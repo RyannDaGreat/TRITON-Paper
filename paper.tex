@@ -1,28 +1,24 @@
 \documentclass{article}
 
+%Neurips Template Comments:
+	% if you need to pass options to natbib, use, e.g.:
+	%     \PassOptionsToPackage{numbers, compress}{natbib}
+	% before loading neurips_2022
 
-% if you need to pass options to natbib, use, e.g.:
-%     \PassOptionsToPackage{numbers, compress}{natbib}
-% before loading neurips_2022
+	% ready for submission
+	% \usepackage{neurips_2022}
 
+	% to compile a preprint version, e.g., for submission to arXiv, add add the
+	% [preprint] option:
+			% \usepackage[preprint]{neurips_2022}
 
-% ready for submission
-\usepackage{neurips_2022}
+	% to compile a camera-ready version, add the [final] option, e.g.:
+	\usepackage[final]{neurips_2022}
 
+	% to avoid loading the natbib package, add option nonatbib:
+	%    \usepackage[nonatbib]{neurips_2022}
 
-% to compile a preprint version, e.g., for submission to arXiv, add add the
-% [preprint] option:
-%     \usepackage[preprint]{neurips_2022}
-
-
-% to compile a camera-ready version, add the [final] option, e.g.:
-%     \usepackage[final]{neurips_2022}
-
-
-% to avoid loading the natbib package, add option nonatbib:
-%    \usepackage[nonatbib]{neurips_2022}
-
-
+%Neurips Template Packages
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -33,65 +29,42 @@
 \usepackage{microtype}      % microtypography
 \usepackage{xcolor}         % colors
 
+%Ryan Packages
+\usepackage{graphicx}       % images
+\graphicspath{ {./images/} }
 
-\title{Formatting Instructions For NeurIPS 2022}
-
-
-% The \author macro works with any number of authors. There are two commands
-% used to separate the names and addresses of multiple authors: \And and \AND.
-%
-% Using \And between authors leaves it to LaTeX to determine where to break the
-% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
-% authors names on the first line, and the last on the second line, try using
-% \AND instead of \And before the third author name.
-
+\title{TRITON: Texture Recovering Image Translation Network [[TODO Make catchier]]}
 
 \author{%
-  David S.~Hippocampus\thanks{Use footnote for providing further information
-    about author (webpage, alternative address)---\emph{not} for acknowledging
-    funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
-  % examples of more authors
-  % \And
-  % Coauthor \\
-  % Affiliation \\
-  % Address \\
-  % \texttt{email} \\
-  % \AND
-  % Coauthor \\
-  % Affiliation \\
-  % Address \\
-  % \texttt{email} \\
-  % \And
-  % Coauthor \\
-  % Affiliation \\
-  % Address \\
-  % \texttt{email} \\
-  % \And
-  % Coauthor \\
-  % Affiliation \\
-  % Address \\
-  % \texttt{email} \\
+	Ryan Burgert \\
+	Department of Computer Science\\
+	Stony Brook University\\
+	Stony Brook, NY 11794 \\
+	\texttt{rburgert@cs.stonybrook.edu} \\
+	% \And
+	% Michael Ryoo \\
+	% Department of Computer Science\\
+	% Stony Brook University\\
+	% Stony Brook, NY 11794 \\
+	% \texttt{mryoo@cs.stonybrook.edu} \\
 }
-
 
 \begin{document}
 
-
 \maketitle
 
-
 \begin{abstract}
-  The abstract paragraph should be indented \nicefrac{1}{2}~inch (3~picas) on
-  both the left- and right-hand margins. Use 10~point type, with a vertical
-  spacing (leading) of 11~points.  The word \textbf{Abstract} must be centered,
-  bold, and in point size 12. Two line spaces precede the abstract. The abstract
-  must be limited to one paragraph.
+	Image translation has been succesful in improving benchmarks in robotic reinforcement learning.
+	Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
+	These techniques do not leverage the latent 3d geometry that creates the input images.
+	Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
+	In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
+	This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
+	With the addition of certain losses, we achieve temporal consistency without using temporal queues (such as optical flow etc...reword this sentence?).
+	Previous algorithms that have tried to perform unpaired image translation using neural textures have been limited to camera movements.
+	In contrast, this algorithm can handle the movements of objects in the scene, which is useful for downstream tasks such as robotic manipulation.
+	Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations with respect to ground truth photographs is improved by this approach.
 \end{abstract}
-
 
 \section{Submission of papers to NeurIPS 2022}
 
@@ -105,7 +78,7 @@ Please read the instructions below carefully and follow them faithfully.
 Papers to be submitted to NeurIPS 2022 must be prepared according to the
 instructions presented here. Papers may only be up to {\bf nine} pages long,
 including figures. Additional pages \emph{containing only acknowledgments and
-references} are allowed. Papers that exceed the page limit will not be
+	references} are allowed. Papers that exceed the page limit will not be
 reviewed, or in any other way considered for presentation at the conference.
 
 
@@ -125,7 +98,7 @@ rejection.
 The style files for NeurIPS and other conference information are available on
 the World Wide Web at
 \begin{center}
-  \url{http://www.neurips.cc/}
+	\url{http://www.neurips.cc/}
 \end{center}
 The file \verb+neurips_2022.pdf+ contains these instructions and illustrates the
 various formatting requirements your NeurIPS paper must satisfy.
@@ -133,7 +106,7 @@ various formatting requirements your NeurIPS paper must satisfy.
 
 The only supported style file for NeurIPS 2022 is \verb+neurips_2022.sty+,
 rewritten for \LaTeXe{}.  \textbf{Previous style files for \LaTeX{} 2.09,
-  Microsoft Word, and RTF are no longer supported!}
+	Microsoft Word, and RTF are no longer supported!}
 
 
 The \LaTeX{} style file contains three optional arguments: \verb+final+, which
@@ -147,7 +120,7 @@ If you wish to post a preprint of your work online, e.g., on arXiv, using the
 NeurIPS style, please use the \verb+preprint+ option. This will create a
 nonanonymized version of your work with the text ``Preprint. Work in progress.''
 in the footer. This version may be distributed as you see fit. Please \textbf{do
-  not} use the \verb+final+ option, which should \textbf{only} be used for
+	not} use the \verb+final+ option, which should \textbf{only} be used for
 papers accepted to NeurIPS.
 
 
@@ -245,30 +218,30 @@ used consistently.
 
 The documentation for \verb+natbib+ may be found at
 \begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
+	\url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
 \end{center}
 Of note is the command \verb+\citet+, which produces citations appropriate for
 use in inline text.  For example,
 \begin{verbatim}
-   \citet{hasselmo} investigated\dots
+	 \citet{hasselmo} investigated\dots
 \end{verbatim}
 produces
 \begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
+	Hasselmo, et al.\ (1995) investigated\dots
 \end{quote}
 
 
 If you wish to load the \verb+natbib+ package with options, you may add the
 following before loading the \verb+neurips_2022+ package:
 \begin{verbatim}
-   \PassOptionsToPackage{options}{natbib}
+	 \PassOptionsToPackage{options}{natbib}
 \end{verbatim}
 
 
 If \verb+natbib+ clashes with another package you load, you can add the optional
 argument \verb+nonatbib+ when loading the style file:
 \begin{verbatim}
-   \usepackage[nonatbib]{neurips_2022}
+	 \usepackage[nonatbib]{neurips_2022}
 \end{verbatim}
 
 
@@ -296,9 +269,9 @@ marks.\footnote{As in this example.}
 
 
 \begin{figure}
-  \centering
-  \fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
+	\centering
+	\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+	\caption{Sample figure caption.}
 \end{figure}
 
 
@@ -331,26 +304,26 @@ Note that publication-quality tables \emph{do not contain vertical rules.} We
 strongly suggest the use of the \verb+booktabs+ package, which allows for
 typesetting high-quality, professional tables:
 \begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
+	\url{https://www.ctan.org/pkg/booktabs}
 \end{center}
 This package was used to typeset Table~\ref{sample-table}.
 
 
 \begin{table}
-  \caption{Sample table title}
-  \label{sample-table}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
+	\caption{Sample table title}
+	\label{sample-table}
+	\centering
+	\begin{tabular}{lll}
+		\toprule
+		\multicolumn{2}{c}{Part}                   \\
+		\cmidrule(r){1-2}
+		Name     & Description     & Size ($\mu$m) \\
+		\midrule
+		Dendrite & Input terminal  & $\sim$100     \\
+		Axon     & Output terminal & $\sim$10      \\
+		Soma     & Cell body       & up to $10^6$  \\
+		\bottomrule
+	\end{tabular}
 \end{table}
 
 
@@ -383,32 +356,32 @@ achieve this.
 
 
 \item You can check which fonts a PDF files uses.  In Acrobat Reader, select the
-  menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-  also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-  available out-of-the-box on most Linux machines.
+	menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
+	also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
+	available out-of-the-box on most Linux machines.
 
 
 \item The IEEE has recommendations for generating PDF files whose fonts are also
-  acceptable for NeurIPS. Please see
-  \url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
+	acceptable for NeurIPS. Please see
+	\url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
 
 
 \item \verb+xfig+ "patterned" shapes are implemented with bitmap fonts.  Use
-  "solid" shapes instead.
+	"solid" shapes instead.
 
 
 \item The \verb+\bbold+ package almost always uses bitmap fonts.  You should use
-  the equivalent AMS Fonts:
+	the equivalent AMS Fonts:
 \begin{verbatim}
-   \usepackage{amsfonts}
+	 \usepackage{amsfonts}
 \end{verbatim}
 followed by, e.g., \verb+\mathbb{R}+, \verb+\mathbb{N}+, or \verb+\mathbb{C}+
 for $\mathbb{R}$, $\mathbb{N}$ or $\mathbb{C}$.  You can also use the following
 workaround for reals, natural and complex:
 \begin{verbatim}
-   \newcommand{\RR}{I\!\!R} %real numbers
-   \newcommand{\Nat}{I\!\!N} %natural numbers
-   \newcommand{\CC}{I\!\!\!\!C} %complex numbers
+	 \newcommand{\RR}{I\!\!R} %real numbers
+	 \newcommand{\Nat}{I\!\!N} %natural numbers
+	 \newcommand{\CC}{I\!\!\!\!C} %complex numbers
 \end{verbatim}
 Note that \verb+amsfonts+ is automatically loaded by the \verb+amssymb+ package.
 
@@ -428,8 +401,8 @@ Most of the margin problems come from figures positioned by hand using
 \verb+\includegraphics+ from the \verb+graphicx+ package. Always specify the
 figure width as a multiple of the line width as in the example below:
 \begin{verbatim}
-   \usepackage[pdftex]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]{myfile.pdf}
+	 \usepackage[pdftex]{graphicx} ...
+	 \includegraphics[width=0.8\linewidth]{myfile.pdf}
 \end{verbatim}
 See Section 4.4 in the graphics bundle documentation
 (\url{http://mirrors.ctan.org/macros/latex/required/graphics/grfguide.pdf})
@@ -473,7 +446,7 @@ pp.\ 609--616. Cambridge, MA: MIT Press.
 
 
 [2] Bower, J.M.\ \& Beeman, D.\ (1995) {\it The Book of GENESIS: Exploring
-  Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
+	Realistic Neural Models with the GEneral NEural SImulation System.}  New York:
 TELOS/Springer--Verlag.
 
 
@@ -495,9 +468,9 @@ questions.  For each question, change the default \answerTODO{} to \answerYes{},
 justification to your answer}, either by referencing the appropriate section of
 your paper or providing a brief inline description.  For example:
 \begin{itemize}
-  \item Did you include the license to the code and datasets? \answerYes{See Section~\ref{gen_inst}.}
-  \item Did you include the license to the code and datasets? \answerNo{The code and the data are proprietary.}
-  \item Did you include the license to the code and datasets? \answerNA{}
+	\item Did you include the license to the code and datasets? \answerYes{See Section~\ref{gen_inst}.}
+	\item Did you include the license to the code and datasets? \answerNo{The code and the data are proprietary.}
+	\item Did you include the license to the code and datasets? \answerNA{}
 \end{itemize}
 Please do not modify the questions and only use the provided macros for your
 answers.  Note that the Checklist section does not count towards the page
@@ -511,62 +484,62 @@ Checklist section heading above along with the questions/answers below.
 
 \item For all authors...
 \begin{enumerate}
-  \item Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
-    \answerTODO{}
-  \item Did you describe the limitations of your work?
-    \answerTODO{}
-  \item Did you discuss any potential negative societal impacts of your work?
-    \answerTODO{}
-  \item Have you read the ethics review guidelines and ensured that your paper conforms to them?
-    \answerTODO{}
+	\item Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
+	      \answerTODO{}
+	\item Did you describe the limitations of your work?
+	      \answerTODO{}
+	\item Did you discuss any potential negative societal impacts of your work?
+	      \answerTODO{}
+	\item Have you read the ethics review guidelines and ensured that your paper conforms to them?
+	      \answerTODO{}
 \end{enumerate}
 
 
 \item If you are including theoretical results...
 \begin{enumerate}
-  \item Did you state the full set of assumptions of all theoretical results?
-    \answerTODO{}
-        \item Did you include complete proofs of all theoretical results?
-    \answerTODO{}
+	\item Did you state the full set of assumptions of all theoretical results?
+	      \answerTODO{}
+	\item Did you include complete proofs of all theoretical results?
+	      \answerTODO{}
 \end{enumerate}
 
 
 \item If you ran experiments...
 \begin{enumerate}
-  \item Did you include the code, data, and instructions needed to reproduce the main experimental results (either in the supplemental material or as a URL)?
-    \answerTODO{}
-  \item Did you specify all the training details (e.g., data splits, hyperparameters, how they were chosen)?
-    \answerTODO{}
-        \item Did you report error bars (e.g., with respect to the random seed after running experiments multiple times)?
-    \answerTODO{}
-        \item Did you include the total amount of compute and the type of resources used (e.g., type of GPUs, internal cluster, or cloud provider)?
-    \answerTODO{}
+	\item Did you include the code, data, and instructions needed to reproduce the main experimental results (either in the supplemental material or as a URL)?
+		\answerTODO{}
+	\item Did you specify all the training details (e.g., data splits, hyperparameters, how they were chosen)?
+		\answerTODO{}
+				\item Did you report error bars (e.g., with respect to the random seed after running experiments multiple times)?
+		\answerTODO{}
+				\item Did you include the total amount of compute and the type of resources used (e.g., type of GPUs, internal cluster, or cloud provider)?
+		\answerTODO{}
 \end{enumerate}
 
 
 \item If you are using existing assets (e.g., code, data, models) or curating/releasing new assets...
 \begin{enumerate}
-  \item If your work uses existing assets, did you cite the creators?
-    \answerTODO{}
-  \item Did you mention the license of the assets?
-    \answerTODO{}
-  \item Did you include any new assets either in the supplemental material or as a URL?
-    \answerTODO{}
-  \item Did you discuss whether and how consent was obtained from people whose data you're using/curating?
-    \answerTODO{}
-  \item Did you discuss whether the data you are using/curating contains personally identifiable information or offensive content?
-    \answerTODO{}
+	\item If your work uses existing assets, did you cite the creators?
+	      \answerTODO{}
+	\item Did you mention the license of the assets?
+	      \answerTODO{}
+	\item Did you include any new assets either in the supplemental material or as a URL?
+	      \answerTODO{}
+	\item Did you discuss whether and how consent was obtained from people whose data you're using/curating?
+	      \answerTODO{}
+	\item Did you discuss whether the data you are using/curating contains personally identifiable information or offensive content?
+	      \answerTODO{}
 \end{enumerate}
 
 
 \item If you used crowdsourcing or conducted research with human subjects...
 \begin{enumerate}
-  \item Did you include the full text of instructions given to participants and screenshots, if applicable?
-    \answerTODO{}
-  \item Did you describe any potential participant risks, with links to Institutional Review Board (IRB) approvals, if applicable?
-    \answerTODO{}
-  \item Did you include the estimated hourly wage paid to participants and the total amount spent on participant compensation?
-    \answerTODO{}
+	\item Did you include the full text of instructions given to participants and screenshots, if applicable?
+	      \answerTODO{}
+	\item Did you describe any potential participant risks, with links to Institutional Review Board (IRB) approvals, if applicable?
+	      \answerTODO{}
+	\item Did you include the estimated hourly wage paid to participants and the total amount spent on participant compensation?
+	      \answerTODO{}
 \end{enumerate}
 
 
