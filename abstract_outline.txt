@@ -1,0 +1,55 @@
+- Abstract
+
+1: As mentioned below, I don't like 1. Robotic reinforcement learning probably isn't the only application of the approach. Plus, we don't really have any experiments in this paper. We can be broader.
+2: Maybe change to something like "Despite existing approaches enable accurate and realistic per-frame generation of ..., they often suffer generating temporally consistent..."
+3 and 4: we may want to add a bit more words to make the sentences flow more naturally.
+5 and 6: emphasize "neural texture" more? Clarify what we are really learning.
+7: We MUST ALWAYS specify what these "certain losses" are, in general in any paper.
+8 and 9: Merge these into a single sentence: "Unlike previous ..., our algorithm ..."
+
+- Robotics: We don't need to mention this (and other applications in the abstract). This can go in the intro, maybe within the first paragraph to motivate.
+- overleaf: mryoo@cs.stonybrook.edu, github: ryoo.michaels@gmail.com
+- Long training: It's OK to train for long period of time. In the supplementary material, you can report how the results looks qualitatively and quantitatively as training progresses.
+- Figure with outlines: It looks good, but we will want to add some text subsections (above each column?) to indicate what each column is, within the figure. 
+- "Note that we are not looking for consistency from left to right, as the pairing between label and cube is arbitrary." I feel we need to say this a bit differently. Using the word "consistency" will only confuse the readers, as we are using it for many different things. We can just say that within each column, the objects with the same-colored outline should correspond to the same thing and should be identical?
+- A single author case: It's 100% ok to go with "I". Or you can add your dog as another author and you don't need to worry about it.
+ 
+TODO: 
+	- Apply minimal changes 
+	- Refine writing
+	- Submit abstract today
+	- Revise later
+
+ 2. Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
+	2: Maybe change to something like "Despite existing approaches enable accurate and realistic per-frame generation of ..., they often suffer generating temporally consistent..."
+
+ 3. These techniques do not leverage the latent 3d geometry that creates the input images.
+ 4. Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
+	3 and 4: we may want to add a bit more words to make the sentences flow more naturally.
+
+ 5. In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
+ 6. This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
+	5 and 6: emphasize "neural texture" more? Clarify what we are really learning.
+
+ 7. With the addition of certain losses, we achieve temporal consistency without using temporal queues (such as optical flow etc...reword this sentence?).
+	7: We MUST ALWAYS specify what these "certain losses" are, in general in any paper.
+
+ 8. Previous algorithms that have tried to perform unpaired image translation using neural textures have been limited to camera movements. [[this is the neural texture paper used for surgery simulations]]
+ 9. In contrast, this algorithm can handle the movements of objects in the scene, which is useful for downstream tasks such as robotic manipulation.
+	8 and 9: Merge these into a single sentence: "Unlike previous ..., our algorithm ..."
+
+ 10. Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations with respect to ground truth photographs is improved by this approach.
+
+
+
+[[[[[[[[[OLD BELOW]]]]]]]]]
+ 1. Image translation has been succesful in improving benchmarks in robotic reinforcement learning. [[RetinaGan, RL-CycleGan etc]]
+ 2. Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
+ 3. These techniques do not leverage the latent 3d geometry that creates the input images.
+ 4. Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
+ 5. In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
+ 6. This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
+ 7. With the addition of certain losses, we achieve temporal consistency without using temporal queues (such as optical flow etc...reword this sentence?).
+ 8. Previous algorithms that have tried to perform unpaired image translation using neural textures have been limited to camera movements. [[this is the neural texture paper used for surgery simulations]]
+ 9. In contrast, this algorithm can handle the movements of objects in the scene, which is useful for downstream tasks such as robotic manipulation.
+ 10. Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations with respect to ground truth photographs is improved by this approach.
