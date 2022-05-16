@@ -33,7 +33,7 @@
 \usepackage{graphicx}       % images
 \graphicspath{ {./images/} }
 
-\title{TRITON: Texture Recovering Image Translation Network [[TODO Make catchier]]}
+\title{TRITON: Learning to Recover Textures through Image Translation}
 
 \author{%
 	Ryan Burgert \\
@@ -47,6 +47,9 @@
 	% Stony Brook University\\
 	% Stony Brook, NY 11794 \\
 	% \texttt{mryoo@cs.stonybrook.edu} \\
+	\And
+	Emma Burgert \\
+	Ryan Burgert's Dog\\
 }
 
 \begin{document}
@@ -54,7 +57,7 @@
 \maketitle
 
 \begin{abstract}
-	Unpaired image translation algorithms can be used for sim-to-real tasks, but they often fail to generate temporally consistent results.
+	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
 	Because of this, the details or even identity of a particular object might change as it moves across a scene.
 	We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
 	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm.
