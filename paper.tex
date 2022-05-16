@@ -54,16 +54,15 @@
 \maketitle
 
 \begin{abstract}
-	Image translation has been succesful in improving benchmarks in robotic reinforcement learning.
-	Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
-	These techniques do not leverage the latent 3d geometry that creates the input images.
-	Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
-	In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
-	This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
-	With the addition of certain losses, we achieve temporal consistency without using temporal queues (such as optical flow etc...reword this sentence?).
-	Previous algorithms that have tried to perform unpaired image translation using neural textures have been limited to camera movements.
-	In contrast, this algorithm can handle the movements of objects in the scene, which is useful for downstream tasks such as robotic manipulation.
-	Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations with respect to ground truth photographs is improved by this approach.
+	Unpaired image translation algorithms can be used for sim-to-real tasks, but they often fail to generate temporally consistent results.
+	Because of this, the details or even identity of a particular object might change as it moves across a scene.
+	We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
+	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm.
+	Unlike previous techniques, TRITON leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
+	These textures are projected onto the surfaces of input scenes, which are then fed through an image translation network to obtain the final outputs.
+	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly [[ie. no need for optical flow]].
+	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
+	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
 \end{abstract}
 
 \section{Submission of papers to NeurIPS 2022}

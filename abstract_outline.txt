@@ -23,9 +23,38 @@ TODO:
  2. Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
 	2: Maybe change to something like "Despite existing approaches enable accurate and realistic per-frame generation of ..., they often suffer generating temporally consistent..."
 
+
  3. These techniques do not leverage the latent 3d geometry that creates the input images.
  4. Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
 	3 and 4: we may want to add a bit more words to make the sentences flow more naturally.
+
+Although unpaired image translation algorithms can appear to be effective sim to real techniques, they often fail to generate temporally consistent results. 
+Because of this, the content or even identity of a particular object might change as it moves across a scene.
+We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
+We call this algorithm TRITON (Texture Recovering Image Translation Network).
+Unlike previous techniques, TRITON leverages the underlying 3d geometry of input scenes by generating realistic-looking latent nerual textures.
+These textures are then projected onto the surfaces of objects in a scene, and the result is fed through an image translator to obtain the final results.
+By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly [[ie. no need for optical flow]].
+Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
+Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations with respect to ground-truth photographs is improved by this approach.
+
+
+
+
+
+Other algorithms such as CycleGan, CUT, MUNIT, or RetinaGAN do not leverage the underlying latent geometry that creates the input scenes they translate.
+In this paper, we introduce an algorithm called TRITON (Texture Recovering Image Translation Network) that,
+	in addition to learning the parameters of an image translation network,
+	also attempts to learn the parameters of a neural latent texture approximating the albedo of the objects in the scene.
+
+
+
+In this paper, we detail an algorithm called TRITON: Texture Recovering Image Translation Network. 
+TRITON 
+
+
+Even though the input data is simulated, most techniques ignore the input images' underlying geometry. 
+
 
  5. In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
  6. This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
