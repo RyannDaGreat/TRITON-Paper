@@ -1,5 +1,33 @@
 This is the outline. This is where I will put my ideas before actually writing the latex file.
 
+Break it down:
+
+Dataset:
+Inputs and Outputs Explanation
+	We load our 3d models as UVL maps.
+		Floating-point RGB images (saved as .exr files to have greater than 1-byte-per-channel resolution)
+	We take photos of objects that move in a scene
+		(Sample of photos in (link to main diagram))
+
+	
+
+Method:
+Fourier texture and projection and uvl maps
+Texture reality
+Unprojection consistency
+
+UVL maps
+
+
+
+
+
+
+
+
+
+
+
 **Do I say we? I? Ours? Mine?
 
 ABSTRACT
@@ -24,9 +52,13 @@ ABSTRACT
 
 
 
+
+
 INTRODUCTION
 	- What IS view consistency?
 		- Show consistency diagram
+
+		
 	- MOTIVATION
 		- USE CASES
 			- Sim to real for robotics
@@ -79,6 +111,8 @@ ALGORITHM
 TESTS
 	- Ground truth L2, LPIPS, SSIM
 		- Confusion matrix of label preferences - show if cyclegan does prefer some over others given a label or whether its a flat fuckup of a distribution
+		- Histogram of matchingnesses for LPIPS - if theres a spike on a single one that means theres a particular best one which means consistent
+			- Also show a picture example of the best for each
 	- Visual quality of recovered textures
 	- Secondary metric: label consistency
 	- Qulitative test: scene mutations (having duplicate items with the same label visually behind each other, out of bounds, rotated, camera moved, etc)
@@ -104,12 +138,20 @@ LIMITATIONS:
 			- Might be fixable if we also feed in depth maps
 		- Training time is much longer than cyclegan to get good looking results
 
+FUTURE WORK:
+
 THOUGHT SNIPPETS
 	- Intuitively, this lets it draw features on an otherwise featureless surface. 
 	- View consistency problems: it requires you to have a match in the batch. Which means you can't have a batch size of 1, and in order to get anything out of it you must be lucky (or selectively choose the inputs in the batch to have matching UVL values). Another disadvantage is additional hyperparameters: it has to match textures onto a grid, which needs a height and width low enough to be effective at binning; yet high enough to excert a strong view consistency loss.
 	- View consistency advantages: It can be applied to image translation algorithms that don't have textures. Texture reality loss can't do that. Also texture reality is kinda a good name...it says how realistic does the texture look. Maybe "Texture realism" loss is better?
 	- There are two datasets we focus on. One is the five_items dataset, and the other is the five_cubes dataset. The majority of it focuses on the five_cubes dataset, but we also use the five_items dataset to show funny examples of apple-cubes and color matching loss. We also use five_items to talk about specularity on the can and rubiks cube (and why just pure texture can't do shadows etc.)
 	- The datasets: They're gathered by translating objects on the XY plane, and rotating them about the Z axis. There is roughly even lighting from all directions, so shadows are not harsh and direction doesn't affect brightness of sides of a cube very much.
+	- THINGS I NEED TO SAY:
+		- The latent textures can't be learned effectively without image translation! This is an important ablation, but my code can't do this yet...
+	- THINGS I DONT WANT TO EXPLAIN:
+		- Adding UVL to the input for faster convergence
+		- The rasterization of the latent textures
+	- Instead of the camera moving, the objects in the scene move.
 
 CITATIONS
 	- DEFERRED NEURAL RENDERER: Hassan Abu Alhaija, Siva Karthik Mustikovela, Justus Thies, Matthias Nießner, Andreas Geiger, and Carsten Rother. Intrinsic autoencoders for joint neural rendering and intrinsic image decomposition. In International Conference on 3D Vision, 2020.
