@@ -63,7 +63,7 @@
 	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm.
 	Unlike previous techniques, TRITON leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
 	These textures are projected onto the surfaces of input scenes, which are then fed through an image translation network to obtain the final outputs.
-	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly [[ie. no need for optical flow]].
+	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
 	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
 \end{abstract}
