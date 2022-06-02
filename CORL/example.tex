@@ -3,6 +3,7 @@
 % \usepackage{corl_2022} % Use this for the initial submission.
 \usepackage[final]{corl_2022} % Uncomment for the camera-ready ``final'' version.
 \usepackage{graphicx}
+\usepackage{float}
 \graphicspath{ {../images} }
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
@@ -51,6 +52,7 @@
 	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
 	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
+
 \end{abstract}
 
 % Two or three meaningful keywords should be added here
@@ -73,13 +75,30 @@ This paper too, though, was limited to only camera movements.
 The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneuously, keeps all semantic details 
 [[I'll finish this later...lets work on the meat of the paper first...]]
 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=200pt]{frame_inconsistency_diagram.pdf}
+	\end{center}
+	\caption{
+		Each row of images is a different random placement of object in a scene.
+		Each column is a different image translation algorithm.
+		The same cube is marked with the same color outline across all photos.
+		TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
+		Meanwhile, CycleGan for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
+		CUT and CycleGan are not consistent, while TRITON is.
+		TODO: Update the images in this to have the latest training iteration...
+		}
+	\label{fig:main_diagram}
+\end{figure}
+		
 
 %===============================================================================
+
 
 \section{Data}
 \label{sec:data}
 
-\begin{figure}
+\begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=270pt]{uvl_explanation.pdf}
 	\end{center}
@@ -116,6 +135,19 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 \section{Method}
 \label{sec:text}
 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=400pt]{main_diagram.pdf}
+	\end{center}
+	\caption{
+		This is the main diagram for the paper.
+		TODO: Come up with a tour of this diagram in this caption. Also maybe make it larger?
+		TODO: Use variables instead of 3,4 
+		TODO: Make the text larger and easier to read
+		TODO: Simplify the diagram?
+		}
+	\label{fig:main_diagram}
+\end{figure}
 	
 
 
