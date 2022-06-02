@@ -43,7 +43,24 @@
 %===============================================================================
 
 \begin{abstract}
-    The purpose of this document is to provide both the basic paper template and submission guidelines. Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
+	% Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
+
+	% Because of the 6 senence limit, I've commented out some of the sentences...
+
+	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
+	% Because of this, the details or even identity of a particular object might change as it moves across a scene.
+	We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
+%
+	%TURNING TWO SENTENCES INTO ONE:
+	% We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm.
+	% Unlike previous techniques, TRITON leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
+	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm that 
+	leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
+%
+	% These textures are projected onto the surfaces of input scenes, which are then fed through an image translation network to obtain the final outputs.
+	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
+	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
+	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
 \end{abstract}
 
 % Two or three meaningful keywords should be added here
