@@ -60,7 +60,19 @@
 
 \section{Introduction}
 	
-    Submission to CoRL 2022 will be entirely electronic, via a web site (not email). Information about the submission process and \LaTeX{} templates are available on the conference web site at \url{http://www.robot-learning.org/}. For camera ready submission, use the \texttt{final} option for the \texttt{\textbackslash usepackage} command. 
+	Recently, several sim to real algorithms have come out that are based on image to image translation. [Citations]
+	These are used for training robots using pixel-based reinforcement learning.
+	They demonstrated that better image translation algorithms yielded notable improvements in robotic benchmarks.
+	At the same time, there is a lot of research on differentiable rendering,
+		a topic which produced papers such as NERF which attempt to capture 3d representations of the real world.
+	However, most of these approaches are either supervised or involve only camera movements [citations].
+	One paper that came out recently combined both image translation and differentiable rendering in an unsupervised manner to create view-consistent models of human organs [citation].
+	This paper too, though, was limited to only camera movements.
+	
+	The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneuously, keeps all semantic details 
+	[[I'll finish this later...lets work on the meat of the paper first...]]
+	
+
 
 %===============================================================================
 
