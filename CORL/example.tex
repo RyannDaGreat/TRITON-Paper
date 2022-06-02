@@ -85,6 +85,40 @@
 	
 %===============================================================================
 
+\section{Data}
+\label{sec:data}
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=270pt]{uvl_explanation.pdf}
+	\end{center}
+	\caption{
+		This diagram shows the purpose of a UVL image.
+		 A UVL scene is an image that has three channels: RGB.
+		 R and G are used for U and V, and B is used for L.
+		 L stands for Label, and determines which part of the synthetic image will get which texture.
+		 The U and V coordinates correspond to positions on each texture,
+		 	telling it how to project the textures onto the 3d objects represented in the UVL scene.
+		The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
+		}
+	\label{fig:uvl_explanation}
+\end{figure}
+
+In this paper, we'll mostly focus on a dataset that involves three alphabet blocks that are moved across a table.
+Alphabet blocks were chosen because they all have the same geometry (a cube), but have very distinct semantic textures that will make temporal inconsistency obvious to the human eye.
+This dataset is analagous to data that would be collected for a third-person robotic grasping task.
+However, other objects (such as cans of soda, apples, cloves of garlic etc) are also for generating other results in this paper. ((TODO: Detail the five object tests and five cube tests and other stuff like shiny cans etc)).
+
+There are two components to this dataset: Simulated data in the form of UVL scenes, and photographs.
+The camera in the simulation is positioned in approximately the same place as the real camera, with approximately the same field of view.
+In both domains of this dataset, the camera never moves. Instead, the objects are randomly positioned and rotated on the table.
+In both the simulation and in real life, these objects are randomly translated along the x and y axis of the table, as well as rotated on the z axis.
+
+There are 200 photographs in this datset, and they are recorded as RGB jpg images.
+There are 3000 synthetic images in this dataset, in the form of UVL images.
+These UVL images are also encoded as RGB images, but provide information about the geometry of a scene.
+UVL images are composed of both a UV map and a label map, and are summarized in figure \ref{fig:uvl_explanation}.
+To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating point values.
 
 %===============================================================================
 
