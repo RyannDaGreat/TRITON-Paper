@@ -1,0 +1,218 @@
+This is the outline. This is where I will put my ideas before actually writing the latex file.
+
+Break it down:
+
+Dataset:
+Inputs and Outputs Explanation
+	We load our 3d models as UVL maps.
+		Floating-point RGB images (saved as .exr files to have greater than 1-byte-per-channel resolution)
+	We take photos of objects that move in a scene
+		(Sample of photos in (link to main diagram))
+
+	
+
+Method:
+Fourier texture and projection and uvl maps
+Texture reality
+Unprojection consistency
+
+UVL maps
+
+
+
+
+
+
+
+
+
+
+
+**Do I say we? I? Ours? Mine?
+
+ABSTRACT
+	Image translation has been succesful in improving benchmarks in robotic reinforcement learning.
+	Current unpaired sim to real image translation algorithms are not globally temporally consistent. 
+	These techniques do not leverage the latent 3d geometry that creates the input images.
+	Much of the content in photographs can be approximated as albedo maps on the surfaces of 3d objects.
+	In this paper, we combine differentiable rendering with image translation to recover the textures of 3d objects.
+	This algorithm takes advantage of the input geometry by projecting learnable textures onto their surfaces, before feeding it into an image translation algorithm.
+	With the addition of certain losses, we achieve temporal consistency without using temporal queues (such as optical flow etc...reword this sentence?).
+	Previous algorithms that have tried to perform unpaired image translation using neural textures have been limited to camera movements.
+	In contrast, this algorithm can handle the movements of objects in the scene, which is useful for downstream tasks such as robotic manipulation.
+	Our experiments show that in addition to achieving higher temporal consistency, the accuracy of the translations to ground-truth photographs is improved by this approach.
+
+	This paper presents an algorithm that learns the textures on the surfaces of 3d objects without any paired data. The result is an image translation algorithm that generates results closer to a ground truth than previous works.
+	Recently, there has been a lot of interest in unpaired image translation. The ability to transfer style while keeping content is a valuable tool in the fields of robotics (sim2real), art (applying artistic style to pictures).
+	Intuitively, when you have a 3d dataset in an unpaired sim to real environment, you should be able to make use of the 3d geometry. 
+	Having to create textures for 3d objects can be a laborious task that requires a 3d artist. 
+	When a robot arm moves in front of an object, ideally that object should have the same features in the same places as it did before so a neural network can better localize it.
+
+
+
+
+
+
+
+INTRODUCTION
+	- What IS view consistency?
+		- Show consistency diagram
+
+		
+	- MOTIVATION
+		- USE CASES
+			- Sim to real for robotics
+			- Artistic asset creation
+			- Video game reality enhancement
+			- Data augmentation for downstream tasks such as object detection or segmentation
+
+RELATED WORKS (push till later)
+	- Fourier Feature Networks
+	- Image Translation
+	- Neural Textures
+
+ALGORITHM
+	- Explain what UVL is, and what a scene is (it's my terminology)
+	- Explain how we can project textures to scenes and unproject scenes to textures
+	- Define view consistency as a metric
+		- Show the recovered textures' blurryness
+		- Show pictures from the original texture recovery .ipynb
+		- Briefly describe lighting invariance, and how it affects shinyness (or skip it if I can't make the benchmarks in time)
+		- Show why we need to have a batch size of >1 for it to work (and that increasing batch size makes it better)
+	- Show a diagram of the algorithm (this might be the most important diagram in the whole paper!)
+		- Perhaps have two diagrams: This algorithm is translation-algorithm agnostic
+	- Define texture realism loss (and explain advantages of it over pure view consistency)
+		- Only needs a batch size of 1 (show comparisons in the ablations)
+			- Show that although it is sufficient, the average texture looks sharper when we add view consistency loss.
+			- In practice, I add view consistency loss at around 100,000 iterations. This might be an arbitrary choice however. 
+		- Show how the texture changes from random blue bullshit to a regularized texture
+			- This loss makes the texture non-arbitrary
+		- Theoretical explanation for why it's similar to view consistency loss
+
+	MODIFIED MUNIT
+		- Go into the details - this is a modified version of a modified version of MUNIT
+
+	TRAINING PROCEDURE
+		- Crop images to 256x256 to save memory
+		- Concatenate the projected texture to the UVL map - this is because we want to be able to recreate the UVL map from photos (it's a free bonus-segmentation).
+			- Note that I'm not sure this is nessecary...but for the paper I'll pretend like it is nessecary? (In particular, the cubes are not shiny and have weak shadows so it doesn't matter much...not to mention that TR doesn't use it...)
+		TRAINING CURRICULUM
+		- Image sizes are scaled to larger resolutions over time, though the crop size remains the same.
+			- Because it learns a neural texture, it benefits from that training curriculum, and can be scaled to larger resolutions than would normally be possible with its receptive field (about 64x64 I think??)
+
+	COLOR LOSS
+		- Briefly talk about using small amounts of supervision.
+			- Show the apple cube
+			- Show the segmentations
+		- Small amounts of supervision will let us generalize to larger scenes
+		- In this case, we use color statistics (mean in this case). It's a very small number of extra parameters, and it is sufficient.
+		- Note that in the test section, we do not use color loss! This section is only here to talk about generalizability...
+
+TESTS
+	- Ground truth L2, LPIPS, SSIM
+		- Confusion matrix of label preferences - show if cyclegan does prefer some over others given a label or whether its a flat fuckup of a distribution
+		- Histogram of matchingnesses for LPIPS - if theres a spike on a single one that means theres a particular best one which means consistent
+			- Also show a picture example of the best for each
+	- Visual quality of recovered textures
+	- Secondary metric: label consistency
+	- Qulitative test: scene mutations (having duplicate items with the same label visually behind each other, out of bounds, rotated, camera moved, etc)
+		- This is a set of pictures that should be judged qualitatively by the viewer of the paper. Mine looks better.
+	ABLATIONS:
+		Ablations are in this section, and are included in all of the test tables (but not all of the image figures)
+		A list of ablations:
+			VC = view consistency loss 
+			TEX = has a texture 
+			TR = texture realism loss 
+			- no TEX, no VC, no TR
+			- no TEX, yes VC, no TR
+			- yes TEX, yes TR, no VC
+			- yes TEX, no TR, yes VC
+
+LIMITATIONS:
+	INHERENT:
+		- You must have 3d geometry
+	POSSIBLY FIXABLE:
+		- Panorama problem
+			- Might be fixable if we give the algithm knowledge about camera orientation
+		- Label mismatching problem
+			- Might be fixable if we also feed in depth maps
+		- Training time is much longer than cyclegan to get good looking results
+
+FUTURE WORK:
+
+THOUGHT SNIPPETS
+	- Intuitively, this lets it draw features on an otherwise featureless surface. 
+	- View consistency problems: it requires you to have a match in the batch. Which means you can't have a batch size of 1, and in order to get anything out of it you must be lucky (or selectively choose the inputs in the batch to have matching UVL values). Another disadvantage is additional hyperparameters: it has to match textures onto a grid, which needs a height and width low enough to be effective at binning; yet high enough to excert a strong view consistency loss.
+	- View consistency advantages: It can be applied to image translation algorithms that don't have textures. Texture reality loss can't do that. Also texture reality is kinda a good name...it says how realistic does the texture look. Maybe "Texture realism" loss is better?
+	- There are two datasets we focus on. One is the five_items dataset, and the other is the five_cubes dataset. The majority of it focuses on the five_cubes dataset, but we also use the five_items dataset to show funny examples of apple-cubes and color matching loss. We also use five_items to talk about specularity on the can and rubiks cube (and why just pure texture can't do shadows etc.)
+	- The datasets: They're gathered by translating objects on the XY plane, and rotating them about the Z axis. There is roughly even lighting from all directions, so shadows are not harsh and direction doesn't affect brightness of sides of a cube very much.
+	- THINGS I NEED TO SAY:
+		- The latent textures can't be learned effectively without image translation! This is an important ablation, but my code can't do this yet...
+	- THINGS I DONT WANT TO EXPLAIN:
+		- Adding UVL to the input for faster convergence
+		- The rasterization of the latent textures
+	- Instead of the camera moving, the objects in the scene move.
+
+CITATIONS
+	- DEFERRED NEURAL RENDERER: Hassan Abu Alhaija, Siva Karthik Mustikovela, Justus Thies, Matthias Nießner, Andreas Geiger, and Carsten Rother. Intrinsic autoencoders for joint neural rendering and intrinsic image decomposition. In International Conference on 3D Vision, 2020.
+		- Breaking down their abstract:
+			VERBATIM:
+				Neural rendering techniques promise efficient photorealistic image synthesis while providing rich control over scene parameters by learning the physical image formation process.
+				
+				While several supervised methods have been proposed for this task, acquiring a dataset of images with accurately aligned 3D models is very difficult. 
+			
+				The main contribution of this work is to lift this restriction by training a neural rendering algorithm from unpaired data.
+			
+				We propose an autoencoder for joint generation of realistic images from synthetic 3D models while simultaneously decomposing real images into their intrinsic shape and appearance properties.
+			
+				In contrast to a traditional graphics pipeline, our approach does not require to specify all scene properties, such as material parameters and lighting by hand. Instead, we learn photo-realistic deferred rendering from a small set of 3D models and a larger set of unaligned real images, both of which are easy to acquire in practice. Simultaneously, we obtain accurate intrinsic decompositions of real images while not requiring paired ground truth.
+			
+				Our experiments confirm that a joint treatment of rendering and decomposition is indeed beneficial and that our approach outperforms state-of-the-art image-to-image translation baselines both qualitatively and quantitatively.
+			
+			ESSENCE:
+				Introducing the field (neural rendering).
+
+				There's a problem with this field.
+
+				Our main contribution is blah. It solves this problem.
+
+				Here's how it works.
+
+				Here's how it's different from previous approaches.
+
+				Our experiments say it's good.
+
+	- NEURAL COLON TEXTURES: Long-Term Temporally Consistent Unpaired Video Translation from Simulated Surgical 3D Data:
+		- Breaking down their abstract:
+			VERBATIM
+				Research in unpaired video translation has mainly focused on short-term temporal consistency by conditioning on neighboring frames.
+				
+				However for transfer from simulated to photorealistic sequences, available information on the underlying geometry offers potential for achieving global consistency across views.
+				
+				We propose a novel approach which combines unpaired image translation with neural rendering to transfer simulated to photorealistic surgical abdominal scenes.
+				
+				By introducing global learnable textures and a lighting-invariant view-consistency loss, our method produces consistent translations of arbitrary views and thus enables long-term consistent video synthesis. 
+				
+				We design and test our model to generate video sequences from minimally-invasive surgical abdominal scenes. Because labeled data is often limited in this domain, photorealistic data where ground truth information from the simulated domain is preserved is especially relevant. By extending existing image-based methods to view-consistent videos, we aim to impact the applicability of simulated training and evaluation environments for surgical applications.
+
+			ESSENCE
+				There's a problem with this field (unpaired video translation).
+
+				There's an untapped resource (3d geometry)
+
+				Our approach leverages that resource
+
+				A brief description of what it does 
+
+				How we test it and what it's used for (surgery)
+
+THINGS I WISH I HAD
+	- The Google dataset with the pybullet physics simulator so we can use more than 1 axis of rotation
+	- Baselines with optical-flow based consistency approaches
+
+
+NOTES
+	- Emphasize the sim2real aspect of this for robotics more than other things - that's what it was originally meant for, and warrants comparisons to RetinaGAN
+		- RetinaGAN aimed to preserve important information with tons of annotated data....I have no proof that mine would do this...
+
+	
