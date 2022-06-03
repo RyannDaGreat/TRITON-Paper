@@ -3,10 +3,8 @@
 *.fls
 *.log
 *.out
-*.pdf
 *.bbl
 *.blg
-*.pdf
 *.swp
 *.un~
 *.synctex.gz
@@ -14,3 +12,6 @@
 __latexindent_temp.tex
 
 CORL/example.pdf
+
+NEURIPS/paper.pdf
+NEURIPS/paper_template.pdf
