@@ -72,24 +72,11 @@ However, most of these approaches are either supervised or involve only camera m
 One paper that came out recently combined both image translation and differentiable rendering in an unsupervised manner to create view-consistent models of human organs [citation].
 This paper too, though, was limited to only camera movements.
 
+This algorithm unlocks a new capability: learning textures to match photos for given 3d models without supervision.
+
 The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneuously, keeps all semantic details 
 [[I'll finish this later...lets work on the meat of the paper first...]]
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=200pt]{frame_inconsistency_diagram.pdf}
-	\end{center}
-	\caption{
-		Each row of images is a different random placement of object in a scene.
-		Each column is a different image translation algorithm.
-		The same cube is marked with the same color outline across all photos.
-		TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
-		Meanwhile, CycleGan for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
-		CUT and CycleGan are not consistent, while TRITON is.
-		TODO: Update the images in this to have the latest training iteration...
-		}
-	\label{fig:main_diagram}
-\end{figure}
 		
 
 %===============================================================================
@@ -97,6 +84,22 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 
 \section{Data}
 \label{sec:data}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=200pt]{dataset_explanation.pdf}
+	\end{center}
+	\caption{
+		Compatiable datasets have two sets of images: a set of UVL scenes and a set of photographs.
+		TRITON is a sim-to-real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
+		Being an unsupervised algorithm, there are no correspondences between synthetic and real images.
+		In this dataset, three alphabet cubes are moved around the table. 
+		The synthetic and real cameras have the same position and field of view.
+		There are many more UVL scenes than photos, because synthetic scenes can be generated automatically whereas photos require real-world labor.
+		}
+	\label{fig:dataset_explanation}
+\end{figure}
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -137,29 +140,78 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=400pt]{main_diagram.pdf}
+		\includegraphics[width=400pt]{main_diagram_condensed.pdf}
 	\end{center}
 	\caption{
-		This is the main diagram for the paper.
+		This is the main diagram for the paper. $B$ is the batch size, and $L$ is the number of different labels (which is also the number of learnable textures).
 		TODO: Come up with a tour of this diagram in this caption. Also maybe make it larger?
-		TODO: Use variables instead of 3,4 
+		TODO: Use variables instead of 3,4
 		TODO: Make the text larger and easier to read
 		TODO: Simplify the diagram?
-		}
+	}
 	\label{fig:main_diagram}
 \end{figure}
-	
+
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=400pt]{unprojection_consistency_loss.pdf}
+	\end{center}
+	\caption{
+		This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
+		After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $\u_{1...R,1...L}$, 
+		\pi
+	}
+	\label{fig:unprojection_consistency_loss}
+\end{figure}
+
+
 
 
 %===============================================================================
 
 \section{Citations}
 \label{sec:citations}
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=400pt]{frame_inconsistency_diagram.pdf}
+	\end{center}
 
-	Citations can be made using either \textbackslash citep\{\} or \textbackslash citet\{\}, depending from the appropriateness. To avoid the citation moving to the next line, it is often a good practice to replace the space before with a tilde (\~{}) character.
-	Example 1: ``CoRL is the best conference ever~\citep{Gauss1857}.''
-	Example 2: ``\citet{Gauss1857} proved, both theoretically and numerically, that CoRL is the best conference ever.''
+	% Each outline color corresponds to the same cube.
+	% The same cubes are marked with the same colored outlines across all photos.
+	% For the same cube, we expect to see the same number on the top of the cube regardless of its placement.
 	
+	\caption{
+		Each row of images is a different random placement of object in a scene.
+		Each column is a different image translation algorithm.
+		The same cube is marked with the same color outline across all photos.
+		TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
+		Meanwhile, CycleGan for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
+		CUT and CycleGan are not consistent, while TRITON is.
+		TODO: Update the images in this to have the latest training iteration...
+		}
+	\label{fig:frame_inconsistency_diagram}
+\end{figure}
+
+%===============================================================================
+
+\section{Limitaions}
+\label{sec:Limitations} 
+
+Can't handle transparent objects. 
+Limited number of objects can be learned at once before supervision is nessecary with color loss (but there are workarounds).
+Takes a long time to train.
+
+
+%===============================================================================
+
+\section{Citations} 
+\label{sec:citations} 
+
+Citations can be made using either \textbackslash citep\{\} or \textbackslash citet\{\}, depending from the appropriateness. To avoid the citation moving to the next line, it is often a good practice to replace the space before with a tilde (\~{}) character.
+Example 1: ``CoRL is the best conference ever~\citep{Gauss1857}.''
+Example 2: ``\citet{Gauss1857} proved, both theoretically and numerically, that CoRL is the best conference ever.''
+
 %===============================================================================
 
 \clearpage
