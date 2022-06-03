@@ -88,6 +88,9 @@ ALGORITHM
 		- Show how the texture changes from random blue bullshit to a regularized texture
 			- This loss makes the texture non-arbitrary
 		- Theoretical explanation for why it's similar to view consistency loss
+	
+	UNPROJECTION CONSISTENCY:
+		- Note that it needs coincidences to work properly. 
 
 	MODIFIED MUNIT
 		- Go into the details - this is a modified version of a modified version of MUNIT
