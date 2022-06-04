@@ -4,7 +4,6 @@
 \usepackage[final]{corl_2022} % Uncomment for the camera-ready ``final'' version.
 \usepackage{graphicx}
 \usepackage{float}
-\graphicspath{ {../images} }
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
@@ -87,7 +86,7 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=200pt]{dataset_explanation.pdf}
+		\includegraphics[width=200pt]{../images/dataset_explanation.pdf}
 	\end{center}
 	\caption{
 		Compatiable datasets have two sets of images: a set of UVL scenes and a set of photographs.
@@ -103,7 +102,7 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=270pt]{uvl_explanation.pdf}
+		\includegraphics[width=270pt]{../images/uvl_explanation.pdf}
 	\end{center}
 	\caption{
 		This diagram shows the purpose of a UVL image.
@@ -140,7 +139,7 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=400pt]{main_diagram_condensed.pdf}
+		\includegraphics[width=400pt]{../images/main_diagram_condensed.pdf}
 	\end{center}
 	\caption{
 		This is the main diagram for the paper. $B$ is the batch size, and $L$ is the number of different labels (which is also the number of learnable textures).
@@ -155,12 +154,11 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=400pt]{unprojection_consistency_loss.pdf}
+		\includegraphics[width=400pt]{../images/unprojection_consistency_loss.pdf}
 	\end{center}
 	\caption{
 		This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
 		After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $\u_{1...R,1...L}$, 
-		\pi
 	}
 	\label{fig:unprojection_consistency_loss}
 \end{figure}
@@ -174,7 +172,7 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 \label{sec:citations}
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=400pt]{frame_inconsistency_diagram.pdf}
+		\includegraphics[width=400pt]{../images/frame_inconsistency_diagram.pdf}
 	\end{center}
 
 	% Each outline color corresponds to the same cube.
