@@ -62,7 +62,7 @@
 \section{Introduction}
 	
 
-Recently, several sim to real algorithms have come out that are based on image to image translation. [Citations]
+Recently, several sim-to-real algorithms have come out that are based on image-to-image translation. [Citations]
 These are used for training robots using pixel-based reinforcement learning.
 They demonstrated that better image translation algorithms yielded notable improvements in robotic benchmarks.
 At the same time, there is a lot of research on differentiable rendering,
@@ -73,8 +73,8 @@ This paper too, though, was limited to only camera movements.
 
 This algorithm unlocks a new capability: learning textures to match photos for given 3d models without supervision.
 
-The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneuously, keeps all semantic details 
-[[I'll finish this later...lets work on the meat of the paper first...]]
+The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneously, keeps all semantic details 
+[[I'll finish this later... let's work on the meat of the paper first...]]
 
 		
 
@@ -89,12 +89,12 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 		\includegraphics[width=200pt]{../images/dataset_explanation.pdf}
 	\end{center}
 	\caption{
-		Compatiable datasets have two sets of images: a set of UVL scenes and a set of photographs.
+		Compatible datasets have two sets of images: a set of UVL scenes and a set of photographs.
 		TRITON is a sim-to-real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
 		Being an unsupervised algorithm, there are no correspondences between synthetic and real images.
 		In this dataset, three alphabet cubes are moved around the table. 
-		The synthetic and real cameras have the same position and field of view.
-		There are many more UVL scenes than photos, because synthetic scenes can be generated automatically whereas photos require real-world labor.
+		The synthetic and rear cameras have the same position and field of view.
+		There are many more UVL scenes than photos because synthetic scenes can be generated automatically whereas photos require real-world labor.
 		}
 	\label{fig:dataset_explanation}
 \end{figure}
@@ -118,19 +118,19 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 
 In this paper, we'll mostly focus on a dataset that involves three alphabet blocks that are moved across a table.
 Alphabet blocks were chosen because they all have the same geometry (a cube), but have very distinct semantic textures that will make temporal inconsistency obvious to the human eye.
-This dataset is analagous to data that would be collected for a third-person robotic grasping task.
-However, other objects (such as cans of soda, apples, cloves of garlic etc) are also for generating other results in this paper. ((TODO: Detail the five object tests and five cube tests and other stuff like shiny cans etc)).
+This dataset is analogous to data that would be collected for a third-person robotic grasping task.
+However, other objects (such as cans of soda, apples, cloves of garlic, etc) are also for generating other results in this paper. ((TODO: Detail the five object tests and five cube tests and other stuff like shiny cans etc)).
 
 There are two components to this dataset: Simulated data in the form of UVL scenes, and photographs.
 The camera in the simulation is positioned in approximately the same place as the real camera, with approximately the same field of view.
 In both domains of this dataset, the camera never moves. Instead, the objects are randomly positioned and rotated on the table.
-In both the simulation and in real life, these objects are randomly translated along the x and y axis of the table, as well as rotated on the z axis.
+In both the simulation and in real life, these objects are randomly translated along the x and y-axis of the table, as well as rotated on the z-axis.
 
-There are 200 photographs in this datset, and they are recorded as RGB jpg images.
+There are 200 photographs in this dataset, and they are recorded as RGB jpg images.
 There are 3000 synthetic images in this dataset, in the form of UVL images.
 These UVL images are also encoded as RGB images, but provide information about the geometry of a scene.
-UVL images are composed of both a UV map and a label map, and are summarized in figure \ref{fig:uvl_explanation}.
-To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating point values.
+UVL images are composed of both a UV map and a label map and are summarized in figure \ref{fig:uvl_explanation}.
+To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating-point values.
 
 %===============================================================================
 
@@ -144,10 +144,12 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 	\caption{
 		We use differentiable rendering paired with unpaired image translation to consistently transform synthetic scenes into realistic images.
 		To ensure all objects look consistent in different positions and views, we learn the albedo of each object's surface by using a learnable latent texture.
-		This texture is parametrized as an image generated by an MLP which is fed fourier features, as shown in figure 
+		This texture is parametrized as an image generated by an MLP which is fed Fourier features, as shown in figure \ref{fig:learnable_textures}.
 		$B$ is the batch size, and $L$ is the number of different labels (which is also the number of learnable textures).
 		Inputs are on the left, and outputs are on the right.
 		The dashed arrows indicate losses between nodes.
+		Although $\pi_{1\dots B}$ and $\hat{p}_{1\dots B}$ look similar, they are not identical. 
+		$\pi$ is simply projected textures, whereas $\hat{p}$ has been run through an image translator, allowing it to have shadows and specularities.
 		% TODO: Come up with a tour of this diagram in this caption. Also maybe make it larger?
 		% TODO: Use variables instead of 3,4
 		% TODO: Make the text larger and easier to read
@@ -166,7 +168,7 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 		After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $s_{1...B}$ as seen in figure \ref{fig:main_diagram}, 
 		we can unproject fake photos $\hat{p}_{1...B}$ back into texture space to obtain $u_{1...B,\ 1...L}$ .
 		If the fake photos display consistent textures along their 3d surfaces, then the unprojected textures should be similar.
-		We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$ , then averaging the result.
+		We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$, then averaging the result.
 		When the fake photos display similar surfaces, the unprojections will be similar making the unprojection consistency loss low.
 		Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
 	}
@@ -178,7 +180,10 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 		\includegraphics[width=400pt]{../images/learnable_textures.pdf}
 	\end{center}
 	\caption{
-		Hello
+		This figure illustrates how the differentiable, learnable textures are calculated in figure \ref{fig:main_diagram}.
+		For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
+		We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
+		During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
 	}
 	\label{fig:learnable_textures}
 \end{figure}
@@ -201,13 +206,14 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 	% For the same cube, we expect to see the same number on the top of the cube regardless of its placement.
 	
 	\caption{
-		Each row of images is a different random placement of object in a scene.
-		Each column is a different image translation algorithm.
+		Each row of images shows a different random placement of objects in the scene.
+		Each column of images is a different image translation algorithm.
 		The same cube is marked with the same color outline across all photos.
 		TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
 		Meanwhile, CycleGan for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
+		Because of the symmetry of the cubes, and the unsupervised training, it is arbitrary which synthetic cube gets which symbol after training - but whatever it chooses, it should be consistent between placements.
 		CUT and CycleGan are not consistent, while TRITON is.
-		TODO: Update the images in this to have the latest training iteration...
+		% TODO: Update the images in this to have the latest training iteration...
 		}
 	\label{fig:frame_inconsistency_diagram}
 \end{figure}
@@ -218,7 +224,7 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 \label{sec:Limitations} 
 
 Can't handle transparent objects. 
-Limited number of objects can be learned at once before supervision is nessecary with color loss (but there are workarounds).
+A limited number of objects can be learned at once before supervision is necessary with color loss (but there are workarounds).
 Takes a long time to train.
 
 
@@ -227,9 +233,9 @@ Takes a long time to train.
 \section{Citations} 
 \label{sec:citations} 
 
-Citations can be made using either \textbackslash citep\{\} or \textbackslash citet\{\}, depending from the appropriateness. To avoid the citation moving to the next line, it is often a good practice to replace the space before with a tilde (\~{}) character.
+Citations can be made using either \textbackslash citep\{\} or \textbackslash citet\{\}, depending on the appropriateness. To avoid the citation moving to the next line, it is often a good practice to replace the space before with a tilde (\~{}) character.
 Example 1: ``CoRL is the best conference ever~\citep{fourier_feature_networks}.''
-% Example 2: ``\citet{Gauss1857} proved, both theoretically and numerically, that CoRL is the best conference ever.''
+Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and numerically, that CoRL is the best conference ever.''
 
 %===============================================================================
 
@@ -239,7 +245,6 @@ Example 1: ``CoRL is the best conference ever~\citep{fourier_feature_networks}.'
 
 %===============================================================================
 
-% no \bibliographystyle is required, since the corl style is automatically used.
 \bibliography{example}  % .bib
 
 \end{document}
