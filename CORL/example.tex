@@ -4,6 +4,7 @@
 \usepackage[final]{corl_2022} % Uncomment for the camera-ready ``final'' version.
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{amsfonts}
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
@@ -106,11 +107,11 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 	\end{center}
 	\caption{
 		This diagram shows the purpose of a UVL image.
-		 A UVL scene is an image that has three channels: RGB.
-		 R and G are used for U and V, and B is used for L.
-		 L stands for Label, and determines which part of the synthetic image will get which texture.
-		 The U and V coordinates correspond to positions on each texture,
-		 	telling it how to project the textures onto the 3d objects represented in the UVL scene.
+		A UVL scene is an image that has three channels: RGB.
+		R and G are used for U and V, and B is used for L.
+		L stands for Label, and determines which part of the synthetic image will get which texture.
+		The U and V coordinates correspond to positions on each texture,
+		telling it how to project the textures onto the 3d objects represented in the UVL scene.
 		The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
 		}
 	\label{fig:uvl_explanation}
@@ -132,10 +133,75 @@ These UVL images are also encoded as RGB images, but provide information about t
 UVL images are composed of both a UV map and a label map and are summarized in figure \ref{fig:uvl_explanation}.
 To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating-point values.
 
+The pixels in a UVL image are visualizable in RGB space because, like RGB images, each pixel is a vector with 3 values. The first two channels, U and V, are floating point values between 0 and 1. The L channel is also a floating point value between 0 and 1, it has a second meaning. There are only a finite number of label values (corresponding to the number of learnable textures). The rank of a particular L value is used to index these textures.
+
+In the three-cube dataset we have 4 textures, and UVL scenes contain label values $l \in [\frac{0}{3}, \frac{1}{3},\frac{2}{3}, \frac{3}{3}]$. A pixel in a UVL scene $l=\frac{2}{3}$ will get indexed to the third texture, because $\frac{2}{3}$ is the third smallest label value.
+
 %===============================================================================
 
 \section{Method}
 \label{sec:text}
+
+\subsection{Neural Texture}
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=400pt]{../images/learnable_textures.pdf}
+		\end{center}
+		\caption{
+			This figure illustrates how the neural textures are calculated in figure \ref{fig:main_diagram}.
+		}
+		% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
+		% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
+		% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
+		\label{fig:learnable_textures}
+	\end{figure}
+
+	Given a batch of $B$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\tau_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
+
+	These neural textures are not stored in raster form during training. Instead, as illustrated in figure \ref{fig:learnable_textures}, they're paramaterized by a pixel-wise fourier feature network \cite{fourier_feature_networks} that takes in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
+	
+	Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
+	Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
+	\makebox[\textwidth]
+	{
+		$
+		\tau_i(uv) = 
+		\
+		M_i\left(\left[
+			\sin f_1 uv, \ 
+			\cos f_1 uv, \ 
+			\sin f_2 uv, \ 
+			\cos f_2 uv, \ 
+			\dots \ 
+			\sin f_{256} uv, \ 
+			\cos f_{256} uv \ 
+		\right]\right)
+		$
+	}
+	where $uv$ and $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
+	 $f_i uv$ represents their dot product, 
+	%  $rgb$ represents a 3d color vector,
+	 and $M_i$ maps a $uv$ embedding to an $rgb$ color value:
+	 $M_i: \mathbb{R}^{256} \rightarrow \mathbb{R}^3$.
+	Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
+	
+	A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
+	
+	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures. The trained fourier-feature textures also exhibit less noise than its raster counterparts. We think this is because they don't suffer as much from aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. Case in point: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
+
+	% UV Map projection
+	% We use an RGB texture, parametrized by an MLP taking fourier features as an input.
+	% We use a separate MLP for every texture. 
+
+
+
+
+
+
+
+
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -143,7 +209,7 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 		\includegraphics[width=400pt]{../images/main_diagram_condensed_with_domains.pdf}
 	\end{center}
 	\caption{
-		We use differentiable rendering paired with unpaired image translation to consistently transform synthetic scenes into realistic images.
+		We use differentiable rendering paired with unpaired image translation to consistently= transform synthetic scenes into realistic images.
 		To ensure all objects look consistent in different positions and views, we learn the albedo of each object's surface by using a learnable latent texture.
 		This texture is parametrized as an image generated by an MLP which is fed Fourier features, as shown in figure \ref{fig:learnable_textures}.
 		$B$ is the batch size, and $L$ is the number of different labels (which is also the number of learnable textures).
@@ -174,19 +240,6 @@ To avoid positional rounding errors, UVL images are encoded as EXR files: an ima
 		Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
 	}
 	\label{fig:unprojection_consistency_loss}
-\end{figure}
-
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=400pt]{../images/learnable_textures.pdf}
-	\end{center}
-	\caption{
-		This figure illustrates how the differentiable, learnable textures are calculated in figure \ref{fig:main_diagram}.
-		For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
-		We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
-		During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
-	}
-	\label{fig:learnable_textures}
 \end{figure}
 
 
