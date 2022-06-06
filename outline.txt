@@ -1,5 +1,61 @@
 This is the outline. This is where I will put my ideas before actually writing the latex file.
 
+
+
+
+############################################### > METHOD > #################################################
+
+OVERVIEW
+
+TEXTURE
+	Given a set of UVL Scenes with $L$ different label values, we can project up to $L$ neural textures onto that scene as seen in figure .
+
+	UV Map projection
+	We use an RGB texture, parametrized by an MLP taking fourier features as an input.
+	We use a separate MLP for every texture.
+
+dk
+o
+
+{
+    "key": "F3",
+    "command": "toggle",
+    "when": "editorTextFocus",
+    "args": {
+        "id": "minimap",
+        "value": [
+            {
+                "editor.minimap.enabled": true
+            },
+            {
+                "editor.minimap.enabled": false
+            }
+        ]
+    }
+},
+
+############################################### < METHOD < #################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Break it down:
 
 Dataset:
@@ -17,7 +73,6 @@ Texture reality
 Unprojection consistency
 
 UVL maps
-
 
 
 
