@@ -1,3 +1,7 @@
+%%%%%%%%%%%%BIG TODO::::
+%%%%%% MAKE BATCH SIZE N INSTEAD OF B - B is a domain!
+
+
 \documentclass{article}
 
 % \usepackage{corl_2022} % Use this for the initial submission.
@@ -243,15 +247,19 @@ where $enc_A, enc_B, dec_A, dec_B$ are encoders and decoders for domains A and B
 	\end{center}
 	\caption{
 		This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
-		After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $s_{1...B}$ as seen in figure \ref{fig:main_diagram}, 
-		we can unproject fake photos $\hat{p}_{1...B}$ back into texture space to obtain $u_{1...B,\ 1...L}$ .
-		If the fake photos display consistent textures along their 3d surfaces, then the unprojected textures should be similar.
-		We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$, then averaging the result.
-		When the fake photos display similar surfaces, the unprojections will be similar making the unprojection consistency loss low.
-		Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
+		The Unprojection Mean and Reprojection nodes are not used in any losses, and help to illustrate the next section \ref{sec:texture_realism_loss}.
+		% After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $s_{1...B}$ as seen in figure \ref{fig:main_diagram}, 
+		% we can unproject fake photos $\hat{p}_{1...B}$ back into texture space to obtain $u_{1...B,\ 1...L}$ .
+		% If the fake photos display consistent textures along their 3d surfaces, then the unprojected textures should be similar.
+		% We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$, then averaging the result.
+		% When the fake photos display similar surfaces, the unprojections will be similar making the unprojection consistency loss low.
+		% Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
 	}
 	\label{fig:unprojection_consistency_loss}
 \end{figure}
+
+Heres the equation for unprojection consistency loss:
+$\ell_{UC} = \mu\left(\sigma\left(u\right)_{1 \dots L}\right)$
 
 This benefits from large batch sizes, but that often makes you run out of vram.
 
@@ -270,6 +278,7 @@ Also, the resolution of the unprojection matters:
 \end{figure}
 
 \subsection{Texture Realism Loss}
+\label{sec:texture_realism_loss}
 
 \begin{figure}[H]
 	\begin{center}
@@ -285,14 +294,75 @@ These images could be regularized so that they're the same every time.
 
 To do this we put a penalty on the latent texture that makes it $\pi$ look like its translation $\hat{p}$. 
 
-We use L2 and MSSSIM losses to do this.
+We use l2 and msssim losses to do this.
 
 This helps improve the translations.
+
+Texture realism loss equation:
+$L_{TR}=L_{TR_{l2}}+L_{TR_{msssim}}$
+where 
+$L_{TR_{msssim}} = -msssim(\pi,\hat{p})$ and
+$L_{TR_{l2}} = \frac{
+	\sum\limits_{i=1}^B {
+	   %  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+	   \left( \pi-\hat{p}  \right)^2
+		} 
+   }
+   {B}$
 
 There's a good reason for this: it's almost equivalent to unprojection consistency.
 In fact, it can even be used on its own without unprojection consistency loss (both are sufficient to translate things.)
 
 (Give theoretical explation)
+$
+\ell_{UC} = 
+\
+\
+\mu\left(\sigma\left(u_{1\dots B,\ 1\dots L}\right)_{1 \dots L}\right) = 
+\sqrt{
+\frac{
+	 \sum\limits_{i=1}^B {
+		%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+		\left( \hat{p}-\bar{p}  \right)^2
+		 } 
+	}
+	{B}
+}
+$
+Using $\bar{p}$ from figure \ref{fig:unprojection_consistency_loss}
+
+Becuase $\bar{p}$ is created from the average recovered texturs of $\hat{p}$, $\bar{p} \approx \hat{p}$.
+
+Becuse of texture realism loss, $\pi \approx \hat{p}$.
+
+Therefore, $\bar{p} \approx \hat{p} \approx \pi$
+
+
+% The l2 component of the texture realism loss equation:
+% $ \
+% \
+% \
+% \
+% \ \ell_{TR_{l2}}=\sum\limits_{i=1}^B {
+% 	%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+% 	\left( \pi-\hat{p}  \right)^2
+% 	 } 
+% $
+
+Substituting one projected texture for another, aka $\pi$ for $\bar{p}$, we get 
+$ \
+\
+\
+\
+\ \ell_{TR_{l2}}
+\approx
+\frac{\sum\limits_{i=1}^B {
+	%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+	\left( \hat{p}-\pi  \right)^2
+	 }}{B} = \ell_{UC}^2
+$
+
+
 
 There are some advantages over unprojection consistency though: 
 smaller batch sizes (even a batch size of 1, which UC cant do),
