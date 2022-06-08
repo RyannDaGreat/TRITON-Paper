@@ -71,6 +71,8 @@
 \section{Introduction}
 	
 
+TODO: Note that the simple input of UVL, or an RGB neural texture, means any simulator should be plug-and-play with this algorithm.
+
 Recently, several sim-to-real algorithms have come out that are based on image-to-image translation. [Citations]
 These are used for training robots using pixel-based reinforcement learning.
 They demonstrated that better image translation algorithms yielded notable improvements in robotic benchmarks.
@@ -90,8 +92,45 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 %===============================================================================
 
 
-\section{Data}
+\section{Formulation}
 \label{sec:data}
+
+
+TODO: Describe what UVL is ; 
+Formulate the setting: What our inputs are and the targets are and what we learn (a neural texture function) and how we can take advantage of it for robotic learning.
+Don't go into details; just say 'its a black box function'
+
+TODO: Create subfigures with subcaptions. 
+2a: Nothing but UVL=UV+L
+2b. 3d uvl axis to texture pack (drew on whiteboard)
+2c. Skip over the translation network and show a pretty robot arm picture
+
+This is the formulatoin section; not data section. Dont talk about how many photos we use etc. 
+
+JUST IN CASE THINGS ARE ERASED:
+We learn neural texture corresponding to each object, where each texture is represented as a function mapping... 
+The idea is to learn object textures as a set of continuous functions from a set of (unlabeled) real images, and use them to generate realistic images.
+Given a 3D structure of the scene represented with a UVL image, the learned neural textures will translate them into a realistic image.
+When used for the robot learning, this enables learnable, realistic sim2real of robot training images.
+
+IN THE INTRODUCTION: How we're using a neural neural network network texture. Also in related works.
+
+TODO: Replace neural texture in figure 3 with axis, and treat it as a function that takes UV in with an arrow pointing to it.
+
+BREAK IT DOWN APPROACH:
+Don't have any pictures. Have breakdown where we add new things in multiple figures.
+First figure: Just image translation. 
+Seconf:
+Third:
+Etc...
+
+
+\begin{equation}
+	\label{eq:somename}
+	Do stuff like this
+
+\end{equation}
+
 
 \begin{figure}[H]
 	\begin{center}
