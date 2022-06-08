@@ -100,6 +100,8 @@ TODO: Describe what UVL is ;
 Formulate the setting: What our inputs are and the targets are and what we learn (a neural texture function) and how we can take advantage of it for robotic learning.
 Don't go into details; just say 'its a black box function'
 
+TODO: Add UV to the fourier feature diagram.
+
 TODO: Create subfigures with subcaptions. 
 2a: Nothing but UVL=UV+L
 2b. 3d uvl axis to texture pack (drew on whiteboard)
@@ -123,13 +125,6 @@ First figure: Just image translation.
 Seconf:
 Third:
 Etc...
-
-
-\begin{equation}
-	\label{eq:somename}
-	Do stuff like this
-
-\end{equation}
 
 
 \begin{figure}[H]
@@ -227,28 +222,27 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 		\label{fig:learnable_textures}
 	\end{figure}
 
+	TODO: Put summary of section here
+
 	$B$ is the batch size. Given a batch of $B$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\tau_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 
 	These neural textures are not stored in raster form during training. Instead, as illustrated in figure \ref{fig:learnable_textures}, they're paramaterized by a pixel-wise fourier feature network \cite{fourier_feature_networks} that takes in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
 	
 	Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 	Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
-	\makebox[\textwidth]
-	{
-		$
-		\tau_i(uv) = 
-		\
-		M_i\left(\left[
-			\sin f_1 uv, \ 
-			\cos f_1 uv, \ 
-			\sin f_2 uv, \ 
-			\cos f_2 uv, \ 
-			\dots \ 
-			\sin f_{256} uv, \ 
-			\cos f_{256} uv \ 
-		\right]\right)
-		$
-	}
+	\begin{equation}
+			\tau_i(uv) = 
+			\
+			M_i\left(\left[
+				\sin f_1 uv, \ 
+				\cos f_1 uv, \ 
+				\sin f_2 uv, \ 
+				\cos f_2 uv, \ 
+				\dots \ 
+				\sin f_{256} uv, \ 
+				\cos f_{256} uv \ 
+			\right]\right)
+	\end{equation}
 	where $uv$ and $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
 	 $f_i uv$ represents their dot product, 
 	%  $rgb$ represents a 3d color vector,
