@@ -222,7 +222,7 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 		\label{fig:learnable_textures}
 	\end{figure}
 
-	TODO: Put summary of section here
+	TODO: Put summary of section here; don't strart with 'b is the batch size' 
 
 	$B$ is the batch size. Given a batch of $B$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\tau_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 
@@ -261,17 +261,42 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 
 
 \subsection{Image Translation}
-Our image translation module $T$ is based on the image translation module used in \citep{surgical_video_translation}, which is a variant of MUNIT \cite{munit}. Like in \citep{surgical_video_translation} but unlike MUNIT, however, the style code is fixed and noise is injected into the latent codes to prevent overfitting. During inference, our image translation module is completely determinstic.
+TODO: Why doesn't citep work? The references don't show the authors names...it used to work...did I mess up example.bib?
+
+TODO: Get rid of the variable "C" and replace it with $(\pi,s)$
+
+Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT is that our style code is fixed making it unimodal, and noise is injected into the latent codes during training to prevent overfitting. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. In addition, we use a different reconstruction criterion for cycle consistency. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
 $T$ is a bidirectional image translation module, and has two translation directions. $T_{A\rightarrow B}$ translates sim to real (aka domain A to domain B), and $T_{B\rightarrow A}$ translates real to sim (aka domain B to domain A). The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels.
 
-Apart from these differences, the losses pertaining directly to image translation are the same as that in MUNIT. 
-
-Due to the way MUNIT works, we define
-$T_{A\rightarrow B}\left(c\right) = dec_B\left(enc_A\left(c\right)\right)$
+MUNIT translates images by encoding both image domains into a common latent space, then decoding them into their respective domains.
+In our translation module, we define
+$T_{A\rightarrow B}\left(c\right) = G_B\left(E_A\left(c\right)\right)$
 and 
-$T_{B\rightarrow A}\left(p\right) = dec_A\left(enc_B\left(p\right)\right)$
-where $enc_A, enc_B, dec_A, dec_B$ are encoders and decoders for domains A and B respectively, $p$ is a batch of real photos, and $c$ is a batch of simulated UVL+projection concatenations.
+$T_{B\rightarrow A}\left(p\right) = G_A\left(E_B\left(p\right)\right)$
+where $E_A, E_B, G_A, G_B$ are encoders and generators for domains A and B respectively, $p \in B$ is a batch of real photos, and $c\in A$ is a batch of simulated uvl+texture projection $(s, \pi)$ concatenations. 
+We also define the outputs of these translators as fake photos $\hat{p} = T_{A\rightarrow B}(c)$ and fake projection/uvl scenes $(\hat{\pi},\hat{s}) = \hat{c} = T_{A\rightarrow B}(c)$.
+
+% TODO: Choose one of the three equation representations. Which is best? The next paragraph will look less ugly when the equations are shorter.
+
+To ensure cycle consistency, we impose reconstruction losses to ensure
+% $c \approx G_A(E_B(G_B(E_A(c)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(c)) = T_{B\rightarrow A}(\hat{p})$
+$c \approx T_{B\rightarrow A}(\hat{p})$
+and vice versa
+% $p \approx G_B(E_A(G_A(E_B(p)))) = T_{A\rightarrow B}(T_{B\rightarrow A}(c)) = T_{A\rightarrow B}(\hat{c}) = T_{A\rightarrow B}(\hat{\pi},\hat{s})$. 
+$p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$
+%I only want to use one of the two representations; either using T_AB or GA(EB) etc. Which one should I use?
+We also impose reconstruction losses to ensure that $G_A(E_A(c)) \approx c$ and $G_B(E_B(p)) \approx p$, which essentially acts as an autoencoder loss. 
+% We also have optional reconstruction losses to ensure 
+
+Our reconstruction loss uses a combination of L2 loss and multi scale structural image similarity (MS-SSIM), introduced in \citep{msssim}. For our uses, MS-SSIM is a metric that measures the similarity of two images on a scale from 0 to 1. Our reconstruction loss is $\ell_{recon}(x,y) = -msssim(x,y) + \mu\left((x-y)^2\right)$.
+
+We also have discriminators $D_A$ and $D_B$ 
+
+NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
+
+
+
 
 
 
