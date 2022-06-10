@@ -261,39 +261,60 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 
 
 \subsection{Image Translation}
-TODO: Why doesn't citep work? The references don't show the authors names...it used to work...did I mess up example.bib?
 
-TODO: Get rid of the variable "C" and replace it with $(\pi,s)$
+\newcommand{\Tab}{T_{A\rightarrow B}}
+\newcommand{\Tba}{T_{B\rightarrow A}}
+\newcommand{\pih}{\hat{\pi}}
+\newcommand{\sh}{\hat{s}}
+\newcommand{\ph}{\hat{p}}
+\newcommand{\pis}{\pi,s} % pi and s pairs from domain A
+\newcommand{\pish}{\pih,\sh} % pi and s pairs from domain A
+\newcommand{\ppis}{(\pis)} %Parenthesized pis
+\newcommand{\ppish}{(\pish)} %Parenthesized pis
 
-Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT is that our style code is fixed making it unimodal, and noise is injected into the latent codes during training to prevent overfitting. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. In addition, we use a different reconstruction criterion for cycle consistency. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
+% TO PUT IN FORMULATION:
+% The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels. An element of A is $\ppis \in A$ and $p \in B$.
+% $p \in B$ is a batch of real photos,
+% and $\ppis\in A$ is a batch of simulated projection/uvl scene concatenations. 
 
-$T$ is a bidirectional image translation module, and has two translation directions. $T_{A\rightarrow B}$ translates sim to real (aka domain A to domain B), and $T_{B\rightarrow A}$ translates real to sim (aka domain B to domain A). The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels.
+% TODO: Why doesn't citep work? The references don't show the authors names...it used to work...did I mess up example.bib?
+
+% TODO: Get rid of the variable "C" and replace it with $\ppis$
+
+% TODO: Is l2 loss capitalized or lower case?
+
+Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and the reconstruction criterion we use. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
+
+$T$ is a bidirectional image translation module, and has two translation directions. $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
 
 MUNIT translates images by encoding both image domains into a common latent space, then decoding them into their respective domains.
-In our translation module, we define
-$T_{A\rightarrow B}\left(c\right) = G_B\left(E_A\left(c\right)\right)$
-and 
-$T_{B\rightarrow A}\left(p\right) = G_A\left(E_B\left(p\right)\right)$
-where $E_A, E_B, G_A, G_B$ are encoders and generators for domains A and B respectively, $p \in B$ is a batch of real photos, and $c\in A$ is a batch of simulated uvl+texture projection $(s, \pi)$ concatenations. 
-We also define the outputs of these translators as fake photos $\hat{p} = T_{A\rightarrow B}(c)$ and fake projection/uvl scenes $(\hat{\pi},\hat{s}) = \hat{c} = T_{A\rightarrow B}(c)$.
+In our translation module, we define fake photos $\ph = \Tab(\pis) = G_B(E_A(\pis))$ and fake projection/uvl scenes $\ppish = \Tba(p) = G_A(E_B(p))$
+	where $E_A, E_B, G_A, G_B$ are encoders and generators for domains A and B respectively.
+% We also define the outputs of these translators as fake photos $\hat{p} = T_{A\rightarrow B}(\pis)$ and fake projection/uvl scenes $(\hat{\pi},\hat{s}) = T_{A\rightarrow B}(\pis)$.
 
 % TODO: Choose one of the three equation representations. Which is best? The next paragraph will look less ugly when the equations are shorter.
 
-To ensure cycle consistency, we impose reconstruction losses to ensure
-% $c \approx G_A(E_B(G_B(E_A(c)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(c)) = T_{B\rightarrow A}(\hat{p})$
-$c \approx T_{B\rightarrow A}(\hat{p})$
+To ensure cycle consistency, we have an image similarity loss $\ell_{cyc}$ to ensure
+% $c \approx G_A(E_B(G_B(E_A(\pis)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(\pis)) = T_{B\rightarrow A}(\hat{p})$
+$\ppis \approx T_{B\rightarrow A}(\hat{p})$
 and vice versa
-% $p \approx G_B(E_A(G_A(E_B(p)))) = T_{A\rightarrow B}(T_{B\rightarrow A}(c)) = T_{A\rightarrow B}(\hat{c}) = T_{A\rightarrow B}(\hat{\pi},\hat{s})$. 
-$p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$
+% $p \approx G_B(E_A(G_A(E_B(p)))) = T_{A\rightarrow B}(T_{B\rightarrow A}(\pis)) = T_{A\rightarrow B}(\hat{c}) = T_{A\rightarrow B}(\hat{\pi},\hat{s})$. 
+$p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$.
 %I only want to use one of the two representations; either using T_AB or GA(EB) etc. Which one should I use?
-We also impose reconstruction losses to ensure that $G_A(E_A(c)) \approx c$ and $G_B(E_B(p)) \approx p$, which essentially acts as an autoencoder loss. 
-% We also have optional reconstruction losses to ensure 
+We also impose an image similarity loss $\ell_{rec}$ to ensure that $\ppis \approx G_A(E_A\ppis)$ and $p \approx G_B(E_B(p))$, which is effectively an autoencoder loss. 
+In addition, we also have content similarity loss $ \ell_{con}$ to make 
+$E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
+% $E_A(\pis) \approx E_B(\Tab(\pis))$ and $E_A(p) \approx E_A(\Tba(p))$.
 
-Our reconstruction loss uses a combination of L2 loss and multi scale structural image similarity (MS-SSIM), introduced in \citep{msssim}. For our uses, MS-SSIM is a metric that measures the similarity of two images on a scale from 0 to 1. Our reconstruction loss is $\ell_{recon}(x,y) = -msssim(x,y) + \mu\left((x-y)^2\right)$.
+Our similarity losses are the sum of L2 distance and negative multi scale structural image similarity (MS-SSIM), introduced in \citep{msssim}. For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1. Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - msssim(x,y)$. 
 
-We also have discriminators $D_A$ and $D_B$ 
+We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}.
 
-NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
+In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$
+
+
+
+% NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
 
 
 
