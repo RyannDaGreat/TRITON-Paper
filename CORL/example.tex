@@ -350,17 +350,11 @@ This benefits from large batch sizes, but that often makes you run out of vram.
 
 Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
 
-Also, the resolution of the unprojection matters:
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=400pt]{../images/unprojection_resolution_comparison.pdf}
-	\end{center}
-	\caption{
-		The resolution of an unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, lowering numerical instability.
-	}
-	\label{fig:unprojection_resolution_comparison}
-\end{figure}
+
+
+
+
 
 \subsection{Texture Realism Loss}
 \label{sec:texture_realism_loss}
@@ -517,5 +511,32 @@ Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and num
 %===============================================================================
 
 \bibliography{example}  % .bib
+
+
+
+
+
+
+
+
+
+
+\section{Appendix} 
+Also, the resolution of the unprojection matters:
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=400pt]{../images/unprojection_resolution_comparison.pdf}
+	\end{center}
+	\caption{
+		The resolution of an unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, lowering numerical instability.
+	}
+	\label{fig:unprojection_resolution_comparison}
+\end{figure}
+
+
+
+
+
 
 \end{document}
