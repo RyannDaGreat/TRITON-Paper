@@ -406,40 +406,42 @@ To michael: Should we mention these caveats in this section, or mention them in 
 \end{figure}
 
 We can improve the translation results by forcing the neural texture to look realistic, instead of allowing it to have arbitrary colors.
-To do this we add an image similarity loss that makes $\pi$ look like its translation $\hat{p}$. 
+To do this, we add a texture realism loss $\lTR$.
+$\lTR$ is an image similarity loss that makes $\pi$ look like its translation $\hat{p}$.
+In other words, $\lTR$ makes the neural texture more realistic by making the neural texture projections more realistic.
 
 So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
 If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
 However, we can improve this further.
 
-Up until now we have not put any constraints on this neural texture. With only the above constraints, $\tau$ might look wildly different each time you train it.
-As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture might not look anything like the translation results. 
+% Up until now we have not put any constraints on this neural texture. 
+Without $\lTR$, $\tau$ can look wildly different each time you train it.
+As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic - the colors are completely arbitrary.
+After adding $\lTR$ though, $\pih \approx \ph$, and $\tau$ to represents the albedo of the surfaces in the scene.
+The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
 
-We introduce a new loss, called texture realism loss. $\lTR$ image similarity loss that encourages $\pi \approx \ph$.
-In other words, $\lTR$ makes the neural texture more realistic by making the neural texture projections more realistic.
-This loss forces the neural texture to approximate the albedo of the surfaces in a scene.
-This image similarity loss is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
+As it turns out, $\lTR$ is sufficient to ensure surface consistency without $\lUC$, though using both yields better results than either one alone. 
+For an explanation of why this is the case, see the appendix \ref{sec:texture_realism_theory}.
+There are some advantages to using $\lTR$ alone though: when just using $\lTR$ you can use batch sizes as small as $B=1$, allowing you to save video memory. 
+Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch.
 
-These images could be regularized so that they're the same every time.
+% We introduce a new loss, called texture realism loss that fixes this: $\lTR$ is an image similarity loss that encourages $\pi \approx \ph$.
+% This loss forces the neural texture to approximate the albedo of the surfaces in a scene.
 
-To do this we put a penalty on the latent texture that makes it $\pi$ look like its translation $\hat{p}$. 
-
-We use l2 and msssim losses to do this.
-
-This helps improve the translations.
-
-There are some advantages over unprojection consistency though: 
-smaller batch sizes (even a batch size of 1, which UC cant do),
-you don't have to get lucky (the more chaotic, or even the more zoomed in a dataset becomes the less likely there is to be any collisions)
-
-
-
-
-
+% These images could be regularized so that they're the same every time.
+% 
+% To do this we put a penalty on the latent texture that makes it $\pi$ look like its translation $\hat{p}$. 
+% 
+% We use l2 and msssim losses to do this.
+% 
+% This helps improve the translations.
+% 
+% There are some advantages over unprojection consistency though: 
+% smaller batch sizes (even a batch size of 1, which UC cant do),
+% you don't have to get lucky (the more chaotic, or even the more zoomed in a dataset becomes the less likely there is to be any collisions)
 
 \subsection{Color Loss}
-
-
+ASK MICHAEL: I'd rather not mention this and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
 
 %===============================================================================
 
@@ -502,9 +504,7 @@ Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and num
 
 
 
-
-
-
+\clearpage
 
 \section{Appendix} 
 \label{sec:appendix}
@@ -527,6 +527,11 @@ Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and num
 
 	\subsection*{Texture Realism Theory}
 		\label{sec:texture_realism_theory}
+
+
+		THIS SECTION IS UNPOLISHED, BUT CONTAINS  THE NESSECARY CONTENT.
+		I'll delete this section if you don't think its important enough to keep.
+
 		Texture realism loss equation:
 		$L_{TR}=L_{TR_{l2}}+L_{TR_{msssim}}$
 		where 
