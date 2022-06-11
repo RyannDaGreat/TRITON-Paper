@@ -1,3 +1,40 @@
+%TODO:
+%	Formulation Section
+%	Figures
+%		Main diagram - break it up into pieces with just text
+%		UVL three-axis diagram
+%		Replace C with (pi,s)
+%	Method:
+%		Unprojection Consistency Loss
+%		Texture Reality Loss
+
+%TODO:
+%	Formulation Section
+%	Figures: Main diagram - break it up into pieces with just text
+%	Figures: UVL three-axis diagram
+%	Method:	Unprojection Consistency Loss
+%	Method:	Texture Reality Loss
+
+
+\newcommand{\Tab}{T_{A\rightarrow B}}
+\newcommand{\Tba}{T_{B\rightarrow A}}
+\newcommand{\pih}{\hat{\pi}}
+\newcommand{\sh}{\hat{s}}
+\newcommand{\ph}{\hat{p}}
+\newcommand{\pis}{\pi,s} % pi and s pairs from domain A
+\newcommand{\pish}{\pih,\sh} % pi and s pairs from domain A
+\newcommand{\ppis}{(\pis)} %Parenthesized pis
+\newcommand{\ppish}{(\pish)} %Parenthesized pis
+
+\newcommand{\toB}{_{1\dots B}}
+\newcommand{\toBL}{_{1\dots B,1\dots L}}
+\newcommand{\toL}{_{1\dots L}}
+
+\newcommand{\lUC}{\ell_{UC}}
+\newcommand{\lTR}{\ell_{TR}}
+
+
+
 %%%%%%%%%%%%BIG TODO::::
 %%%%%% MAKE BATCH SIZE N INSTEAD OF B - B is a domain!
 
@@ -12,7 +49,8 @@
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
-\title{TRITON: Globally Consistent Sim-to-Real Transfer
+% \title{TRITON: Globally Consistent Sim-to-Real Transfer
+\title{Neural Textures make Better Simulators
 
 ``I can't believe it's not real!" %Definitely gonna delete this lol
  %via Neural Textures
@@ -45,6 +83,11 @@
 	% Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
 
 	% Because of the 6 sentence limit, I've commented out some of the sentences...
+
+	QUESTIONS FOR MICHAEL:
+	\begin{itemize}
+		\item - TODO: WE MAINTAIN WHAT WE NOW CALL "SURFACE CONSISTENCY" instead of view consistency! Or texture consistency? Etc? What should we call it?
+	\end{itemize}
 
 	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
 	% Because of this, the details or even identity of a particular object might change as it moves across a scene.
@@ -264,16 +307,6 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 
 \subsection{Image Translation}
 
-\newcommand{\Tab}{T_{A\rightarrow B}}
-\newcommand{\Tba}{T_{B\rightarrow A}}
-\newcommand{\pih}{\hat{\pi}}
-\newcommand{\sh}{\hat{s}}
-\newcommand{\ph}{\hat{p}}
-\newcommand{\pis}{\pi,s} % pi and s pairs from domain A
-\newcommand{\pish}{\pih,\sh} % pi and s pairs from domain A
-\newcommand{\ppis}{(\pis)} %Parenthesized pis
-\newcommand{\ppish}{(\pish)} %Parenthesized pis
-
 % TO PUT IN FORMULATION:
 % The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels. An element of A is $\ppis \in A$ and $p \in B$.
 % $p \in B$ is a batch of real photos,
@@ -312,7 +345,7 @@ Our similarity losses are the sum of L2 distance and negative multi scale struct
 
 We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}.
 
-In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$
+In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
 
 
 
@@ -321,10 +354,8 @@ In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\el
 
 
 
-
-
-
 \subsection{Unprojection Consistency Loss}
+\label{unprojection_consistency_loss}
 
 \begin{figure}[H]
 	\begin{center}
@@ -343,18 +374,22 @@ In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\el
 	\label{fig:unprojection_consistency_loss}
 \end{figure}
 
-Heres the equation for unprojection consistency loss:
-$\ell_{UC} = \mu\left(\sigma\left(u\right)_{1 \dots L}\right)$
+To maintain surface consistency, we sample a random batch of UVL scenes $S\toB$, and translate them into $\ph\toB$.
+Using geometric knowledge of the scene encoded in $S\toB$, we individually unproject each $\ph_i \in \ph\toB$ back into texture space, to obtain $B$ sets of $L$ unprojected textures $u\toBL$.
+We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toBL)\toL$.
+This loss observes how badly these unprojections differ from one another, and thus how different the object surfaces appear between translations. 
 
-This benefits from large batch sizes, but that often makes you run out of vram.
+Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene.
 
-Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
+This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats to this loss, however.
+In order to produce a standard deviation greater than $0$, we must have a batch size greater than $1$.
+In fact, $\lUC$ is most useful with large batch sizes because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases.
+There is a limited number of elements we can fit into video memory, so environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region.
+In first-person environments, this might be more of a problem - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
 
+To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
 
-
-
-
-
+% Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
 
 \subsection{Texture Realism Loss}
 \label{sec:texture_realism_loss}
