@@ -306,6 +306,7 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 
 
 \subsection{Image Translation}
+\label{sec:image_translation}
 
 % TO PUT IN FORMULATION:
 % The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels. An element of A is $\ppis \in A$ and $p \in B$.
@@ -355,7 +356,7 @@ In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\el
 
 
 \subsection{Unprojection Consistency Loss}
-\label{unprojection_consistency_loss}
+\label{sec:unprojection_consistency_loss}
 
 \begin{figure}[H]
 	\begin{center}
@@ -377,15 +378,15 @@ In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\el
 To maintain surface consistency, we sample a random batch of UVL scenes $S\toB$, and translate them into $\ph\toB$.
 Using geometric knowledge of the scene encoded in $S\toB$, we individually unproject each $\ph_i \in \ph\toB$ back into texture space, to obtain $B$ sets of $L$ unprojected textures $u\toBL$.
 We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toBL)\toL$.
-This loss observes how badly these unprojections differ from one another, and thus how different the object surfaces appear between translations. 
+This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
 
 Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene.
 
-This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats to this loss, however.
+This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, however.
 In order to produce a standard deviation greater than $0$, we must have a batch size greater than $1$.
-In fact, $\lUC$ is most useful with large batch sizes because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases.
-There is a limited number of elements we can fit into video memory, so environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region.
-In first-person environments, this might be more of a problem - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
+Furthermore, environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region because they're unlikely to show up twice in the same batch.
+For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases.
+But because video memory limits our batch sizes, first-person environments might be more of a challenge for $\lUC$ - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
 
 To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
 
@@ -403,6 +404,20 @@ To michael: Should we mention these caveats in this section, or mention them in 
 	}
 	\label{fig:texture_realism_ablation}
 \end{figure}
+
+We can improve the translation results by forcing the neural texture to look realistic, instead of allowing it to have arbitrary colors.
+
+So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
+If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
+However, we can improve this further.
+
+Up until now we have not put any constraints on this neural texture. With only the above constraints, $\tau$ might look wildly different each time you train it.
+As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture might not look anything like the translation results. 
+
+We introduce a new loss, called texture realism loss. $\lTR$ image similarity loss that encourages $\pi \approx \ph$.
+In other words, $\lTR$ makes the neural texture more realistic by making the neural texture projections more realistic.
+This loss forces the neural texture to approximate the albedo of the surfaces in a scene.
+This image similarity loss is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
 
 These images could be regularized so that they're the same every time.
 
