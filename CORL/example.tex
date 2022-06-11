@@ -406,6 +406,7 @@ To michael: Should we mention these caveats in this section, or mention them in 
 \end{figure}
 
 We can improve the translation results by forcing the neural texture to look realistic, instead of allowing it to have arbitrary colors.
+To do this we add an image similarity loss that makes $\pi$ look like its translation $\hat{p}$. 
 
 So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
 If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
@@ -426,72 +427,6 @@ To do this we put a penalty on the latent texture that makes it $\pi$ look like 
 We use l2 and msssim losses to do this.
 
 This helps improve the translations.
-
-Texture realism loss equation:
-$L_{TR}=L_{TR_{l2}}+L_{TR_{msssim}}$
-where 
-$L_{TR_{msssim}} = -msssim(\pi,\hat{p})$ and
-$L_{TR_{l2}} = \frac{
-	\sum\limits_{i=1}^B {
-	   %  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
-	   \left( \pi-\hat{p}  \right)^2
-		} 
-   }
-   {B}$
-
-There's a good reason for this: it's almost equivalent to unprojection consistency.
-In fact, it can even be used on its own without unprojection consistency loss (both are sufficient to translate things.)
-
-(Give theoretical explation)
-$
-\ell_{UC} = 
-\
-\
-\mu\left(\sigma\left(u_{1\dots B,\ 1\dots L}\right)_{1 \dots L}\right) = 
-\sqrt{
-\frac{
-	 \sum\limits_{i=1}^B {
-		%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
-		\left( \hat{p}-\bar{p}  \right)^2
-		 } 
-	}
-	{B}
-}
-$
-Using $\bar{p}$ from figure \ref{fig:unprojection_consistency_loss}
-
-Becuase $\bar{p}$ is created from the average recovered texturs of $\hat{p}$, $\bar{p} \approx \hat{p}$.
-
-Becuse of texture realism loss, $\pi \approx \hat{p}$.
-
-Therefore, $\bar{p} \approx \hat{p} \approx \pi$
-
-
-% The l2 component of the texture realism loss equation:
-% $ \
-% \
-% \
-% \
-% \ \ell_{TR_{l2}}=\sum\limits_{i=1}^B {
-% 	%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
-% 	\left( \pi-\hat{p}  \right)^2
-% 	 } 
-% $
-
-Substituting one projected texture for another, aka $\pi$ for $\bar{p}$, we get 
-$ \
-\
-\
-\
-\ \ell_{TR_{l2}}
-\approx
-\frac{\sum\limits_{i=1}^B {
-	%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
-	\left( \hat{p}-\pi  \right)^2
-	 }}{B} = \ell_{UC}^2
-$
-
-
 
 There are some advantages over unprojection consistency though: 
 smaller batch sizes (even a batch size of 1, which UC cant do),
@@ -572,17 +507,89 @@ Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and num
 
 
 \section{Appendix} 
-Also, the resolution of the unprojection matters:
+\label{sec:appendix}
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=400pt]{../images/unprojection_resolution_comparison.pdf}
-	\end{center}
-	\caption{
-		The resolution of an unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, lowering numerical instability.
-	}
-	\label{fig:unprojection_resolution_comparison}
-\end{figure}
+	\subsection*{Unprojection Recovery Resolution Effect}
+
+		Also, the resolution of the unprojection matters:
+
+
+
+		\begin{figure}[H]
+			\begin{center}
+				\includegraphics[width=400pt]{../images/unprojection_resolution_comparison.pdf}
+			\end{center}
+			\caption{
+				The resolution of an unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, lowering numerical instability.
+			}
+			\label{fig:unprojection_resolution_comparison}
+		\end{figure}
+
+	\subsection*{Texture Realism Theory}
+		\label{sec:texture_realism_theory}
+		Texture realism loss equation:
+		$L_{TR}=L_{TR_{l2}}+L_{TR_{msssim}}$
+		where 
+		$L_{TR_{msssim}} = -msssim(\pi,\hat{p})$ and
+		$L_{TR_{l2}} = \frac{
+			\sum\limits_{i=1}^B {
+			%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+			\left( \pi-\hat{p}  \right)^2
+				} 
+		}
+		{B}$
+
+		There's a good reason for this: it's almost equivalent to unprojection consistency.
+		In fact, it can even be used on its own without unprojection consistency loss (both are sufficient to translate things.)
+
+		(Give theoretical explation)
+		$
+		\ell_{UC} = 
+		\
+		\
+		\mu\left(\sigma\left(u_{1\dots B,\ 1\dots L}\right)_{1 \dots L}\right) = 
+		\sqrt{
+		\frac{
+			\sum\limits_{i=1}^B {
+				%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+				\left( \hat{p}-\bar{p}  \right)^2
+				} 
+			}
+			{B}
+		}
+		$
+		Using $\bar{p}$ from figure \ref{fig:unprojection_consistency_loss}
+
+		Becuase $\bar{p}$ is created from the average recovered texturs of $\hat{p}$, $\bar{p} \approx \hat{p}$.
+
+		Becuse of texture realism loss, $\pi \approx \hat{p}$.
+
+		Therefore, $\bar{p} \approx \hat{p} \approx \pi$
+
+
+		% The l2 component of the texture realism loss equation:
+		% $ \
+		% \
+		% \
+		% \
+		% \ \ell_{TR_{l2}}=\sum\limits_{i=1}^B {
+		% 	%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+		% 	\left( \pi-\hat{p}  \right)^2
+		% 	 } 
+		% $
+
+		Substituting one projected texture for another, aka $\pi$ for $\bar{p}$, we get 
+		$ \
+		\
+		\
+		\
+		\ \ell_{TR_{l2}}
+		\approx
+		\frac{\sum\limits_{i=1}^B {
+			%  \mu\left(u_{1\dots B,\ 1\dots L}\right)_{1...L}
+			\left( \hat{p}-\pi  \right)^2
+			}}{B} = \ell_{UC}^2
+		$
 
 
 
