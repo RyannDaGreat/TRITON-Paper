@@ -141,6 +141,9 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 \label{sec:data}
 
 
+
+
+
 TODO: Describe what UVL is ; 
 Formulate the setting: What our inputs are and the targets are and what we learn (a neural texture function) and how we can take advantage of it for robotic learning.
 Don't go into details; just say 'its a black box function'
@@ -172,25 +175,10 @@ Third:
 Etc...
 
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=200pt]{../images/dataset_explanation.pdf}
-	\end{center}
-	\caption{
-		Compatible datasets have two sets of images: a set of UVL scenes and a set of photographs.
-		TRITON is a sim-to-real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
-		Being an unsupervised algorithm, there are no correspondences between synthetic and real images.
-		In this dataset, three alphabet cubes are moved around the table. 
-		The synthetic and rear cameras have the same position and field of view.
-		There are many more UVL scenes than photos because synthetic scenes can be generated automatically whereas photos require real-world labor.
-		}
-	\label{fig:dataset_explanation}
-\end{figure}
-
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=270pt]{../images/uvl_explanation.pdf}
+		\includegraphics[width=270pt]{../images/uvl_explanation_minimal.pdf}
 	\end{center}
 	\caption{
 		This diagram shows the purpose of a UVL image.
@@ -308,6 +296,7 @@ s hat
 		% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
 		\label{fig:learnable_textures}
 	\end{figure}
+	s
 
 	TRITON's neural texture module lets it  of objects, and thus take advantage of 3d geometric priors. By learning this texture, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
 
@@ -645,6 +634,24 @@ Example 2: ``\citet{fourier_feature_networks} proved, both theoretically and num
 		$
 
 
+\section*{Graveyard}
+
+Here I put things I won't include in the paper or appendix, but want to keep for reference until submission
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=200pt]{../images/dataset_explanation.pdf}
+	\end{center}
+	\caption{
+		Compatible datasets have two sets of images: a set of UVL scenes and a set of photographs.
+		TRITON is a sim-to-real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
+		Being an unsupervised algorithm, there are no correspondences between synthetic and real images.
+		In this dataset, three alphabet cubes are moved around the table. 
+		The synthetic and rear cameras have the same position and field of view.
+		There are many more UVL scenes than photos because synthetic scenes can be generated automatically whereas photos require real-world labor.
+		}
+	\label{fig:dataset_explanation}
+\end{figure}
 
 
 
