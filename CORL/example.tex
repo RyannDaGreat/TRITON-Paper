@@ -116,21 +116,23 @@
 \section{Introduction}
 	
 
-TODO: Note that the simple input of UVL, or an RGB neural texture, means any simulator should be plug-and-play with this algorithm.
+I introduce you to TRITON. The rest of the introduction text goes here; I've commented out my old incomplete introduction.
 
-Recently, several sim-to-real algorithms have come out that are based on image-to-image translation. [Citations]
-These are used for training robots using pixel-based reinforcement learning.
-They demonstrated that better image translation algorithms yielded notable improvements in robotic benchmarks.
-At the same time, there is a lot of research on differentiable rendering,
-a topic which produced papers such as NERF which attempt to capture 3d representations of the real world.
-However, most of these approaches are either supervised or involve only camera movements [citations].
-One paper that came out recently combined both image translation and differentiable rendering in an unsupervised manner to create view-consistent models of human organs [citation].
-This paper too, though, was limited to only camera movements.
+% TODO: Note that the simple input of UVL, or an RGB neural texture, means any simulator should be plug-and-play with this algorithm.
 
-This algorithm unlocks a new capability: learning textures to match photos for given 3d models without supervision.
+% Recently, several sim-to-real algorithms have come out that are based on image-to-image translation. [Citations]
+% These are used for training robots using pixel-based reinforcement learning.
+% They demonstrated that better image translation algorithms yielded notable improvements in robotic benchmarks.
+% At the same time, there is a lot of research on differentiable rendering,
+% a topic which produced papers such as NERF which attempt to capture 3d representations of the real world.
+% However, most of these approaches are either supervised or involve only camera movements [citations].
+% One paper that came out recently combined both image translation and differentiable rendering in an unsupervised manner to create view-consistent models of human organs [citation].
+% This paper too, though, was limited to only camera movements.
 
-The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneously, keeps all semantic details 
-[[I'll finish this later... let's work on the meat of the paper first...]]
+% This algorithm unlocks a new capability: learning textures to match photos for given 3d models without supervision.
+
+% The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneously, keeps all semantic details 
+% [[I'll finish this later... let's work on the meat of the paper first...]]
 
 		
 
@@ -178,7 +180,7 @@ The motivation for this paper is to create a temporally consistent sim-to-real i
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=270pt]{../images/uvl_explanation_minimal.pdf}
+		\includegraphics[width=400pt]{../images/uvl_explanation_minimal.pdf}
 	\end{center}
 	\caption{
 		% This diagram shows the purpose of a UVL image.
@@ -416,11 +418,11 @@ Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translatio
 This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, however.
 In order to produce a standard deviation greater than $0$, we must have a batch size greater than $1$.
 Furthermore, environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region because they're unlikely to show up twice in the same batch.
-For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases.
+For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases. 
 But because video memory limits our batch sizes, first-person environments might be more of a challenge for $\lUC$ - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
 
 To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
-
+ 
 % Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
 
 \subsection{Texture Realism Loss}
@@ -485,7 +487,7 @@ ASK MICHAEL: I'd rather not mention this entire section and run out the page lim
 
 \section{Results}
 
-\subsection*{Data}
+\subsection{Data}
 
 Here I detail the datasets used in the results section. 
 Every dataset has two sets of images: UVL scenes and photographs. They are all unpaired, and have RGB values ranging from 0 to 1.
