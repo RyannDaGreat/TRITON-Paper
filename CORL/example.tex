@@ -298,7 +298,6 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 		% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
 		\label{fig:learnable_textures}
 	\end{figure}
-	s
 
 	TRITON's neural texture module lets it  of objects, and thus take advantage of 3d geometric priors. By learning this texture, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
 
@@ -340,6 +339,20 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 \subsection{Image Translation}
 \label{sec:image_translation}
+
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=200pt]{../images/module_translator.pdf}
+	\end{center}
+	\caption{
+		A subset of figure \ref{fig:main_diagram} focusing on the image translation module $T$.
+	}
+	% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
+	% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
+	% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
+	\label{fig:learnable_textures}
+\end{figure}
+
 
 % TO PUT IN FORMULATION:
 % The simulation domain A (UVL maps concatenated to their texture projections) has 6 channels, whereas the real image domain B (photographs) has 3 channels. An element of A is $\ppis \in A$ and $p \in B$.
