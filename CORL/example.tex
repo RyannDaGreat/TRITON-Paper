@@ -267,11 +267,11 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 		\label{fig:learnable_textures}
 	\end{figure}
 
-	TRITON's neural texture module is what lets it learn the albedo of objects, and thus take advantage of 3d geometric priors. By learning this texture, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
+	TRITON's neural texture module lets it  of objects, and thus take advantage of 3d geometric priors. By learning this texture, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
 
 	Given a batch of $B$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\tau_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 
-	These neural textures are not stored in raster form during training. Instead, as illustrated in figure \ref{fig:learnable_textures}, they're paramaterized by a pixel-wise fourier feature network \cite{fourier_feature_networks} that takes in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
+	These neural textures are not stored in raster form during training. Instead, as illustrated in figure \ref{fig:learnable_textures}, they're paramaterized by pixel-wise fourier feature networks \cite{fourier_feature_networks} that take in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
 	
 	Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 	Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
@@ -297,7 +297,7 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 	
 	A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
 	
-	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures. The trained fourier-feature textures also exhibit less noise than its raster counterparts. We think this is because they don't suffer as much from aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. Case in point: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
+	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures. The trained fourier-feature textures also exhibit less noise than its raster counterparts. We think this is because they don't suffer as muchIt cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. Case in point: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
 
 	% UV Map projection
 	% We use an RGB texture, parametrized by an MLP taking fourier features as an input.
@@ -319,7 +319,7 @@ In the three-cube dataset we have 4 textures, and UVL scenes contain label value
 
 % TODO: Is l2 loss capitalized or lower case?
 
-Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and the reconstruction criterion we use. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
+Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
 $T$ is a bidirectional image translation module, and has two translation directions. $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
 
@@ -441,7 +441,13 @@ Using $\lTR$ is also more numerically stable, as you no longer have to worry abo
 % you don't have to get lucky (the more chaotic, or even the more zoomed in a dataset becomes the less likely there is to be any collisions)
 
 \subsection{Color Loss}
-ASK MICHAEL: I'd rather not mention this and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
+
+TRITON is very robust to geomtric imperfections. However, sometimes it takes this a bit too far - it can overfit textures onto the wrong objects and still maintain consistency.
+In one example, it manages to map an apple texture onto a cube. 
+
+To help TRITON correctly match textures to objects, we introduce a small amount of supervision by adding a color loss. I'm going to stop writing this because I don't know if I even want to keep this in the paper...you can achieve the same result by running the algorithm multiple times, and so its not strictly nessecary.
+
+ASK MICHAEL: I'd rather not mention this entire section and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
 
 %===============================================================================
 
