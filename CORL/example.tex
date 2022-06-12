@@ -48,6 +48,9 @@
 \usepackage{float}
 \usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{array, booktabs, ragged2e}
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
@@ -85,11 +88,6 @@
 	% Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
 
 	% Because of the 6 sentence limit, I've commented out some of the sentences...
-
-	QUESTIONS FOR MICHAEL:
-	\begin{itemize}
-		\item - TODO: WE MAINTAIN WHAT WE NOW CALL "SURFACE CONSISTENCY" instead of view consistency! Or texture consistency? Etc? What should we call it?
-	\end{itemize}
 
 	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
 	% Because of this, the details or even identity of a particular object might change as it moves across a scene.
@@ -561,6 +559,38 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 	\label{fig:frame_inconsistency_diagram}
 \end{figure}
 
+% 	Alphabet Three							
+% 	Masked				Unmasked			
+% 	LPIPS		L2		LPIPS		L2	
+% 	Sync	Unsync	Sync	Unsync	Sync	Unsync	Sync	Unsync
+% Pure MUNIT	0.0437	0.0373	0.00500	0.00490	0.434	0.402	0.0425	0.0392
+% Texture Only	0.0442	0.0386	0.00586	0.00589	0.285	0.255	0.0364	0.0310
+% Texture Reality	0.0286	0.0267	0.00479	0.00478	0.117	0.1157	0.0123	0.0122
+% CycleGAN			TODO: Sync with respect to L2, so sync is always ≥ unsync					
+% CUT				TODO: Google Synthetic Dataset				
+
+
+
+
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+
+\begin{tabular}{p{1ex}>{\RaggedRight}p{4cm}*{3}{p{1.8cm}p{1cm}}}\toprule
+	\multicolumn{2}{l}{Variables} & \multicolumn{2}{l}{Type of job contract} & \multicolumn{4}{c}{} \\\cmidrule{3-8}
+	 &           & \multicolumn{2}{l}{Informal} & \multicolumn{2}{l}{Formal}  & \multicolumn{2}{l}{Total}\\
+	  \cmidrule{3-4} \cmidrule(lr){5-6} \cmidrule{7-8}
+	
+	 &            & n = 1234 & \% & n = 1234 & \% & n = 1234 & \% \\\midrule
+	\multicolumn{2}{l}{Female} & \\
+	
+	 & Age under 22 years old & 101 & 13.1 & 52 & 8.7 & 153 & 11.2\\
+	
+	
+	\end{tabular}
+
+
+
+
+
 %===============================================================================
 
 \section{Limitaions}
@@ -709,6 +739,14 @@ Here I put things I won't include in the paper or appendix, but want to keep for
 	\label{fig:dataset_explanation}
 \end{figure}
 
+
+\section*{Things to Ask Michael}
+
+
+QUESTIONS FOR MICHAEL:
+\begin{itemize}
+	\item - TODO: WE MAINTAIN WHAT WE NOW CALL "SURFACE CONSISTENCY" instead of view consistency! Or texture consistency? Etc? What should we call it?
+\end{itemize}
 
 
 
