@@ -175,6 +175,19 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 % Etc...
 
 
+\begin{figure}[H]
+	\begin{center}
+		\includegraphics[width=400pt]{../images/first_diagram.pdf}
+	\end{center}
+	\caption{
+		This is an overview of what TRITON accomplishes.
+		TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
+		}
+	\label{fig:uvl_explanation}
+\end{figure}
+
+
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -286,7 +299,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 	\begin{figure}[H]
 		\begin{center}
-			\includegraphics[width=400pt]{../images/learnable_textures.pdf}
+			\includegraphics[width=300pt]{../images/learnable_textures.pdf}
 		\end{center}
 		\caption{
 			This figure illustrates how the neural textures are calculated in figure \ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's U and V axes using fourier feature networks.
@@ -537,11 +550,13 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 
 \label{sec:results}
 
+
+\subsection{Qualitative Differences}
 \begin{figure}[H]
 	\begin{center}
 		\includegraphics[width=400pt]{../images/frame_inconsistency_diagram.pdf}
 	\end{center}
-
+	
 	% Each outline color corresponds to the same cube.
 	% The same cubes are marked with the same colored outlines across all photos.
 	% For the same cube, we expect to see the same number on the top of the cube regardless of its placement.
@@ -556,40 +571,51 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 		CUT and CycleGan are not consistent, while TRITON is.
 		% TODO: Update the images in this to have the latest training iteration...
 		}
-	\label{fig:frame_inconsistency_diagram}
-\end{figure}
-
-% 	Alphabet Three							
-% 	Masked				Unmasked			
-% 	LPIPS		L2		LPIPS		L2	
-% 	Sync	Unsync	Sync	Unsync	Sync	Unsync	Sync	Unsync
-% Pure MUNIT	0.0437	0.0373	0.00500	0.00490	0.434	0.402	0.0425	0.0392
-% Texture Only	0.0442	0.0386	0.00586	0.00589	0.285	0.255	0.0364	0.0310
-% Texture Reality	0.0286	0.0267	0.00479	0.00478	0.117	0.1157	0.0123	0.0122
-% CycleGAN			TODO: Sync with respect to L2, so sync is always ≥ unsync					
-% CUT				TODO: Google Synthetic Dataset				
-
-
-
-
-\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
-
-\begin{tabular}{p{1ex}>{\RaggedRight}p{4cm}*{3}{p{1.8cm}p{1cm}}}\toprule
-	\multicolumn{2}{l}{Variables} & \multicolumn{2}{l}{Type of job contract} & \multicolumn{4}{c}{} \\\cmidrule{3-8}
-	 &           & \multicolumn{2}{l}{Informal} & \multicolumn{2}{l}{Formal}  & \multicolumn{2}{l}{Total}\\
-	  \cmidrule{3-4} \cmidrule(lr){5-6} \cmidrule{7-8}
+		\label{fig:frame_inconsistency_diagram}
+	\end{figure}
 	
-	 &            & n = 1234 & \% & n = 1234 & \% & n = 1234 & \% \\\midrule
-	\multicolumn{2}{l}{Female} & \\
-	
-	 & Age under 22 years old & 101 & 13.1 & 52 & 8.7 & 153 & 11.2\\
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=400pt]{../images/blurry_recovery.pdf}
+		\end{center}
+		\caption{
+			The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
+			[[Michael, should I include CycleGAN and other algos here?]]
+		}
+		\label{fig:unprojection_consistency_loss}
+	\end{figure}
+	% 	Alphabet Three							
+	% 	Masked				Unmasked			
+	% 	LPIPS		L2		LPIPS		L2	
+	% 	Sync	Unsync	Sync	Unsync	Sync	Unsync	Sync	Unsync
+	% Pure MUNIT	0.0437	0.0373	0.00500	0.00490	0.434	0.402	0.0425	0.0392
+	% Texture Only	0.0442	0.0386	0.00586	0.00589	0.285	0.255	0.0364	0.0310
+	% Texture Reality	0.0286	0.0267	0.00479	0.00478	0.117	0.1157	0.0123	0.0122
+	% CycleGAN			TODO: Sync with respect to L2, so sync is always ≥ unsync					
+	% CUT				TODO: Google Synthetic Dataset				
 	
 	
+	
+	
+	\subsection{Ground Truth Comaprison}
+\begin{table}[H]
+	\begin{tabular}{l|llllllll}
+		& \multicolumn{8}{c}{Three Block Dataset}                                                                                                                                                                                              \\
+		& \multicolumn{4}{c|}{Masked}                                                                                       & \multicolumn{4}{c}{Unmasked}                                                                                     \\
+		& \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c|}{LPIPS}                              & \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c}{LPIPS}                              \\
+		Algorithm                              & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c}{Unsync} \\ \hline
+		\textbf{TRITON w/o $\tau, \lUC, \lTR$} & 0.0437                    & 0.0373                      & 0.00500                   & 0.00490                     & 0.434                     & 0.402                       & 0.0425                    & 0.0392                     \\
+		\textbf{TRITON w/o $\lUC, \lTR$}       & 0.0442                    & 0.0386                      & 0.00586                   & 0.00589                     & 0.285                     & 0.255                       & 0.0364                    & 0.0310                     \\
+		\textbf{TRITON}                        & 0.0286                    & 0.0267                      & 0.00479                   & 0.00478                     & 0.117                     & 0.1157                      & 0.0123                    & 0.0122                     \\
+		\textbf{CycleGAN}                      &                           &                             &                           &                             &                           &                             &                           &                            \\
+		\textbf{CUT}                           &                           &                             &                           &                             &                           &                             &                           &                           
 	\end{tabular}
+\end{table}
 
+[[Figures: Show these results and explain why we have a mask on some of them]]
 
-
-
+TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
 
 %===============================================================================
 
