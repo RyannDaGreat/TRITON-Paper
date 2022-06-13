@@ -183,7 +183,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 		This is an overview of what TRITON accomplishes.
 		TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
 		}
-	\label{fig:uvl_explanation}
+	\label{fig:first_diagram}
 \end{figure}
 
 
@@ -398,7 +398,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
 	% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
 	% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
-	\label{fig:learnable_textures}
+	\label{fig:module_translator}
 \end{figure}
 
 
@@ -491,7 +491,7 @@ To michael: Should we mention these caveats in this section, or mention them in 
 
 \begin{figure}[H]
 	\begin{center}
-		\includegraphics[width=25x0pt]{../images/texture_realism_ablation.pdf}
+		\includegraphics[width=250pt]{../images/texture_realism_ablation.pdf}
 	\end{center}
 	\caption{
 		The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
@@ -620,7 +620,7 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 			The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
 			[[Michael, should I include CycleGAN and other algos here?]]
 		}
-		\label{fig:unprojection_consistency_loss}
+		\label{fig:blurry_recovery}
 	\end{figure}
 	% 	Alphabet Three							
 	% 	Masked				Unmasked			
