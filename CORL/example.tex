@@ -1,3 +1,7 @@
+%TODO: Revise method section
+%TODO: Create formulation section
+%TODO: Create results section
+
 %TODO:
 %	Formulation Section
 %	Figures
@@ -33,7 +37,8 @@
 
 \newcommand{\lUC}{\ell_{UC}}
 \newcommand{\lTR}{\ell_{TR}}
-
+\newcommand{\eqand}{\ \ \ \text{ and }\ \ \ }
+\newcommand{\real}{\mathbb{R}}
 
 
 %%%%%%%%%%%%BIG TODO::::
@@ -301,43 +306,51 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
     %
     %Justify why we're calling it neural neural texture. Unlike previous papers [citations], we learn a neural network instead of a grid of pixels. To be explicit we call it neural neural texture. %%%%%% Previous papers were more like latent textures but ours is different: it is a funciton.  Previous works were called "Neural Textures" but we're going to call ours "Neural Neural Textures" - a subtype of neural textures. 
 
-
-
-
-
-
-
-	Neural Neural Textures $\tau\toL: (u,v) \rightarrow (R,G,B)$: 
-			
-	%What is it...then how do we use it...
+	% Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
+	Instead of feeding input scenes $s$ directly into the image translator $\Tab$, we first apply learnable textures $\tau$ to their surfaces as shown in figure \ref{fig:main_diagram}.
+	Previous works called these learnable textures ``neural textures'', and were parametrized as a discrete grid of differentiable texels. 
+	% In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are a type of neural texture that is parametrized continuously over UV space using a neural fourier feature network.
+	In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are parametrized continuously over UV space using a neural network.
+	Like previous works, our neural textures $\tau\toL$ are learned jointly with our image translator $T$.
 	
-	(as the 1st sentence) Define Neural Neural Texture as a function taking....
-	
-	(as the 2nd sentence)
-	Given a 3D scene $s$, we apply $\tau\toL$ to each UV to obtain RGB surface values...
-	
-	project learnable RGB textures $\tau\toL$ to their surfaces to obtain projection $\pi$. 
-	
-% 			Neural Neural Textures $\tau\toL(u,v)$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\tau\toL$ to obtain projection $\pi$.
-	
-	These neural textures are represented implicitly by a neural network that maps UV values to RGB values, and are learned jointly with the image translator.
+	These neural textures are represented implicitly by a neural network that maps UV values to RGB values.%, and are used to obtain projections $\pi$ from 3d scenes $s$.
 	\begin{equation}
-		\pi=\tau\toL(s)
+		\qquad \tau: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 	\end{equation}
-	We then concatenate the scenes with the projections channelwise to obtain images from domain A: $\ppis \in A$.
-
-
-
-
-
-
-
-% 	TRITON's neural neural texture module lets it create features on the surfaces of objects, and thus take advantage of 3d geometric priors. 
-	Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
-
-%THIS WILL BE REPLACED BY SUMMARY SECTION
-% 	Given a batch of $N$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\pi_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 	
+	Given a 3d UVL scene $s$, we obtain texture projection $\pi=\tau\toL(s)$ by applying $\tau\toL$ to every pixel $(u,v,l) \in s$ individually.
+	Each pixel in the resulting projection $(r,g,b)\in\pi$ is the result of selecting a texture index $i$ based on the label value $l$, then applying $\tau_i$ to the $u,v$ values.
+	\begin{equation}
+		\pi=\tau\toL(s) \eqand (r,g,b) \in \pi = \tau_i(u,v)
+	\end{equation}
+
+	%DISCARDED TEXT:
+	% A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
+	% TRITON's neural neural texture module lets it create features on the surfaces of objects, and thus take advantage of 3d geometric priors. 
+
+	
+			% The neural texture applied to a particular scene pixel $(u,v,l) \in s$ is multiplexed by $l$, and the respective output pixel $(r,g,b) \in \pi = \tau_l(u,v)$. 
+			% Texture projections $\pi$ are obatined by applying a set of $L$ different neural neural textures $\tau\toL$ to a UVL scene $s$ pixelwise.
+			% [[IMPORTANT: THIS IS TECHNICALLY INCORRECT AS l IS A VALUE BETWEEN 0 and 1]]
+			
+			
+			% where $i\in[1,L]\cap\mathbb{Z}$ is the rank of $l$
+			% When applied to a UVL scene, it is applied to each $(u,v,l) \in s$ pixel individually where every pixel $(r,g,b) \in \pi = \tau$ 
+			%What is it...then how do we use it...
+			% (as the 2nd sentence)
+			% Given a 3D scene $s$, we apply $\tau\toL$ to each UV to obtain RGB surface values...
+			% project learnable RGB textures $\tau\toL$ to their surfaces to obtain projection $\pi$. 
+			% 			Neural Neural Textures $\tau\toL(u,v)$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\tau\toL$ to obtain projection $\pi$.
+			
+			% \begin{equation}
+				% \pi=\tau\toL(s)
+			% \end{equation}
+			%
+
+
+	%THIS WILL BE REPLACED BY SUMMARY SECTION
+	% 	Given a batch of $N$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\pi_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
+		
 	Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 	Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
 	\begin{equation}
@@ -357,17 +370,21 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	 $f_i uv$ represents their dot product, 
 	%  $rgb$ represents a 3d color vector,
 	 and $M_i$ maps a $uv$ embedding to an $rgb$ color value:
-	 $M_i: \mathbb{R}^{256} \rightarrow \mathbb{R}^3$.
+	 $M_i: \real^{256} \rightarrow \real^3$.
 	Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 	
-	A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
 	
 	%Squeeze this down - we don't need explanations for why, that can go in the appendix.
-	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures. The trained fourier-feature textures also exhibit less noise than its raster counterparts. We think this is because they do not suffer as much. It cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. Case in point: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
+	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures, as well as being smoother and less noisy. 
+	% The trained fourier-feature textures also exhibit less noise than its raster counterparts. 
+	% We think this is because they do not suffer as much. 
+	% It cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. 
+	% Case in point: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
 
 	% UV Map projection
 	% We use an RGB texture, parametrized by an MLP taking fourier features as an input.
 	% We use a separate MLP for every texture. 
+
 
 
 
@@ -406,7 +423,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 	Bidirectional Image Translator $T$: $\Tab$ translates images from domain A to domain B, and $\Tba$ translates images from domain B to domain A.
 	\begin{equation}
-		\ph=\Tab(\pis)\ \ \ \text{ and }\ \ \ \ppish=\Tba(p)
+		\ph=\Tab(\pis)\eqand\ppish=\Tba(p)
 	\end{equation}
 	$T$ is a variation of MUNIT~\cite{munit}, and inherits adversarial losses $\ell_{adv}$, as well cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
 
