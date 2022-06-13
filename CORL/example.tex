@@ -261,7 +261,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 		%Copy paste the figure multiple times, deleting things
 		%Mention "Neural Neural Texture": Its a function mapping UV to RGB
 		%Formulation doesnt mentino texture; just uvl inputs and final outputs
-		%Always use function notation tau(u,v) instead of just tau (in figure as well) 
+		%Always use function notation tauuv instead of just tau (in figure as well) 
 		%The arrow should be running through tau. It's not a variable its a function...
 		%Rename 'B' to "N" for batch size
 		%Figure 8: Align consistent with inconsistent and use all 5 green ones
@@ -315,13 +315,13 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	
 	These neural textures are represented implicitly by a neural network that maps UV values to RGB values.%, and are used to obtain projections $\pi$ from 3d scenes $s$.
 	\begin{equation}
-		\qquad \tau: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
+		\qquad \tau: uv \in\real^2 \rightarrow rgb \in\real^3 % \eqand 
 	\end{equation}
 	
-	Given a 3d UVL scene $s$, we obtain texture projection $\pi=\tau\toL(s)$ by applying $\tau\toL$ to every pixel $(u,v,l) \in s$ individually.
-	Each pixel in the resulting projection $(r,g,b)\in\pi$ is the result of selecting a texture index $i$ based on the label value $l$, then applying $\tau_i$ to the $u,v$ values.
+	Given a 3d UVL scene $s$, we obtain texture projection $\pi=\tau\toL(s)$ by applying $\tau\toL$ to every scene pixel $uvl \in s$ individually.
+	Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\tau_i$ to the $u,v$ values.
 	\begin{equation}
-		\pi=\tau\toL(s) \eqand (r,g,b) \in \pi = \tau_i(u,v)
+		\pi=\tau\toL(s) \eqand rgb \in \pi = \tau_i(uv)
 	\end{equation}
 
 	%DISCARDED TEXT:
@@ -329,18 +329,18 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	% TRITON's neural neural texture module lets it create features on the surfaces of objects, and thus take advantage of 3d geometric priors. 
 
 	
-			% The neural texture applied to a particular scene pixel $(u,v,l) \in s$ is multiplexed by $l$, and the respective output pixel $(r,g,b) \in \pi = \tau_l(u,v)$. 
+			% The neural texture applied to a particular scene pixel $uvl \in s$ is multiplexed by $l$, and the respective output pixel $rgb \in \pi = \tau_luv$. 
 			% Texture projections $\pi$ are obatined by applying a set of $L$ different neural neural textures $\tau\toL$ to a UVL scene $s$ pixelwise.
 			% [[IMPORTANT: THIS IS TECHNICALLY INCORRECT AS l IS A VALUE BETWEEN 0 and 1]]
 			
 			
 			% where $i\in[1,L]\cap\mathbb{Z}$ is the rank of $l$
-			% When applied to a UVL scene, it is applied to each $(u,v,l) \in s$ pixel individually where every pixel $(r,g,b) \in \pi = \tau$ 
+			% When applied to a UVL scene, it is applied to each $uvl \in s$ pixel individually where every pixel $rgb \in \pi = \tau$ 
 			%What is it...then how do we use it...
 			% (as the 2nd sentence)
 			% Given a 3D scene $s$, we apply $\tau\toL$ to each UV to obtain RGB surface values...
 			% project learnable RGB textures $\tau\toL$ to their surfaces to obtain projection $\pi$. 
-			% 			Neural Neural Textures $\tau\toL(u,v)$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\tau\toL$ to obtain projection $\pi$.
+			% 			Neural Neural Textures $\tau\toLuv$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\tau\toL$ to obtain projection $\pi$.
 			
 			% \begin{equation}
 				% \pi=\tau\toL(s)
@@ -373,20 +373,20 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	%  $M_i: \real^{256} \rightarrow \real^3$.
 	% Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 	
-	Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
+	Each neural neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 	Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
 	\begin{equation}
 			\tau_i(uv) = 
 			\
-			M_i\left(\left[
-				\sin f_1 uv, \ 
-				\cos f_1 uv, \ 
-				\sin f_2 uv, \ 
-				\cos f_2 uv, \ 
+			M_i(
+				\sin( f_1     uv  ) , \ 
+				\cos( f_1     uv  ) , \ 
+				\sin( f_2     uv  ) , \ 
+				\cos( f_2     uv  ) , \ 
 				\dots \ 
-				\sin f_{256} uv, \ 
-				\cos f_{256} uv \ 
-			\right]\right)
+				\sin( f_{256} uv  ) , \ 
+				\cos( f_{256} uv  )  \ 
+			)
 	\end{equation}
 	where $uv$ and $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
 	 $f_i uv$ represents their dot product, 
@@ -397,7 +397,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	
 	
 	%Squeeze this down - we don't need explanations for why, that can go in the appendix.
-	In practice, we found that TRITON learns faster with fourier-feature textures than raster textures, as well as being smoother and less noisy. 
+	In practice, we found that TRITON learns faster with neural neural textures than raster neural textures. The generated textures are also smoother and less noisy. 
 	% The trained fourier-feature textures also exhibit less noise than its raster counterparts. 
 	% We think this is because they do not suffer as much. 
 	% It cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. 
@@ -441,25 +441,18 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 
 
-
-
-	Bidirectional Image Translator $T$: $\Tab$ translates images from domain A to domain B, and $\Tba$ translates images from domain B to domain A.
+	
+	% Our image translation module $T$ is bidirectional: $\Tab$ translates images from domain A to domain B, and $\Tba$ translates images from domain B to domain A.
+	Our image translation module $T$ is a bidirectional: $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
 	\begin{equation}
-		\ph=\Tab(\pis)\eqand\ppish=\Tba(p)
+		\ph=\Tab(\pis)  \eqand  \ppish=\Tba(p)
 	\end{equation}
-	$T$ is a variation of MUNIT~\cite{munit}, and inherits adversarial losses $\ell_{adv}$, as well cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
-
-
-
-
-
-
-
-
-
-	Our image translation module, $T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. During inference however, this intermediate noise is removed and our image translation module is completely determinstic. Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
-
-	$T$ is a bidirectional image translation module, and has two translation directions. $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
+		
+	$T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
+	$T$ uses the same network architectures as MUNIT, and also inherits its adversarial losses $\ell_{adv}$, cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
+	The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. 
+	During inference however, this intermediate noise is removed and our image translation module is completely determinstic. 
+	% Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
 	MUNIT translates images by encoding both image domains into a common latent space, then decoding them into their respective domains.
 	In our translation module, we define fake photos $\ph = \Tab(\pis) = G_B(E_A(\pis))$ and fake projection/uvl scenes $\ppish = \Tba(p) = G_A(E_B(p))$
@@ -485,8 +478,6 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}.
 
 	In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
-
-
 
 	% NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
 
