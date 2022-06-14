@@ -413,18 +413,18 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 \subsection{Image Translation}
 \label{sec:image_translation}
 
-	\begin{figure}[H]
-		\begin{center}
-			\includegraphics[width=200pt]{../images/module_translator.pdf}
-		\end{center}
-		\caption{
-			A subset of figure \ref{fig:main_diagram} focusing on the image translation module $T$.
-		}
-		% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
-		% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
-		% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
-		\label{fig:module_translator}
-	\end{figure}
+% 	\begin{figure}[H]
+% 		\begin{center}
+% 			\includegraphics[width=200pt]{../images/module_translator.pdf}
+% 		\end{center}
+% 		\caption{
+% 			A subset of figure \ref{fig:main_diagram} focusing on the image translation module $T$.
+% 		}
+% 		% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
+% 		% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
+% 		% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
+% 		\label{fig:module_translator}
+% 	\end{figure}
 
 
 	% TO PUT IN FORMULATION:
@@ -506,7 +506,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 	To keep the object surfaces consistent between a batch of $N$ outputs, we impose a pixel-wise ``unprojection consistency loss'' between these surfaces by unprojecting them back into a common texture space.
 	\begin{equation}
-		u\toNL=\text{unproject}(\ph\toN,s\toN)\ \ \ \text{ and } \ \ \ \lTR \Rightarrow u_1 \approx u_2 \dots \approx u_N
+		u\toNL=\text{unproject}(\ph\toN,s\toN)\ \ \ \text{ and } \ \ \ \lUC \Rightarrow u_1 \approx u_2 \dots \approx u_N
 	\end{equation}
 
 	We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
@@ -516,11 +516,12 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 	Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene.
 
-	This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, however.
-	In order to produce a standard deviation greater than $0$, we must have a batch size greater than $1$.
-	Furthermore, environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region because they're unlikely to show up twice in the same batch.
-	For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases. 
-	But because video memory limits our batch sizes, first-person environments might be more of a challenge for $\lUC$ - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
+%MOVE THIS TO APPENDIX
+% 	This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, howe/ver.
+% 	In order to produce a standard deviation greater than $0$, we must have a batch size greater than $1$.
+% 	Furthermore, environments that rarely show a particular region of a surface will rarely have $\lUC$ applied to that region because they're unlikely to show up twice in the same batch.
+% 	For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases. 
+% 	But because video memory limits our batch sizes, first-person environments might be more of a challenge for $\lUC$ - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
 
 	To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
 	
