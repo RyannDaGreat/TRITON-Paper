@@ -257,16 +257,31 @@
 	There are two components to every dataset: A set of simulated 3d scenes, and a set of photographs.
 	Datasets usually have many more scenes than photographs, since scenes can be generated automatically.
 
-	The photographs, having $(r,g,b)$ values between 0 and 1,
-		are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
+	% The photographs, having $(r,g,b)$ values between 0 and 1,
+	% 	are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
+	% 	3 refers to the three $(r,g,b)$ channels, 
+	% 	and $H,W$ are the height and width respectively.
+
+	% A photograph in a set of photographs, having $(r,g,b)$ values between 0 and 1,
+	% 	is denoted as ${p^n \in [0,1]^{ 3 \times H \times W}}$ where $n$ is that photograph's index in that set,
+	% 	3 refers to the three $(r,g,b)$ channels, 
+	% 	and $H,W$ are the height and width respectively.
+
+	A photograph, having $(r,g,b)$ values between 0 and 1,
+		is denoted as ${p \in [0,1]^{ 3 \times H \times W}}$ where 
 		3 refers to the three $(r,g,b)$ channels, 
 		and $H,W$ are the height and width respectively.
 
 	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation, and deformation of every object (including the camera).
 	% Using some 3d rendering software, be it Blender or Gazebo or some other 3d creates an image from these 
-	We represent each 3d state with a simple $(r,g,b)$ image, in a simple enough format that any decent robotic simulator should able to provide.
-	These scenes have the same datatype and dimensions as photographs and are denoted as $s \in [0,1]^{N \times 3 \times H \times W}$.
-	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in diagram \ref{fig:uvl_explanation}.
+	We represent each 3d state with a simple $(r,g,b)$ image, in a simple enough format that any decent simulator should able to provide.
+	% These have the same datatype and dimensions as photographs and are denoted as 
+	% $s \in [0,1]^{N \times 3 \times H \times W}$.
+	% A scene has the same dimensions as a photograph and is denoted as 
+	% $s^n \in [0,1]^{3 \times H \times W}$.
+	A scene has the same dimensions as a photograph and is denoted as 
+	$s \in [0,1]^{3 \times H \times W}$.
+	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in figure \ref{fig:uvl_explanation}.
 	The channels $u$ and $v$ refer to a texture coordinate, whereas $l$ refers to a label value that identifies every object in a scene.
 	In a given dataset, each object gets a different label. Likewise, each object is assigned a different texture.
 	We assume that every dataset has $L$ different label values, $L$ different objects, and that we must learn $L$ different neural textures. 
@@ -406,59 +421,61 @@
 		%Justify why we're calling it neural neural texture. Unlike previous papers [citations], we learn a neural network instead of a grid of pixels. To be explicit we call it neural neural texture. %%%%%% Previous papers were more like latent textures but ours is different: it is a funciton.  Previous works were called "Neural Textures" but we're going to call ours "Neural Neural Textures" - a subtype of neural textures. 
 
 		% Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
-		Instead of feeding input scenes $s$ directly into the image translator $\Tab$, we first apply learnable textures $\tau$ to their surfaces as shown in figure \ref{fig:main_diagram}.
+		Instead of feeding a scene $s$ directly into the image translator $\Tab$, we first apply learnable textures $\psi$ to its surfaces as shown in figure \ref{fig:main_diagram}.
 		Previous works called these learnable textures ``neural textures'', and were parametrized by a discrete grid of differentiable texels. 
 		% In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are a type of neural texture that is parametrized continuously over UV space using a neural fourier feature network.
 		In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are parametrized continuously over UV space using a neural network.
-		Like previous works, our neural textures $\tau\toL$ are learned jointly with our image translator $T$.
+		Like previous works, our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
 		
 		These neural neural textures are represented implicitly by a neural network that maps UV values to RGB values. %, and are used to obtain projections $\pi$ from 3d scenes $s$.
-		For each texture $\tau_i \in \tau\toL$, 
+		For each texture $\psi_i \in \psi\toL$, 
 		\begin{equation}
-			\tau_i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
+			\psi_i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 		\end{equation}
 		
-		Given scenes $s$, we obtain projections $\pi$ by applying a texture $\tau_i \in \tau\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
-		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\tau_i$ to the $u,v$ values.
+		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi_i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
+		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\psi_i$ to the $u,v$ values.
 		\begin{equation}
-			% \pi=\tau\toL(s) \eqand rgb \in \pi = \tau_i(uv)
-			% \pi_{n,c,x,y}=\tau_i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
-			\pi_{n,c,x,y}=\tau_i(s_{n,1,x,y},s_{n,2,x,y})
+			% \pi=\psi\toL(s) \eqand rgb \in \pi = \psi_i(uv)
+			% \pi_{n,c,x,y}=\psi_i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
+			% \pi_{n,c,x,y}=\psi_i(s_{n,1,x,y},s_{n,2,x,y})
+			\pi_{c,x,y}=\psi_i(s_{1,x,y},s_{2,x,y})_c
 		\end{equation}
-		where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
-		% where $n\in 1\dots N,\ \ c\in 1\dots 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
+		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
+		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
+		where $c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{3,x,y})$.
 
 		%DISCARDED TEXT:
-		% A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
+		% A particular neural texture $\psi_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
 		% TRITON's neural neural texture module lets it create features on the surfaces of objects, and thus take advantage of 3d geometric priors. 
 
 		
-				% The neural texture applied to a particular scene pixel $uvl \in s$ is multiplexed by $l$, and the respective output pixel $rgb \in \pi = \tau_luv$. 
-				% Texture projections $\pi$ are obatined by applying a set of $L$ different neural neural textures $\tau\toL$ to a UVL scene $s$ pixelwise.
+				% The neural texture applied to a particular scene pixel $uvl \in s$ is multiplexed by $l$, and the respective output pixel $rgb \in \pi = \psi_luv$. 
+				% Texture projections $\pi$ are obatined by applying a set of $L$ different neural neural textures $\psi\toL$ to a UVL scene $s$ pixelwise.
 				% [[IMPORTANT: THIS IS TECHNICALLY INCORRECT AS l IS A VALUE BETWEEN 0 and 1]]
 				
 				
 				% where $i\in[1,L]\cap\mathbb{Z}$ is the rank of $l$
-				% When applied to a UVL scene, it is applied to each $uvl \in s$ pixel individually where every pixel $rgb \in \pi = \tau$ 
+				% When applied to a UVL scene, it is applied to each $uvl \in s$ pixel individually where every pixel $rgb \in \pi = \psi$ 
 				%What is it...then how do we use it...
 				% (as the 2nd sentence)
-				% Given a 3D scene $s$, we apply $\tau\toL$ to each UV to obtain RGB surface values...
-				% project learnable RGB textures $\tau\toL$ to their surfaces to obtain projection $\pi$. 
-				% 			Neural Neural Textures $\tau\toLuv$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\tau\toL$ to obtain projection $\pi$.
+				% Given a 3D scene $s$, we apply $\psi\toL$ to each UV to obtain RGB surface values...
+				% project learnable RGB textures $\psi\toL$ to their surfaces to obtain projection $\pi$. 
+				% 			Neural Neural Textures $\psi\toLuv$: Given an input scene $s$ depicting 3d objects with labels $1\dots L$, we apply a function on their surface's UV values with neural textures $\psi\toL$ to obtain projection $\pi$.
 				
 				% \begin{equation}
-					% \pi=\tau\toL(s)
+					% \pi=\psi\toL(s)
 				% \end{equation}
 				%
 
 
 		%THIS WILL BE REPLACED BY SUMMARY SECTION
-		% 	Given a batch of $N$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\tau_{1\dots L}$ onto that scene; obtaining projections $\pi_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
+		% 	Given a batch of $N$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\psi_{1\dots L}$ onto that scene; obtaining projections $\pi_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 			
-		% Each neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
+		% Each neural texture $\psi_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 		% Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
 		% \begin{equation}
-		% 		\tau_i(uv) = 
+		% 		\psi_i(uv) = 
 		% 		\
 		% 		M_i\left(\left[
 		% 			\sin \left( f_1     \cdot \left(u,v\right) \right) , \ 
@@ -477,10 +494,11 @@
 		%  $M_i: \real^{256} \rightarrow \real^3$.
 		% Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
-		Each neural neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
+		We now discuss the implementation of our neural neural networks $\psi\toL$.
+		Each neural neural texture $\psi_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$. 
 		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for $M_i$.
 		\begin{equation}
-				\tau_i(u,v) = 
+				\psi_i(u,v) = 
 				\
 				% M_i(
 				% 	\sin( f_1     uv  ) , \ 
@@ -502,7 +520,8 @@
 				)
 		\end{equation}
 		where $g_i=f_i\cdot(u,v)$
-		, $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		% , $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		, $f_i \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
 		$\cdot$ represents the dot product operator, 
 		%  $rgb$ represents a 3d color vector,
 		and $M_i$ maps a $(u,v)$ vector's embedding to an $(r,g,b)$ color value:
@@ -680,13 +699,13 @@
 		\begin{equation}
 			\lTR = \similar(\pi,\ph)
 		\end{equation}
-		% So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
+		% So far, we've taken an image translator $T$ and added neural textures $\psi$ and a surface consistency constraint $\lUC$. 
 		% If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
 		% However, we can improve this further.
 		% Up until now we have not put any constraints on this neural texture. 
-		Without $\lTR$, $\tau$ can look wildly different each time you train it.
+		Without $\lTR$, $\psi$ can look wildly different each time you train it.
 		As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic – the colors are completely arbitrary.
-		After adding $\lTR$ though, $\pih \approx \ph$, and $\tau$ to represents the albedo of the surfaces in the scene.
+		After adding $\lTR$ though, $\pih \approx \ph$, and $\psi$ to represents the albedo of the surfaces in the scene.
 		% The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
 		
 		As it turns out, we can achieve surface-consistent translations just using $\lTR$, without $\lUC$.
@@ -814,7 +833,7 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 		& \multicolumn{4}{c|}{Masked}                                                                                       & \multicolumn{4}{c}{Unmasked}                                                                                     \\
 		& \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c|}{LPIPS}                              & \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c}{LPIPS}                              \\
 		Algorithm                              & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c}{Unsync} \\ \hline
-		\textbf{TRITON w/o $\tau, \lUC, \lTR$} & 0.0437                    & 0.0373                      & 0.00500                   & 0.00490                     & 0.434                     & 0.402                       & 0.0425                    & 0.0392                     \\
+		\textbf{TRITON w/o $\psi, \lUC, \lTR$} & 0.0437                    & 0.0373                      & 0.00500                   & 0.00490                     & 0.434                     & 0.402                       & 0.0425                    & 0.0392                     \\
 		\textbf{TRITON w/o $\lUC, \lTR$}       & 0.0442                    & 0.0386                      & 0.00586                   & 0.00589                     & 0.285                     & 0.255                       & 0.0364                    & 0.0310                     \\
 		\textbf{TRITON}                        & 0.0286                    & 0.0267                      & 0.00479                   & 0.00478                     & 0.117                     & 0.1157                      & 0.0123                    & 0.0122                     \\
 		\textbf{CycleGAN}                      &                           &                             &                           &                             &                           &                             &                           &                            \\
