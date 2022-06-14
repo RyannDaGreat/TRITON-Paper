@@ -54,7 +54,7 @@
 %     D_A, D_B
 %     G_A, G_B
 
-%     similaity(x,y) = MSSSIM(L2(x,y)
+%     similarity(x,y) = MSSSIM(L2(x,y)
 
 
 % FIXING NOTATION WILL BE HARD :(
@@ -104,6 +104,9 @@
 \newcommand{\lTR}{\ell_{TR}}
 \newcommand{\eqand}{\ \ \ \text{ and }\ \ \ }
 \newcommand{\real}{\mathbb{R}}
+
+% \newcommand{\similar}{\text{similarity}}
+\newcommand{\similar}{\Omega}
 
 
 %%%%%%%%%%%%BIG TODO::::
@@ -224,42 +227,48 @@
 
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
 
-	TRITON's goal is to turn 3d simulated images into realistic fake photographs without any matching pairs.
+	TRITON's goal is to turn 3d simulated images into realistic fake photographs without any matching pairs, while maintaining high surface consistency.
 	It does this by simultaneously learning both an image translator and a set of realistic textures.
+	These translations can be useful for downstream tasks, especially robotic policy learning from camera data.
+	
 	In contrast to previous works involving neural textures, TRITON can handle more than just camera movements:
-	the positions of objects in the training data can be moved around or deformed as well between samples.
-
+	the positions of objects in the training data can be moved around or deformed as well between data samples.
+	For this reason, we chose the term ``surface consistency'' instead of ``view consistency''.
+	With high surface consistency, surfaces of translated objects will look the same even when moved around or viewed from different camera angles.
 
 	\begin{figure}[H]
 		\begin{center}
 			\includegraphics[width=400pt]{../images/uvl_explanation_minimal.pdf}
 		\end{center}
 		\caption{
+			A scene is obtained by rendering a 3d state into an image, where the first two color channels represent $u,v$ coordinates and the third channel $l$ represents object labels.
 			% This diagram shows the purpose of a UVL image.
-			A UVL scene is an image that has three channels: RGB.
-			R and G are used for U and V, and B is used for L.
-			L stands for Label, and determines which part of the synthetic image will get which texture.
-			The U and V coordinates correspond to positions on each texture,
-			telling it how to project the textures onto the 3d objects represented in the UVL scene.
-			The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
+			% A UVL scene is an image that has three channels: RGB.
+			% R and G are used for U and V, and B is used for L.
+			% L stands for Label, and determines which part of the synthetic image will get which texture.
+			% The U and V coordinates correspond to positions on each texture,
+			% telling it how to project the textures onto the 3d objects represented in the UVL scene.
+			% The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
 			}
 		\label{fig:uvl_explanation}
 	\end{figure}
 
 	There are two components to every dataset: A set of simulated 3d scenes, and a set of photographs.
+	Datasets usually have many more scenes than photographs, since scenes can be generated automatically.
 
 	The photographs, having $(r,g,b)$ values between 0 and 1,
 		are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
 		3 refers to the three $(r,g,b)$ channels, 
 		and $H,W$ are the height and width respectively.
 
-	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation and deformation of every object (including the camera).
+	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation, and deformation of every object (including the camera).
 	% Using some 3d rendering software, be it Blender or Gazebo or some other 3d creates an image from these 
+	We represent each 3d state with a simple $(r,g,b)$ image, in a simple enough format that any decent robotic simulator should able to provide.
 	These scenes have the same datatype and dimensions as photographs and are denoted as $s \in [0,1]^{N \times 3 \times H \times W}$.
 	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in diagram \ref{fig:uvl_explanation}.
 	The channels $u$ and $v$ refer to a texture coordinate, whereas $l$ refers to a label value that identifies every object in a scene.
 	In a given dataset, each object gets a different label. Likewise, each object is assigned a different texture.
-	We assume that every dataset has $L$ different label values, $L$ different objects, and $L$ different learnable textures. 
+	We assume that every dataset has $L$ different label values, $L$ different objects, and that we must learn $L$ different neural textures. 
 
 	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
 	\begin{equation}
@@ -267,6 +276,7 @@
 	\end{equation}
 	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
 	Also please note that this paper uses 1-based indexing for notational simplicity. 
+
 
 
 
@@ -538,7 +548,7 @@
 			
 		$T$ is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
 		$T$ uses the same network architectures as MUNIT, and also inherits its adversarial losses $\ell_{adv}$, cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
-		The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. 
+		The main differences between our image translation model and MUNIT are that our style code is fixed (making it unimodal), noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. 
 		During inference however, this intermediate noise is removed and our image translation module is completely determinstic. 
 		% Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
@@ -548,21 +558,37 @@
 		% We also define the outputs of these translators as fake photos $\hat{p} = T_{A\rightarrow B}(\pis)$ and fake projection/uvl scenes $(\hat{\pi},\hat{s}) = T_{A\rightarrow B}(\pis)$.
 
 		% TODO: Choose one of the three equation representations. Which is best? The next paragraph will look less ugly when the equations are shorter.
+		
+		% For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1.
+		% Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
+		We define an image similarity loss between two image-like tensors that returns a score between 0 and 1, where 0 means perfect similarity:
+		\begin{equation}
+			\similar(x,y) = L_2(x,y)-\msssim(x,y) 
+		\end{equation}
+		This function combines mean pixel-wise $L_2$ distance (used in MUNIT) with multi-scale structural image similarity $\msssim$, introduced in \citep{msssim}.
 
-		To ensure cycle consistency, we have an image similarity loss $\ell_{cyc}$ to ensure
-		% $c \approx G_A(E_B(G_B(E_A(\pis)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(\pis)) = T_{B\rightarrow A}(\hat{p})$
-		$\ppis \approx T_{B\rightarrow A}(\hat{p})$
-		and vice versa
-		% $p \approx G_B(E_A(G_A(E_B(p)))) = T_{A\rightarrow B}(T_{B\rightarrow A}(\pis)) = T_{A\rightarrow B}(\hat{c}) = T_{A\rightarrow B}(\hat{\pi},\hat{s})$. 
-		$p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$.
-		%I only want to use one of the two representations; either using T_AB or GA(EB) etc. Which one should I use?
-		We also impose an image similarity loss $\ell_{rec}$ to ensure that $\ppis \approx G_A(E_A\ppis)$ and $p \approx G_B(E_B(p))$, which is effectively an autoencoder loss. 
-		In addition, we also have content similarity loss $ \ell_{con}$ to make 
-		$E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
-		% $E_A(\pis) \approx E_B(\Tab(\pis))$ and $E_A(p) \approx E_A(\Tba(p))$.
+		% To ensure cycle consistency, we have an image similarity loss $\ell_{cyc}$ to ensure
+		% % $c \approx G_A(E_B(G_B(E_A(\pis)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(\pis)) = T_{B\rightarrow A}(\hat{p})$
+		% $\ppis \approx T_{B\rightarrow A}(\hat{p})$
+		% and vice versa
+		% % $p \approx G_B(E_A(G_A(E_B(p)))) = T_{A\rightarrow B}(T_{B\rightarrow A}(\pis)) = T_{A\rightarrow B}(\hat{c}) = T_{A\rightarrow B}(\hat{\pi},\hat{s})$. 
+		% $p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$.
+		% %I only want to use one of the two representations; either using T_AB or GA(EB) etc. Which one should I use?
+		% We also impose an image similarity loss $\ell_{rec}$ to ensure that $\ppis \approx G_A(E_A\ppis)$ and $p \approx G_B(E_B(p))$, which is effectively an autoencoder loss. 
+		% In addition, we also have content similarity loss $ \ell_{con}$ to make 
+		% $E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
+		% % $E_A(\pis) \approx E_B(\Tab(\pis))$ and $E_A(p) \approx E_A(\Tba(p))$.
 
-		Our similarity losses are the sum of L2 distance and negative multi scale structural image similarity (MS-SSIM), introduced in \citep{msssim}. For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1. Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
 
+		To ensure cycle consistency, loss $\ell_{cyc}  =  \similar\left(\ppis,T_{B\rightarrow A}\left(\hat{p}\right)\right)  +  \similar\left(p,T_{A\rightarrow B}\left(\hat{\pi},\hat{s}\right)\right)$.
+		% $\ppis \approx T_{B\rightarrow A}(\hat{p})$
+		% and vice versa
+		% $p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$.
+		We also impose an image similarity loss $\ell_{rec} = \similar\left(\ppis,G_A\left(E_A\ppis\right)\right) + \similar\left(p,G_B\left(E_B\left(p\right)\right)\right)$
+		%  to ensure that $\ppis \approx G_A(E_A\ppis)$ and $p \approx G_B(E_B(p))$, 
+			which is effectively an autoencoder loss. 
+		In addition, we also have content similarity loss $ \ell_{con} = \similar\left(E_A\left(\pis\right), E_B\left(\ph\right) \right)    +   \similar\left(E_A\left(p\right),E_A\left(\pish\right)\right) $.% to make 
+		% $E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
 		We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}.
 
 		In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
