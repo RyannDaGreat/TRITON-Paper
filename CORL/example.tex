@@ -496,7 +496,7 @@
 		
 		We now discuss the implementation of our neural neural networks $\psi\toL$.
 		Each neural neural texture $\psi_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$. 
-		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for $M_i$.
+		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding of $(u,v)$ as input for $M_i$, where $M_i$ is a function $\real^{256} \to \real^{3}$ mapping that embedding to an $(r,g,b)$ color value:
 		\begin{equation}
 				\psi_i(u,v) = 
 				\
@@ -522,15 +522,15 @@
 		where $g_i=f_i\cdot(u,v)$
 		% , $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
 		, $f_i \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
-		$\cdot$ represents the dot product operator, 
+		and $\cdot$ is the dot product operator.
 		%  $rgb$ represents a 3d color vector,
-		and $M_i$ maps a $(u,v)$ vector's embedding to an $(r,g,b)$ color value:
-		$M_i: \real^{256} \rightarrow \real^3$.
+		% :
+		% $M_i: \real^{256} \rightarrow \real^3$.
 		Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		
 		%Squeeze this down - we don't need explanations for why, that can go in the appendix.
-		In practice, we found that TRITON learns faster and more stably with our neural neural textures than it does with raster neural textures. The generated textures are also smoother and less noisy. 
+		In practice, we found that TRITON learns faster and more stably with our neural neural textures than it does with raster neural textures. The generated textures are also smoother and less noisy. See the supplementary material for more details.
 		% The trained fourier-feature textures also exhibit less noise than its raster counterparts. 
 		% We think this is because they do not suffer as much. 
 		% It cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. 
@@ -581,13 +581,13 @@
 			\ph=\Tab(\pis)  \eqand  \ppish=\Tba(p)
 		\end{equation}
 			
-		$T$ is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
+		$T$ is based on the image translation module used in \citet{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
 		$T$ uses the same network architectures as MUNIT, and also inherits its adversarial losses $\ell_{adv}$, cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
-		The main differences between our image translation model and MUNIT are that our style code is fixed (making it unimodal), noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. 
+		The main differences between our image translation model and MUNIT are that we use a different image similarity loss $\Omega$, and like \citet[]{surgical_image_translation} and \citet[]{surgical_video_translation} our style code is fixed (making it unimodal) and noise is injected into the latent codes during training to prevent overfitting. 
 		During inference however, this intermediate noise is removed and our image translation module is completely determinstic. 
 		% Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
-		MUNIT translates images by encoding both image domains into a common latent space, then decoding them into their respective domains.
+		MUNIT translates images by encoding both domains $A$ and $B$ into a common latent space, then decoding them into their respective domains  $B$ and $A$.
 		In our translation module, we define fake photos $\ph = \Tab(\pis) = G_B(E_A(\pis))$ and fake projection/uvl scenes $\ppish = \Tba(p) = G_A(E_B(p))$
 			where $E_A, E_B, G_A, G_B$ are encoders and generators for domains A and B respectively.
 		% We also define the outputs of these translators as fake photos $\hat{p} = T_{A\rightarrow B}(\pis)$ and fake projection/uvl scenes $(\hat{\pi},\hat{s}) = T_{A\rightarrow B}(\pis)$.
@@ -596,11 +596,11 @@
 		
 		% For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1.
 		% Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
-		We define an image similarity loss $\similar$ between two image-like tensors $x,y$ that returns a score between 0 and 1, where 0 means perfect similarity:
+		We define an image similarity loss $\similar$ between two images $x,y$ that returns a score between 0 and 1, where 0 means perfect similarity:
 		\begin{equation}
 			\similar(x,y) = L_2(x,y)-\msssim(x,y) 
 		\end{equation}
-		This function combines mean pixel-wise $L_2$ distance (used in MUNIT) with multi-scale structural image similarity $\msssim$, introduced in \citep{msssim}.
+		This function combines mean pixel-wise $L_2$ distance (used in MUNIT) with multi-scale structural image similarity $\msssim$, introduced in \citep{msssim}. Note that this loss can also be applied to the latent representations obtained by $E_A$ and $E_B$, because like images those tensors are also three dimensional.
 
 		% To ensure cycle consistency, we have an image similarity loss $\ell_{cyc}$ to ensure
 		% % $c \approx G_A(E_B(G_B(E_A(\pis)))) = T_{B\rightarrow A}(T_{A\rightarrow B}(\pis)) = T_{B\rightarrow A}(\hat{p})$
@@ -615,20 +615,38 @@
 		% % $E_A(\pis) \approx E_B(\Tab(\pis))$ and $E_A(p) \approx E_A(\Tba(p))$.
 
 
-		To ensure cycle consistency, loss $\ell_{cyc}  =  \similar\left(\ppis,T_{B\rightarrow A}\left(\hat{p}\right)\right)  +  \similar\left(p,T_{A\rightarrow B}\left(\hat{\pi},\hat{s}\right)\right)$.
+		We have cycle consistency loss ${\ell_{cyc}  =  \similar\left(\ppis,T_{B\rightarrow A}\left(\hat{p}\right)\right)  +  \similar\left(p,T_{A\rightarrow B}\left(\hat{\pi},\hat{s}\right)\right)}$
 		% $\ppis \approx T_{B\rightarrow A}(\hat{p})$
 		% and vice versa
 		% $p \approx T_{A\rightarrow B}(\hat{\pi},\hat{s})$.
-		We also impose an image similarity loss $\ell_{rec} = \similar\left(\ppis,G_A\left(E_A\ppis\right)\right) + \similar\left(p,G_B\left(E_B\left(p\right)\right)\right)$
+		, similarity loss ${\ell_{rec} = \similar\left(\ppis,G_A\left(E_A\ppis\right)\right) + \similar\left(p,G_B\left(E_B\left(p\right)\right)\right)}$
 		%  to ensure that $\ppis \approx G_A(E_A\ppis)$ and $p \approx G_B(E_B(p))$, 
-			which is effectively an autoencoder loss. 
-		In addition, we also have content similarity loss $ \ell_{con} = \similar\left(E_A\left(\pis\right), E_B\left(\ph\right) \right)    +   \similar\left(E_A\left(p\right),E_A\left(\pish\right)\right) $.% to make 
+			(which is effectively an autoencoder loss),   
+		and content similarity loss ${ \ell_{con} = \similar\left(E_A\left(\pis\right), E_B\left(\ph\right) \right)    +   \similar\left(E_A\left(p\right),E_A\left(\pish\right)\right) }$.
 		% $E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
-		We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}.
+		We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}. 
+		In total, our image translator loss is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
 
-		In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
 
-		% NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
+		% PRETTIEST BUT TOO MUCH SPACE
+		% 		Inheriting from MUNIT, we have three losses: cycle consistency loss $\ell_{cyc}$, content similarity loss $\ell_{con}$, and reconstruction loss $\ell_{rec}$ which functions as an autoencoder loss.
+		% 		\begin{eqnarray}
+		% \begin{center}
+		% 	\begin{align}
+				
+		% 		\ell_{cyc}  =  \similar\left(\ppis,T_{B\rightarrow A}\left(\hat{p}\right)\right)  +  \similar\left(p,T_{A\rightarrow B}\left(\hat{\pi},\hat{s}\right)\right)
+				
+		% 		\ell_{con} = \similar\left(E_A\left(\pis\right), E_B\left(\ph\right) \right)    +   \similar\left(E_A\left(p\right),E_A\left(\pish\right)\right)
+
+		% 		\ell_{rec} = \similar\left(\ppis,G_A\left(E_A\ppis\right)\right) + \similar\left(p,G_B\left(E_B\left(p\right)\right)\right)
+		% 	\end{align}
+		% \end{center}
+		% 		\end{eqnarray}
+
+
+		% In total, the loss for the image translator module $T$ is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
+
+		% % NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
 
 
 
@@ -638,7 +656,7 @@
 
 		\begin{figure}[H]
 			\begin{center}
-				\includegraphics[width=400pt]{../images/unprojection_consistency_loss_without_reprojection.pdf}
+				\includegraphics[width=.8\textwidth]{../images/unprojection_consistency_loss_without_reprojection.pdf}
 			\end{center}
 			\caption{
 				This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
