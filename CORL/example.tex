@@ -20,6 +20,71 @@
 %	Method:	Texture Reality Loss
 
 
+%ALL CURRENTLY USED TERMS:
+
+%RULES:
+%    - Lower case: Belongs to an upper case thing
+
+%     L - num labels
+%     N - batch size
+%     T - translator
+%     A, B - domains
+%     Tba
+%     Tab
+%     tau - texture       !!!!! MUST CHANGE
+%			TO DO: replace it with psi ψ, the triton symbol!
+%     pi - projection
+%     p - photo
+%     s - scene
+%     l_TR
+%     l_UC
+%     l_ADV
+%     l_REC
+%     l_CYC
+%     l_T
+%     i - general purpose index
+%     f_i - fourier frequency
+%     M - MLP for texture network
+%     u,v,l,r,g,b - channel values
+%     u - unprojections  !!!!!! MUST CHANGE
+%          make it capitalized. Unprojection should be denoted by U - it's too intuitive not to.
+%     sigma - standard deviation
+%     mu - mean
+%     E_A, E_B
+%     D_A, D_B
+%     G_A, G_B
+
+%     similaity(x,y) = MSSSIM(L2(x,y)
+
+
+% FIXING NOTATION WILL BE HARD :(
+% GO OVER WITH XIANG AND JINGHUAN TOMORROW
+%     In this paper I use 1-based indexing to make notation simpler.
+%
+%     s, pi in N,3,H,W - height width
+%              i,c,x,y
+%     All values between 0 and 1
+%
+%     I: {1/L, 2/L, ... L/L} -> {1, 2, ... L}  ;   I(l) = l*L
+%          I is a discrete mapping from continous label values l to discrete texture indices.
+%          It can be nonlinear, as long as its consistent.
+%     
+%     ψ_i: R2 -> R3   for   i \in {1,2 ... L}
+%
+%     pi_{n,c,x,y} = ψ_  {I(s_{n,1,x,y})}  (s_{n,2,x,y},s_{n,3,x,y})
+%
+%     EXPLAINING L_UC IS WAY TO BURDENSOME. We have to talk about weighted standard deviations of unprojections that have a separate unprojection resolution (128x128) etc.
+%	  l_UC = total mean across all dims of sigma
+%     sigma \in R^{L x C x 128 x 128} is the standard deviation of u in the channel dimension, weighted...
+%     !!! I shouldn't have to do this; the other paper didn't!!!
+%     u.sum_{N,C,u,v}
+%
+
+
+
+\newcommand{\msssim}{\text{msssim}}
+
+
 \newcommand{\Tab}{T_{A\rightarrow B}}
 \newcommand{\Tba}{T_{B\rightarrow A}}
 \newcommand{\pih}{\hat{\pi}}
