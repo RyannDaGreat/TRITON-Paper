@@ -210,99 +210,122 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 \section{Formulation}
 \label{sec:data}
 
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=400pt]{../images/first_diagram.pdf}
+		\end{center}
+		\caption{
+			This is an overview of what TRITON accomplishes.
+			TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
+			}
+		\label{fig:first_diagram}
+	\end{figure}
+
+
+	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
+
+	TRITON's goal is to turn 3d simulated images into realistic fake photographs without any matching pairs.
+	It does this by simultaneously learning both an image translator and a set of realistic textures.
+	In contrast to previous works involving neural textures, TRITON can handle more than just camera movements:
+	the positions of objects in the training data can be moved around or deformed as well between samples.
+
+
+	\begin{figure}[H]
+		\begin{center}
+			\includegraphics[width=400pt]{../images/uvl_explanation_minimal.pdf}
+		\end{center}
+		\caption{
+			% This diagram shows the purpose of a UVL image.
+			A UVL scene is an image that has three channels: RGB.
+			R and G are used for U and V, and B is used for L.
+			L stands for Label, and determines which part of the synthetic image will get which texture.
+			The U and V coordinates correspond to positions on each texture,
+			telling it how to project the textures onto the 3d objects represented in the UVL scene.
+			The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
+			}
+		\label{fig:uvl_explanation}
+	\end{figure}
+
+	There are two components to every dataset: A set of simulated 3d scenes, and a set of photographs.
+
+	The photographs, having $(r,g,b)$ values between 0 and 1,
+		are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
+		3 refers to the three $(r,g,b)$ channels, 
+		and $H,W$ are the height and width respectively.
+
+	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation and deformation of every object (including the camera).
+	% Using some 3d rendering software, be it Blender or Gazebo or some other 3d creates an image from these 
+	These scenes have the same datatype and dimensions as photographs and are denoted as $s \in [0,1]^{N \times 3 \times H \times W}$.
+	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in diagram \ref{fig:uvl_explanation}.
+	The channels $u$ and $v$ refer to a texture coordinate, whereas $l$ refers to a label value that identifies every object in a scene.
+	In a given dataset, each object gets a different label. Likewise, each object is assigned a different texture.
+	We assume that every dataset has $L$ different label values, $L$ different objects, and $L$ different learnable textures. 
+
+	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
+	\begin{equation}
+		I: \left\{\frac{1}{L},\frac{2}{L},\dots \frac{L}{L}\right\} \rightarrow \left\{1,2,\dots L\right\}  \eqand  I(l)=l\cdot L
+	\end{equation}
+	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
+	Also please note that this paper uses 1-based indexing for notational simplicity. 
 
 
 
+	% TODO: Describe what UVL is ; 
+	% Formulate the setting: What our inputs are and the targets are and what we learn (a neural texture function) and how we can take advantage of it for robotic learning.
+	% Don't go into details; just say 'its a black box function'
 
-% TODO: Describe what UVL is ; 
-% Formulate the setting: What our inputs are and the targets are and what we learn (a neural texture function) and how we can take advantage of it for robotic learning.
-% Don't go into details; just say 'its a black box function'
+	% TODO: Add UV to the fourier feature diagram.
 
-% TODO: Add UV to the fourier feature diagram.
+	% TODO: Create subfigures with subcaptions. 
+	% 2a: Nothing but UVL=UV+L
+	% 2b. 3d uvl axis to texture pack (drew on whiteboard)
+	% 2c. Skip over the translation network and show a pretty robot arm picture
 
-% TODO: Create subfigures with subcaptions. 
-% 2a: Nothing but UVL=UV+L
-% 2b. 3d uvl axis to texture pack (drew on whiteboard)
-% 2c. Skip over the translation network and show a pretty robot arm picture
+	% This is the formulatoin section; not data section. Dont talk about how many photos we use etc. 
 
-% This is the formulatoin section; not data section. Dont talk about how many photos we use etc. 
+	% JUST IN CASE THINGS ARE ERASED:
+	% We learn neural texture corresponding to each object, where each texture is represented as a function mapping... 
+	% The idea is to learn object textures as a set of continuous functions from a set of (unlabeled) real images, and use them to generate realistic images.
+	% Given a 3D structure of the scene represented with a UVL image, the learned neural textures will translate them into a realistic image.
+	% When used for the robot learning, this enables learnable, realistic sim2real of robot training images.
 
-% JUST IN CASE THINGS ARE ERASED:
-% We learn neural texture corresponding to each object, where each texture is represented as a function mapping... 
-% The idea is to learn object textures as a set of continuous functions from a set of (unlabeled) real images, and use them to generate realistic images.
-% Given a 3D structure of the scene represented with a UVL image, the learned neural textures will translate them into a realistic image.
-% When used for the robot learning, this enables learnable, realistic sim2real of robot training images.
+	% IN THE INTRODUCTION: How we're using a neural neural network network texture. Also in related works.
 
-% IN THE INTRODUCTION: How we're using a neural neural network network texture. Also in related works.
+	% TODO: Replace neural texture in figure 3 with axis, and treat it as a function that takes UV in with an arrow pointing to it.
 
-% TODO: Replace neural texture in figure 3 with axis, and treat it as a function that takes UV in with an arrow pointing to it.
-
-% BREAK IT DOWN APPROACH:
-% Don't have any pictures. Have breakdown where we add new things in multiple figures.
-% First figure: Just image translation. 
-% Seconf:
-% Third:
-% Etc...
-
-
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=400pt]{../images/first_diagram.pdf}
-	\end{center}
-	\caption{
-		This is an overview of what TRITON accomplishes.
-		TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
-		}
-	\label{fig:first_diagram}
-\end{figure}
+	% BREAK IT DOWN APPROACH:
+	% Don't have any pictures. Have breakdown where we add new things in multiple figures.
+	% First figure: Just image translation. 
+	% Seconf:
+	% Third:
+	% Etc...
 
 
+	% In this paper, we'll mostly focus on a hand-collected dataset that involves three alphabet blocks that are moved across a table.
+	% Alphabet blocks were chosen because they all have the same geometry (a cube), but have very distinct semantic textures that will make temporal inconsistency obvious to the human eye.
+	% This dataset is analogous to data that would be collected for a third-person robotic grasping task.
+	% However, other objects (such as cans of soda, apples, cloves of garlic, etc) are also for generating other results in this paper. ((TODO: Detail the five object tests and five cube tests and other stuff like shiny cans etc)).
 
+	% There are two components to this dataset: Simulated data in the form of UVL scenes, and photographs.
+	% The camera in the simulation is positioned in approximately the same place as the real camera, with approximately the same field of view.
+	% In both domains of this dataset, the camera never moves. Instead, the objects are randomly positioned and rotated on the table.
+	% In both the simulation and in real life, these objects are randomly translated along the x and y-axis of the table, as well as rotated on the z-axis.
 
-\begin{figure}[H]
-	\begin{center}
-		\includegraphics[width=400pt]{../images/uvl_explanation_minimal.pdf}
-	\end{center}
-	\caption{
-		% This diagram shows the purpose of a UVL image.
-		A UVL scene is an image that has three channels: RGB.
-		R and G are used for U and V, and B is used for L.
-		L stands for Label, and determines which part of the synthetic image will get which texture.
-		The U and V coordinates correspond to positions on each texture,
-		telling it how to project the textures onto the 3d objects represented in the UVL scene.
-		The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
-		}
-	\label{fig:uvl_explanation}
-\end{figure}
+	% There are 200 photographs in this dataset, and they are recorded as RGB jpg images.
+	% There are 3000 synthetic images in this dataset, in the form of UVL images.
+	% These UVL images are also encoded as RGB images, but provide information about the geometry of a scene.
+	% UVL images are composed of both a UV map and a label map and are summarized in figure \ref{fig:uvl_explanation}.
+	% To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating-point values.
 
+	% The pixels in a UVL image are visualizable in RGB space because, like RGB images, each pixel is a vector with 3 values. The first two channels, U and V, are floating point values between 0 and 1. The L channel is also a floating point value between 0 and 1, it has a second meaning. There are only a finite number of label values (corresponding to the number of learnable textures). The rank of a particular L value is used to index these textures.
 
+	% In the three-cube dataset we have 4 textures, and UVL scenes contain label values $l \in [\frac{0}{3}, \frac{1}{3},\frac{2}{3}, \frac{3}{3}]$. A pixel in a UVL scene $l=\frac{2}{3}$ will get indexed to the third texture, because $\frac{2}{3}$ is the third smallest label value.
 
-% In this paper, we'll mostly focus on a hand-collected dataset that involves three alphabet blocks that are moved across a table.
-% Alphabet blocks were chosen because they all have the same geometry (a cube), but have very distinct semantic textures that will make temporal inconsistency obvious to the human eye.
-% This dataset is analogous to data that would be collected for a third-person robotic grasping task.
-% However, other objects (such as cans of soda, apples, cloves of garlic, etc) are also for generating other results in this paper. ((TODO: Detail the five object tests and five cube tests and other stuff like shiny cans etc)).
-
-% There are two components to this dataset: Simulated data in the form of UVL scenes, and photographs.
-% The camera in the simulation is positioned in approximately the same place as the real camera, with approximately the same field of view.
-% In both domains of this dataset, the camera never moves. Instead, the objects are randomly positioned and rotated on the table.
-% In both the simulation and in real life, these objects are randomly translated along the x and y-axis of the table, as well as rotated on the z-axis.
-
-% There are 200 photographs in this dataset, and they are recorded as RGB jpg images.
-% There are 3000 synthetic images in this dataset, in the form of UVL images.
-% These UVL images are also encoded as RGB images, but provide information about the geometry of a scene.
-% UVL images are composed of both a UV map and a label map and are summarized in figure \ref{fig:uvl_explanation}.
-% To avoid positional rounding errors, UVL images are encoded as EXR files: an image format that supports floating-point values.
-
-% The pixels in a UVL image are visualizable in RGB space because, like RGB images, each pixel is a vector with 3 values. The first two channels, U and V, are floating point values between 0 and 1. The L channel is also a floating point value between 0 and 1, it has a second meaning. There are only a finite number of label values (corresponding to the number of learnable textures). The rank of a particular L value is used to index these textures.
-
-% In the three-cube dataset we have 4 textures, and UVL scenes contain label values $l \in [\frac{0}{3}, \frac{1}{3},\frac{2}{3}, \frac{3}{3}]$. A pixel in a UVL scene $l=\frac{2}{3}$ will get indexed to the third texture, because $\frac{2}{3}$ is the third smallest label value.
+	% Domain A and B
+	% p hat
+	% s hat
 
 % %===============================================================================
-
-% Domain A and B
-% p hat
-% s hat
-
 \section{Method}
 \label{sec:method}
 
