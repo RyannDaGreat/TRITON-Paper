@@ -228,11 +228,11 @@
 
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
 
-	TRITON's goal is to turn 3d simulated images into realistic fake photographs without any matching pairs, while maintaining high surface consistency.
+	TRITON's goal is to turn 3d simulated images into realistic fake photographs by training it without any matching pairs, while maintaining high surface consistency.
 	It does this by simultaneously learning both an image translator and a set of realistic textures.
-	These translations can be useful for downstream tasks, especially robotic policy learning from camera data.
+	These translations can be useful for downstream tasks, especially robotic policy learning from camera data, enabling sim2real.
 	
-	In contrast to previous works involving neural textures, TRITON can handle more than just camera movements:
+	In contrast to previous works involving `neural textures' \textbf{(mryoo: cite them here)}, TRITON can handle more than just camera movements:
 	the positions of objects in the training data can be moved around or deformed as well between data samples.
 	For this reason, we chose the term ``surface consistency'' instead of ``view consistency''.
 	With high surface consistency, surfaces of translated objects will look the same even when moved around or viewed from different camera angles.
