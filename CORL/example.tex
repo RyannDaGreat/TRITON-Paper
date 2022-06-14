@@ -406,7 +406,7 @@
 
 		% Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
 		Instead of feeding input scenes $s$ directly into the image translator $\Tab$, we first apply learnable textures $\tau$ to their surfaces as shown in figure \ref{fig:main_diagram}.
-		Previous works called these learnable textures ``neural textures'', and were parametrized as a discrete grid of differentiable texels. 
+		Previous works called these learnable textures ``neural textures'', and were parametrized by a discrete grid of differentiable texels. 
 		% In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are a type of neural texture that is parametrized continuously over UV space using a neural fourier feature network.
 		In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are parametrized continuously over UV space using a neural network.
 		Like previous works, our neural textures $\tau\toL$ are learned jointly with our image translator $T$.
@@ -561,7 +561,7 @@
 		
 		% For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1.
 		% Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
-		We define an image similarity loss between two image-like tensors that returns a score between 0 and 1, where 0 means perfect similarity:
+		We define an image similarity loss $\similar$ between two image-like tensors $x,y$ that returns a score between 0 and 1, where 0 means perfect similarity:
 		\begin{equation}
 			\similar(x,y) = L_2(x,y)-\msssim(x,y) 
 		\end{equation}
@@ -637,7 +637,7 @@
 	% 	For this reason, $\lUC$ is most useful with large batch sizes.% because observing the same surface in multiple elements of a batch becomes more likely as the batch size increases. 
 	% 	But because video memory limits our batch sizes, first-person environments might be more of a challenge for $\lUC$ - particularly when exploring multiple rooms (a task we haven't done though - should I mention this?)
 
-		To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
+		% To michael: Should we mention these caveats in this section, or mention them in the texture realism loss section? That section addresses all of these issues...
 		
 		% Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
 
@@ -658,30 +658,27 @@
 
 		To encourage the neural textures to look as realistic as possible, we try to make the projections look like the final output by introducing a ``texture realism'' loss $\lTR$. 
 		$\lTR$ is an image similarity loss that makes $\pi$ look like its translation $\hat{p}$.
-		\begin{equation}
-			\lTR \Rightarrow \pi \approx \ph
-		\end{equation}
 		% As it turns out, $\lTR$ is sufficiently powerful loss to generate surface-consistent translations even without $\lUC$, although the results are better when both losses are used.
-
-		This loss forces the neural textures to look realistic, instead of allowing them to have arbitrary colors.
-		In other words, $\lTR$ makes the neural textures more realistic by making their projections look more realistic, like the final outputs.
-
+		% This loss forces the neural textures to look realistic, instead of allowing them to have arbitrary colors.
+		% In other words, $\lTR$ makes the neural textures more realistic by making their projections look more realistic, like the final outputs.
+		\begin{equation}
+			\lTR = \similar(\pi,\ph)
+		\end{equation}
 		% So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
 		% If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
 		% However, we can improve this further.
-
 		% Up until now we have not put any constraints on this neural texture. 
 		Without $\lTR$, $\tau$ can look wildly different each time you train it.
-		As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic - the colors are completely arbitrary.
+		As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic – the colors are completely arbitrary.
 		After adding $\lTR$ though, $\pih \approx \ph$, and $\tau$ to represents the albedo of the surfaces in the scene.
-		The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
+		% The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
 		
-		We can achieve surface-consistent translations just using $\lUC$, without $\lTR$.
+		As it turns out, we can achieve surface-consistent translations just using $\lTR$, without $\lUC$.
 		The the reverse is also true: $\lTR$ is sufficient to ensure surface consistency without $\lUC$.
 		Using both, however, yields better results than either loss alone. 
 		% For an explanation of why this is the case, see the appendix \ref{sec:texture_realism_theory}.
 		
-		There are some advantages to using $\lTR$ alone though: when just using $\lTR$ you can use batch sizes as small as $N=1$, allowing you to save video memory. 
+		With that said, there are some advantages to using $\lTR$ alone: when just using $\lTR$ you can use batch sizes as small as $N=1$, allowing you to save video memory. 
 		Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch as you would with $\lUC$.
 
 		% We introduce a new loss, called texture realism loss that fixes this: $\lTR$ is an image similarity loss that encourages $\pi \approx \ph$.
@@ -698,15 +695,6 @@
 		% There are some advantages over unprojection consistency though: 
 		% smaller batch sizes (even a batch size of 1, which UC cant do),
 		% you don't have to get lucky (the more chaotic, or even the more zoomed in a dataset becomes the less likely there is to be any collisions)
-
-	\subsection{Color Loss}
-
-		TRITON is very robust to geomtric imperfections. However, sometimes it takes this a bit too far - it can overfit textures onto the wrong objects and still maintain consistency.
-		In one example, it manages to map an apple texture onto a cube. 
-
-		To help TRITON correctly match textures to objects, we introduce a small amount of supervision by adding a color loss. I'm going to stop writing this because I don't know if I even want to keep this in the paper...you can achieve the same result by running the algorithm multiple times, and so its not strictly nessecary.
-
-		ASK MICHAEL: I'd rather not mention this entire section and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
 
 	%===============================================================================
 
@@ -952,6 +940,16 @@ Takes a long time to train.
 			\left( \hat{p}-\pi  \right)^2
 			}}{B} = \ell_{UC}^2
 		$
+
+
+		\subsection{Color Loss}
+
+		TRITON is very robust to geomtric imperfections. However, sometimes it takes this a bit too far - it can overfit textures onto the wrong objects and still maintain consistency.
+		In one example, it manages to map an apple texture onto a cube. 
+
+		To help TRITON correctly match textures to objects, we introduce a small amount of supervision by adding a color loss. I'm going to stop writing this because I don't know if I even want to keep this in the paper...you can achieve the same result by running the algorithm multiple times, and so its not strictly nessecary.
+
+		ASK MICHAEL: I'd rather not mention this entire section and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
 
 
 \section*{Graveyard}
