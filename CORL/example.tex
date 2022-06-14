@@ -286,7 +286,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 	%JUNE 12:
 	%TODO: MIgrate all four of these teasers into their respective subsections to save space.
 
-\subsection{Neural Neural Texture and Projection}
+\subsection{Neural Neural Texture Projection}
 
 	\begin{figure}[H]
 		\begin{center}
@@ -448,7 +448,7 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 		\ph=\Tab(\pis)  \eqand  \ppish=\Tba(p)
 	\end{equation}
 		
-	$T$, is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
+	$T$ is based on the image translation module used in \citep{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
 	$T$ uses the same network architectures as MUNIT, and also inherits its adversarial losses $\ell_{adv}$, cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
 	The main differences between our image translation model and MUNIT are that our style code is fixed making it unimodal, noise is injected into the latent codes during training to prevent overfitting, and we use a different image similarity metric. 
 	During inference however, this intermediate noise is removed and our image translation module is completely determinstic. 
@@ -504,13 +504,12 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 		\label{fig:unprojection_consistency_loss}
 	\end{figure}
 
-	Unprojection Consistency Loss $\lUC$: To keep the object surfaces consistent between a batch of $N$ scenes, we impose a pixel-wise similarity loss between these surfaces by warping them back into a common texture space using the UV and label values contained in the original scene. 
+	To keep the object surfaces consistent between a batch of $N$ outputs, we impose a pixel-wise ``unprojection consistency loss'' between these surfaces by unprojecting them back into a common texture space.
 	\begin{equation}
 		u\toNL=\text{unproject}(\ph\toN,s\toN)\ \ \ \text{ and } \ \ \ \lTR \Rightarrow u_1 \approx u_2 \dots \approx u_N
 	\end{equation}
 
-
-	To maintain surface consistency, we sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
+	We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
 	Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph_i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
 	We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
 	This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
@@ -542,32 +541,33 @@ I introduce you to TRITON. The rest of the introduction text goes here; I've com
 
 
 
-	Texture Realism Loss $\lTR$: To encourage the neural textures to look as realistic as possible, we try to make the projections look like the final output. 
+	To encourage the neural textures to look as realistic as possible, we try to make the projections look like the final output by introducing a ``texture realism'' loss $\lTR$. 
+	$\lTR$ is an image similarity loss that makes $\pi$ look like its translation $\hat{p}$.
 	\begin{equation}
 		\lTR \Rightarrow \pi \approx \ph
 	\end{equation}
-	As it turns out, $\lTR$ is sufficiently powerful loss to generate surface-consistent translations even without $\lUC$, although the results are better when both losses are used.
+	% As it turns out, $\lTR$ is sufficiently powerful loss to generate surface-consistent translations even without $\lUC$, although the results are better when both losses are used.
 
+	This loss forces the neural textures to look realistic, instead of allowing them to have arbitrary colors.
+	In other words, $\lTR$ makes the neural textures more realistic by making their projections look more realistic, like the final outputs.
 
-	We can improve the translation results by forcing the neural texture to look realistic, instead of allowing it to have arbitrary colors.
-	To do this, we add a texture realism loss $\lTR$.
-	$\lTR$ is an image similarity loss that makes $\pi$ look like its translation $\hat{p}$.
-	In other words, $\lTR$ makes the neural texture more realistic by making the neural texture projections more realistic.
-
-	So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
-	If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
-	However, we can improve this further.
+	% So far, we've taken an image translator $T$ and added neural textures $\tau$ and a surface consistency constraint $\lUC$. 
+	% If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
+	% However, we can improve this further.
 
 	% Up until now we have not put any constraints on this neural texture. 
 	Without $\lTR$, $\tau$ can look wildly different each time you train it.
 	As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic - the colors are completely arbitrary.
 	After adding $\lTR$ though, $\pih \approx \ph$, and $\tau$ to represents the albedo of the surfaces in the scene.
 	The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
-
-	As it turns out, $\lTR$ is sufficient to ensure surface consistency without $\lUC$, though using both yields better results than either one alone. 
-	For an explanation of why this is the case, see the appendix \ref{sec:texture_realism_theory}.
+	
+	We can achieve surface-consistent translations just using $\lUC$, without $\lTR$.
+	The the reverse is also true: $\lTR$ is sufficient to ensure surface consistency without $\lUC$.
+	Using both, however, yields better results than either loss alone. 
+	% For an explanation of why this is the case, see the appendix \ref{sec:texture_realism_theory}.
+	
 	There are some advantages to using $\lTR$ alone though: when just using $\lTR$ you can use batch sizes as small as $N=1$, allowing you to save video memory. 
-	Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch.
+	Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch as you would with $\lUC$.
 
 	% We introduce a new loss, called texture realism loss that fixes this: $\lTR$ is an image similarity loss that encourages $\pi \approx \ph$.
 	% This loss forces the neural texture to approximate the albedo of the surfaces in a scene.
