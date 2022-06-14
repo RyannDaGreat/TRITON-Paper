@@ -42,7 +42,7 @@
 %     l_REC
 %     l_CYC
 %     l_T
-%     i - general purpose index
+%     i - texture index
 %     f_i - fourier frequency
 %     M - MLP for texture network
 %     u,v,l,r,g,b - channel values
@@ -103,6 +103,7 @@
 \newcommand{\lUC}{\ell_{UC}}
 \newcommand{\lTR}{\ell_{TR}}
 \newcommand{\eqand}{\ \ \ \text{ and }\ \ \ }
+\newcommand{\eqwhere}{\ \ \ \text{ where }\ \ \ }
 \newcommand{\real}{\mathbb{R}}
 
 % \newcommand{\similar}{\text{similarity}}
@@ -411,16 +412,21 @@
 		In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are parametrized continuously over UV space using a neural network.
 		Like previous works, our neural textures $\tau\toL$ are learned jointly with our image translator $T$.
 		
-		These neural textures are represented implicitly by a neural network that maps UV values to RGB values.%, and are used to obtain projections $\pi$ from 3d scenes $s$.
+		These neural neural textures are represented implicitly by a neural network that maps UV values to RGB values. %, and are used to obtain projections $\pi$ from 3d scenes $s$.
+		For each texture $\tau_i \in \tau\toL$, 
 		\begin{equation}
-			\qquad \tau: uv \in\real^2 \rightarrow rgb \in\real^3 % \eqand 
+			\tau_i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 		\end{equation}
 		
-		Given a 3d UVL scene $s$, we obtain texture projection $\pi=\tau\toL(s)$ by applying $\tau\toL$ to every scene pixel $uvl \in s$ individually.
-		Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\tau_i$ to the $u,v$ values.
+		Given scenes $s$, we obtain projections $\pi$ by applying a texture $\tau_i \in \tau\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
+		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\tau_i$ to the $u,v$ values.
 		\begin{equation}
-			\pi=\tau\toL(s) \eqand rgb \in \pi = \tau_i(uv)
+			% \pi=\tau\toL(s) \eqand rgb \in \pi = \tau_i(uv)
+			% \pi_{n,c,x,y}=\tau_i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
+			\pi_{n,c,x,y}=\tau_i(s_{n,1,x,y},s_{n,2,x,y})
 		\end{equation}
+		where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
+		% where $n\in 1\dots N,\ \ c\in 1\dots 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 
 		%DISCARDED TEXT:
 		% A particular neural texture $\tau_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\tau_{1\dots L}$ maps uvl values to rgb values: $\tau_{1\dots L}(uvl)=\tau_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
@@ -472,30 +478,40 @@
 		% Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		Each neural neural texture $\tau_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
-		Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
+		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for $M_i$.
 		\begin{equation}
-				\tau_i(uv) = 
+				\tau_i(u,v) = 
 				\
+				% M_i(
+				% 	\sin( f_1     uv  ) , \ 
+				% 	\cos( f_1     uv  ) , \ 
+				% 	\sin( f_2     uv  ) , \ 
+				% 	\cos( f_2     uv  ) , \ 
+				% 	\dots \ 
+				% 	\sin( f_{256} uv  ) , \ 
+				% 	\cos( f_{256} uv  )  \ 
+				% )
 				M_i(
-					\sin( f_1     uv  ) , \ 
-					\cos( f_1     uv  ) , \ 
-					\sin( f_2     uv  ) , \ 
-					\cos( f_2     uv  ) , \ 
+					\sin( g_1      ) , \ 
+					\cos( g_1      ) , \ 
+					\sin( g_2      ) , \ 
+					\cos( g_2      ) , \ 
 					\dots \ 
-					\sin( f_{256} uv  ) , \ 
-					\cos( f_{256} uv  )  \ 
+					\sin( g_{256}  ) , \ 
+					\cos( g_{256}  )  \ 
 				)
 		\end{equation}
-		where $uv$ and $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
-		$f_i uv$ represents their dot product, 
+		where $g_i=f_i\cdot(u,v)$
+		, $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		$\cdot$ represents the dot product operator, 
 		%  $rgb$ represents a 3d color vector,
-		and $M_i$ maps a $uv$ embedding to an $rgb$ color value:
+		and $M_i$ maps a $(u,v)$ vector's embedding to an $(r,g,b)$ color value:
 		$M_i: \real^{256} \rightarrow \real^3$.
 		Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		
 		%Squeeze this down - we don't need explanations for why, that can go in the appendix.
-		In practice, we found that TRITON learns faster with neural neural textures than raster neural textures. The generated textures are also smoother and less noisy. 
+		In practice, we found that TRITON learns faster and more stably with our neural neural textures than it does with raster neural textures. The generated textures are also smoother and less noisy. 
 		% The trained fourier-feature textures also exhibit less noise than its raster counterparts. 
 		% We think this is because they do not suffer as much. 
 		% It cfrom aliasing artifacts in the UV maps, where the loss gradient might skip over pixels in texture-space when the UVL scene is zoomed out too far or raster resolution is too high. 
@@ -541,7 +557,7 @@
 
 		
 		% Our image translation module $T$ is bidirectional: $\Tab$ translates images from domain A to domain B, and $\Tba$ translates images from domain B to domain A.
-		Our image translation module $T$ is a bidirectional: $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
+		Our image translation module $T$ is bidirectional: $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
 		\begin{equation}
 			\ph=\Tab(\pis)  \eqand  \ppish=\Tba(p)
 		\end{equation}
