@@ -448,25 +448,25 @@ Conclusion: This works well, and our contributions are x
 		Like previous works, our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
 		
 		These neural neural textures are represented implicitly by a neural network that maps UV values to RGB values. %, and are used to obtain projections $\pi$ from 3d scenes $s$.
-		For each texture $\psi_i \in \psi\toL$, 
+		For each texture $\psi^i \in \psi\toL$, 
 		\begin{equation}
-			\psi_i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
+			\psi^i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 		\end{equation}
 		
-		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi_i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
-		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\psi_i$ to the $u,v$ values.
+		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi^i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
+		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\psi^i$ to the $u,v$ values.
 		\begin{equation}
-			% \pi=\psi\toL(s) \eqand rgb \in \pi = \psi_i(uv)
-			% \pi_{n,c,x,y}=\psi_i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
-			% \pi_{n,c,x,y}=\psi_i(s_{n,1,x,y},s_{n,2,x,y})
-			\pi_{c,x,y}=\psi_i(s_{1,x,y},s_{2,x,y})_c
+			% \pi=\psi\toL(s) \eqand rgb \in \pi = \psi^i(uv)
+			% \pi_{n,c,x,y}=\psi^i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
+			% \pi_{n,c,x,y}=\psi^i(s_{n,1,x,y},s_{n,2,x,y})
+			\pi_{c,x,y}=\psi^i(s_{1,x,y},s_{2,x,y})_c
 		\end{equation}
 		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
-		where $c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{3,x,y})$.
+		where channel $c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and texture index} \ \ i=I(s_{3,x,y})$.
 
 		%DISCARDED TEXT:
-		% A particular neural texture $\psi_i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
+		% A particular neural texture $\psi^i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
 		% TRITON's neural neural texture module lets it create features on the surfaces of objects, and thus take advantage of 3d geometric priors. 
 
 		
@@ -492,12 +492,12 @@ Conclusion: This works well, and our contributions are x
 		%THIS WILL BE REPLACED BY SUMMARY SECTION
 		% 	Given a batch of $N$ UVL Scenes $s_{1\dots B}$ with $L$ different label values, we project $L$ different neural textures $\psi_{1\dots L}$ onto that scene; obtaining projections $\pi_{1\dots B}$. This projection mechanism is illustrated in figure \ref{fig:uvl_explanation}.
 			
-		% Each neural texture $\psi_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
+		% Each neural texture $\psi^i$ is a function consisting of two components: a multi-layer perceptron $M^i$ and a static set of 256 random spatial frequencies $f_{1...256}$. 
 		% Given a two-dimensional $uv$ vector, the spatial frequencies are used to generate a high dimensional embedding used as input for the MLP.
 		% \begin{equation}
-		% 		\psi_i(uv) = 
+		% 		\psi^i(uv) = 
 		% 		\
-		% 		M_i\left(\left[
+		% 		M^i\left(\left[
 		% 			\sin \left( f_1     \cdot \left(u,v\right) \right) , \ 
 		% 			\cos \left( f_1     \cdot \left(u,v\right) \right) , \ 
 		% 			% \sin \left( f_2     \cdot \left(u,v\right) \right) , \ 
@@ -507,20 +507,20 @@ Conclusion: This works well, and our contributions are x
 		% 			\cos \left( f_{256} \cdot \left(u,v\right) \right)  \ 
 		% 		\right]\right)
 		% \end{equation}
-		% where $uv$ and $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
-		%  $f_i uv$ represents their dot product, 
+		% where $uv$ and $f^i \in N_{ormal}(\mu=0,\ \sigma=10)$ are two dimensional vectors,
+		%  $f^i uv$ represents their dot product, 
 		% %  $rgb$ represents a 3d color vector,
-		%  and $M_i$ maps a $uv$ embedding to an $rgb$ color value:
-		%  $M_i: \real^{256} \rightarrow \real^3$.
+		%  and $M^i$ maps a $uv$ embedding to an $rgb$ color value:
+		%  $M^i: \real^{256} \rightarrow \real^3$.
 		% Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		We now discuss the implementation of our neural neural networks $\psi\toL$.
-		Each neural neural texture $\psi_i$ is a function consisting of two components: a multi-layer perceptron $M_i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$. 
-		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding of $(u,v)$ as input for $M_i$, where $M_i$ is a function $\real^{256} \to \real^{3}$ mapping that embedding to an $(r,g,b)$ color value:
+		Each neural neural texture $\psi^i$ is a function consisting of two components: a multi-layer perceptron $M^i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$. 
+		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding of $(u,v)$ as input for $M^i$, where $M^i$ is a function $\real^{256} \to \real^{3}$ mapping that embedding to an $(r,g,b)$ color value:
 		\begin{equation}
-				\psi_i(u,v) = 
+				\psi^i(u,v) = 
 				\
-				% M_i(
+				% M^i(
 				% 	\sin( f_1     uv  ) , \ 
 				% 	\cos( f_1     uv  ) , \ 
 				% 	\sin( f_2     uv  ) , \ 
@@ -529,7 +529,7 @@ Conclusion: This works well, and our contributions are x
 				% 	\sin( f_{256} uv  ) , \ 
 				% 	\cos( f_{256} uv  )  \ 
 				% )
-				M_i(
+				M^i(
 					\sin( g_1      ) , \ 
 					\cos( g_1      ) , \ 
 					\sin( g_2      ) , \ 
@@ -539,13 +539,13 @@ Conclusion: This works well, and our contributions are x
 					\cos( g_{256}  )  \ 
 				)
 		\end{equation}
-		where $g_i=f_i\cdot(u,v)$
-		% , $f_i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
-		, $f_i \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		where $g_k=f_k\cdot(u,v)$
+		% , $f^i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		, $f_k \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
 		and $\cdot$ is the dot product operator.
 		%  $rgb$ represents a 3d color vector,
 		% :
-		% $M_i: \real^{256} \rightarrow \real^3$.
+		% $M^i: \real^{256} \rightarrow \real^3$.
 		Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		
@@ -594,7 +594,7 @@ Conclusion: This works well, and our contributions are x
 
 
 
-		
+		%_i
 		% Our image translation module $T$ is bidirectional: $\Tab$ translates images from domain A to domain B, and $\Tba$ translates images from domain B to domain A.
 		Our image translation module $T$ is bidirectional: $\Tab$ translates sim to real (aka domain A to domain B), and $\Tba$ translates real to sim (aka domain B to domain A).
 		\begin{equation}
@@ -697,7 +697,7 @@ Conclusion: This works well, and our contributions are x
 		\end{equation}
 
 		We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
-		Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph_i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
+		Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph^i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
 		We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
 		This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
 
