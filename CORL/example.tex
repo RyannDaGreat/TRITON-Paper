@@ -188,7 +188,27 @@
 \section{Introduction}
 	
 
-	I introduce you to TRITON. The rest of the introduction text goes here; I've commented out my old incomplete introduction.
+
+
+
+
+Problem: 
+Why is this problem important?
+No view consistency.
+
+Introducing our intuition of what improvements can solve this problem.
+
+Our exact method - introducing our components and what we're doing
+
+Conclusion: This works well, and our contributions are x
+
+% I introduce you to TRITON. The rest of the introduction text goes here; I've commented out my old incomplete introduction.
+
+
+
+
+
+
 
 	% TODO: Note that the simple input of UVL, or an RGB neural texture, means any simulator should be plug-and-play with this algorithm.
 
@@ -624,7 +644,7 @@
 			(which is effectively an autoencoder loss),   
 		and content similarity loss ${ \ell_{con} = \similar\left(E_A\left(\pis\right), E_B\left(\ph\right) \right)    +   \similar\left(E_A\left(p\right),E_A\left(\pish\right)\right) }$.
 		% $E_A(\pis) \approx E_B(\ph)$ and $E_A(p) \approx E_A(\pish)$.
-		We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively. They use the LS-GAN loss introduced in \citep{lsgan}. 
+		We also have adversarial losses $\ell_{adv}$ that come from two discriminators $D_A$ and $D_B$, targeting domains A and B respectively, using the LS-GAN loss introduced in \citet{lsgan}. 
 		In total, our image translator loss is $\ell_T=\ell_{cyc}+\ell_{rec}+\ell_{con}+\ell_{adv}$.
 
 
