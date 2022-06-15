@@ -912,16 +912,20 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 \begin{table}[H]
     \caption{Ground truth comparison evaluations for TRITON. Masked and Unmasked mean xxxxxx. Sync and Unsync mean xxxxx. L2 is xxxx LPIPS is xxxxxx. TRITON is xxxxxxx. }
 	\resizebox{\textwidth}{!}{
-        \begin{tabular}{l|llllllll}
-                                      & \multicolumn{8}{c}{Three Block Dataset}                                                                                                                                                                                                                       \\
-                                      & \multicolumn{4}{c|}{Masked}                                                                                                     & \multicolumn{4}{c}{Unmasked}                                                                                                \\
-                                      & \multicolumn{2}{c|}{LPIPS}                                    & \multicolumn{2}{c|}{L2}                                         & \multicolumn{2}{c|}{LPIPS}                                  & \multicolumn{2}{c}{L2}                                        \\
-        Algorithm                     & \multicolumn{1}{c|}{Sync}     & \multicolumn{1}{c|}{Unsync}   & \multicolumn{1}{c|}{Sync}      & \multicolumn{1}{c|}{Unsync}    & \multicolumn{1}{c|}{Sync}    & \multicolumn{1}{c|}{Unsync}  & \multicolumn{1}{c|}{Sync}     & \multicolumn{1}{c}{Unsync}    \\ \hline
+        \begin{tabular}{lllllllll}
+        \toprule
+        & \multicolumn{4}{c}{Masked} & \multicolumn{4}{c}{Unmasked}  \\
+        \cmidrule(lr){2-5} \cmidrule(lr){6-9} & \multicolumn{2}{c}{LPIPS $\downarrow$} & \multicolumn{2}{c}{L2 $\downarrow$}  & \multicolumn{2}{c}{LPIPS $\downarrow$}  & \multicolumn{2}{c}{L2 $\downarrow$}   \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
+        Algorithm  & Sync    & Unsync   & Sync      & Unsync    & Sync   & Unsync  & Sync     & Unsync \\
+        \midrule
         TRITON w/o $\psi, \lUC, \lTR$ & 0.0437                        & 0.0373                        & 0.00500                        & 0.00490                        & 0.434                        & 0.402                        & 0.0425                        & 0.0392                        \\
         TRITON w/o $\lUC, \lTR$       & 0.0442                        & 0.0386                        & 0.00586                        & 0.00589                        & 0.285                        & 0.255                        & 0.0364                        & 0.0310                        \\
-        TRITON                        & \textbf{0.0286}               & \textbf{0.0267}               & \textbf{0.00479}               & \textbf{0.00478}               & \textbf{0.117}               & \textbf{0.1157}              & \textbf{0.0123}               & \textbf{0.0122}               \\
+        \textbf{TRITON}                        & \textbf{0.0286}               & \textbf{0.0267}               & \textbf{0.00479}               & \textbf{0.00478}               & \textbf{0.117}               & \textbf{0.1157}              & \textbf{0.0123}               & \textbf{0.0122}               \\
+        \midrule
         CycleGAN                      & {\color[HTML]{000000} 0.0450} & {\color[HTML]{000000} 0.0379} & {\color[HTML]{000000} 0.00559} & {\color[HTML]{000000} 0.00554} & {\color[HTML]{000000} 0.602} & {\color[HTML]{000000} 0.593} & {\color[HTML]{000000} 0.0425} & {\color[HTML]{000000} 0.0423} \\
-        CUT                           & 0.0469                        & 0.0382                        & 0.00553                        & 0.00526                        & 0.540                        & 0.534                        & 0.0637                        & 0.0629                       
+        CUT                           & 0.0469                        & 0.0382                        & 0.00553                        & 0.00526                        & 0.540                        & 0.534                        & 0.0637                        & 0.0629\\
+        \bottomrule
         \end{tabular}
 	}
 \end{table}
@@ -937,7 +941,7 @@ TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and C
     \vspace{-10pt}
     \includegraphics[width=\textwidth]{images/sim2real_framework.pdf}
     \vspace{-20pt}
-    \caption{Sim2real framework of using TRITON. }
+    \caption{Sim2real framework of using TRITON. We evaluate in two settings: Seen and Unseen. In Unseen, we use a new camera viewpoint to train and evaluate the policy. This new viewpoint is not used for training TRITON. }
     \label{fig:sim2realframework}
 \end{figure}
 In this section we demonstrate how TRITON improves sim2real transfer for robot learning. To do this, we first train TRITON on a dataset consist of unpaired UVL scenes from simulator and photos from the real robot. After that, we train the robot policy in the simulator only. The input of the policy is the fake photo $\hat{p}$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is evaluated on the real robot, taking real photos $p$ as input. 
