@@ -910,29 +910,40 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 
 	%CREATED WITH https://www.tablesgenerator.com/# -- this website is wonderful!!
 \begin{table}[H]
-	
-	\begin{tabular}{l|llllllll}
-		& \multicolumn{8}{c}{Three Block Dataset}                                                                                                                                                                                              \\
-		& \multicolumn{4}{c|}{Masked}                                                                                       & \multicolumn{4}{c}{Unmasked}                                                                                     \\
-		& \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c|}{LPIPS}                              & \multicolumn{2}{c|}{L2}                                 & \multicolumn{2}{c}{LPIPS}                              \\
-		Algorithm                              & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c|}{Unsync} & \multicolumn{1}{c|}{Sync} & \multicolumn{1}{c}{Unsync} \\ \hline
-		\textbf{TRITON w/o $\psi, \lUC, \lTR$} & 0.0437                    & 0.0373                      & 0.00500                   & 0.00490                     & 0.434                     & 0.402                       & 0.0425                    & 0.0392                     \\
-		\textbf{TRITON w/o $\lUC, \lTR$}       & 0.0442                    & 0.0386                      & 0.00586                   & 0.00589                     & 0.285                     & 0.255                       & 0.0364                    & 0.0310                     \\
-		\textbf{TRITON}                        & 0.0286                    & 0.0267                      & 0.00479                   & 0.00478                     & 0.117                     & 0.1157                      & 0.0123                    & 0.0122                     \\
-		\textbf{CycleGAN}                      &                           &                             &                           &                             &                           &                             &                           &                            \\
-		\textbf{CUT}                           &                           &                             &                           &                             &                           &                             &                           &                           
-	\end{tabular}
+    \caption{Ground truth comparison evaluations for TRITON. Masked and Unmasked mean xxxxxx. Sync and Unsync mean xxxxx. L2 is xxxx LPIPS is xxxxxx. TRITON is xxxxxxx. }
+	\resizebox{\textwidth}{!}{
+        \begin{tabular}{l|llllllll}
+                                      & \multicolumn{8}{c}{Three Block Dataset}                                                                                                                                                                                                                       \\
+                                      & \multicolumn{4}{c|}{Masked}                                                                                                     & \multicolumn{4}{c}{Unmasked}                                                                                                \\
+                                      & \multicolumn{2}{c|}{LPIPS}                                    & \multicolumn{2}{c|}{L2}                                         & \multicolumn{2}{c|}{LPIPS}                                  & \multicolumn{2}{c}{L2}                                        \\
+        Algorithm                     & \multicolumn{1}{c|}{Sync}     & \multicolumn{1}{c|}{Unsync}   & \multicolumn{1}{c|}{Sync}      & \multicolumn{1}{c|}{Unsync}    & \multicolumn{1}{c|}{Sync}    & \multicolumn{1}{c|}{Unsync}  & \multicolumn{1}{c|}{Sync}     & \multicolumn{1}{c}{Unsync}    \\ \hline
+        TRITON w/o $\psi, \lUC, \lTR$ & 0.0437                        & 0.0373                        & 0.00500                        & 0.00490                        & 0.434                        & 0.402                        & 0.0425                        & 0.0392                        \\
+        TRITON w/o $\lUC, \lTR$       & 0.0442                        & 0.0386                        & 0.00586                        & 0.00589                        & 0.285                        & 0.255                        & 0.0364                        & 0.0310                        \\
+        TRITON                        & \textbf{0.0286}               & \textbf{0.0267}               & \textbf{0.00479}               & \textbf{0.00478}               & \textbf{0.117}               & \textbf{0.1157}              & \textbf{0.0123}               & \textbf{0.0122}               \\
+        CycleGAN                      & {\color[HTML]{000000} 0.0450} & {\color[HTML]{000000} 0.0379} & {\color[HTML]{000000} 0.00559} & {\color[HTML]{000000} 0.00554} & {\color[HTML]{000000} 0.602} & {\color[HTML]{000000} 0.593} & {\color[HTML]{000000} 0.0425} & {\color[HTML]{000000} 0.0423} \\
+        CUT                           & 0.0469                        & 0.0382                        & 0.00553                        & 0.00526                        & 0.540                        & 0.534                        & 0.0637                        & 0.0629                       
+        \end{tabular}
+	}
 \end{table}
+
 
 [[Figures: Show these results and explain why we have a mask on some of them]]
 
 TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
 
 \subsection{Sim2real Transfer for Robot Learning}
+\begin{figure}[thbp]
+    \centering
+    \vspace{-10pt}
+    \includegraphics[width=\textwidth]{images/sim2real_framework.pdf}
+    \vspace{-20pt}
+    \caption{Sim2real framework of using TRITON. }
+    \label{fig:sim2realframework}
+\end{figure}
 In this section we demonstrate how TRITON improves sim2real transfer for robot learning. To do this, we first train TRITON on a dataset consist of unpaired UVL scenes from simulator and photos from the real robot. After that, we train the robot policy in the simulator only. The input of the policy is the fake photo $\hat{p}$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is evaluated on the real robot, taking real photos $p$ as input. 
 Ideally, a good image translation model leads to less gap between $p$ and $\hat{p}$, so that the policy trained on synthesized photos will transfer to real domain seamlessly. 
 
-\paragraph{Task} We use a robot pose imitation task for our experiments. Given a real robot input of target pose, the robot control its joints to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
+\paragraph{Task} We use a robot pose imitation task for our experiments. Given the input of a photo of real robot pose, the policy outputs robot controls to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
 where $\hat{a}_j$ and $a_j$ are replicated and target joint angle respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints.
 
 \paragraph{Robot policy and Baselines}
@@ -951,7 +962,7 @@ We compare TRITON against two baseline image translation methods: CycleGAN and C
 \end{figure}
 
 \paragraph{Results}
-In Figure~\ref{fig:sim2real} we show the evaluation results of sim2real transfer. Both evaluations show that TRITON outperforms CycleGAN and CUT consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to generating photorealistic images. This is because in low resolution (eg. $84\times 84$) the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clear and harm the policy learning.
+In Figure~\ref{fig:sim2real} we show the evaluation results of sim2real transfer. Both evaluations show that TRITON outperforms CycleGAN and CUT consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to the ability to generate more photorealistic images compared to the baselines. This is because in low resolution (eg. $84\times 84$) the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clearer and do harm to policy learning.
 From Figure~\ref{fig:sim2real}(b), TRITON outperforms the others in Unseen setting, showing the power of xxxxxx.
 In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\ell_{UC}$ to generate photorealistic images, and such high quality images are important in higher resolutions for sim2real transfer.
 
