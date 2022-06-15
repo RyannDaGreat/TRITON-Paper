@@ -125,6 +125,8 @@
 \usepackage{float}
 \usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{multirow}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{array, booktabs, ragged2e}
@@ -251,13 +253,13 @@ Conclusion: This works well, and our contributions are x
 
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
 
-	TRITON's goal is to turn 3d simulated images into realistic fake photographs by training it without any matching pairs, while maintaining high surface consistency.
+	TRITON's goal is to turn 3d simulated images into realistic fake photographs (by training it without any matching pairs), while maintaining high surface consistency.
 	It does this by simultaneously learning both an image translator and a set of realistic textures.
 	These translations can be useful for downstream tasks, especially robotic policy learning from camera data, enabling sim2real.
 	
 	In contrast to previous works involving `neural textures' \textbf{(mryoo: cite them here)}, TRITON can handle more than just camera movements:
 	the positions of objects in the training data can be moved around or deformed as well between data samples.
-	For this reason, we chose the term ``surface consistency'' instead of ``view consistency''.
+	For this reason, we chose the term ``surface consistency'' instead of ``view consistency'', which was the term used in [] \textbf{(mryoo: cite)}.
 	With high surface consistency, surfaces of translated objects will look the same even when moved around or viewed from different camera angles.
 
 	\begin{figure}[H]
@@ -290,7 +292,7 @@ Conclusion: This works well, and our contributions are x
 	% 	3 refers to the three $(r,g,b)$ channels, 
 	% 	and $H,W$ are the height and width respectively.
 
-	A photograph, having $(r,g,b)$ values between 0 and 1,
+	A photograph is an image tensor, having $(r,g,b)$ values between 0 and 1,
 		is denoted as ${p \in [0,1]^{ 3 \times H \times W}}$ where 
 		3 refers to the three $(r,g,b)$ channels, 
 		and $H,W$ are the height and width respectively.
@@ -309,9 +311,11 @@ Conclusion: This works well, and our contributions are x
 	In a given dataset, each object gets a different label. Likewise, each object is assigned a different texture.
 	We assume that every dataset has $L$ different label values, $L$ different objects, and that we must learn $L$ different neural textures. 
 
-	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
-	\begin{equation}
-		I: \left\{\frac{1}{L},\frac{2}{L},\dots \frac{L}{L}\right\} \rightarrow \left\{1,2,\dots L\right\}  \eqand  I(l)=l\cdot L
+
+TODO: Say I scales and discretizes l, don't say more than that. 
+% 	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
+% 	\begin{equation}
+% 		I: \left\{\frac{1}{L},\frac{2}{L},\dots \frac{L}{L}\right\} \rightarrow \left\{1,2,\dots L\right\}  \eqand  I(l)=l\cdot L
 	\end{equation}
 	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
 	Also please note that this paper uses 1-based indexing for notational simplicity. 
@@ -462,11 +466,11 @@ Conclusion: This works well, and our contributions are x
 			% \pi=\psi\toL(s) \eqand rgb \in \pi = \psi^i(uv)
 			% \pi_{n,c,x,y}=\psi^i(s_{n,1,x,y},s_{n,2,x,y}) \eqwhere 1\le n\le N,\ \  1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})
 			% \pi_{n,c,x,y}=\psi^i(s_{n,1,x,y},s_{n,2,x,y})
-			\pi_{c,x,y}=\psi^i(s_{1,x,y},s_{2,x,y})_c
+			\pi_{[x,y]}=\psi^i(s_{[x,y,1]},s_{[x,y,2]})
 		\end{equation}
 		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
-		where channel $c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and texture index} \ \ i=I(s_{3,x,y})$.
+		where channel $c\in \{1, 2, 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and texture index} \ \ i=I(l) ~\text{where}~ l=s_{[x,y,3]}$ and subscript means multidimensional indexing.
 
 		%DISCARDED TEXT:
 		% A particular neural texture $\psi^i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
@@ -923,6 +927,38 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 [[Figures: Show these results and explain why we have a mask on some of them]]
 
 TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
+
+\subsection{Sim2real Transfer for Robot Learning}
+In this section we demonstrate how TRITON improves sim2real transfer for robot learning. To do this, we first train TRITON on a dataset consist of unpaired UVL scenes from simulator and photos from the real robot. After that, we train the robot policy in the simulator only. The input of the policy is the fake photo $\hat{p}$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is evaluated on the real robot, taking real photos $p$ as input. 
+Ideally, a good image translation model leads to less gap between $p$ and $\hat{p}$, so that the policy trained on synthesized photos will transfer to real domain seamlessly. 
+
+\paragraph{Task} We use a robot pose imitation task for our experiments. Given a real robot input of target pose, the robot control its joints to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
+where $\hat{a}_j$ and $a_j$ are replicated and target joint angle respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints.
+
+\paragraph{Robot policy and Baselines}
+Since sim2real provides abundant training data using the simulator, we use behavior cloning which is enough to train a good robot policy.
+The policy is implemented by CNN~\cite{dqn}.
+We compare TRITON against two baseline image translation methods: CycleGAN and CUT, by replacing TRITON with each baseline method respectively in the above pipeline. The robot policy is the same for all methods.
+
+\paragraph{Evaluation Settings} We introduce two main evaluation settings, \textbf{Seen} and \textbf{Unseen}. In \textbf{Seen} setting, the policy is trained and tested using the same camera viewpoint that is used in training image translator. Whereas in \textbf{Unseen} setting, we introduce a camera at a new viewpoint for training and testing the policy. That is, the image translator has to generate the fake photos out of its training distribution (seen camera viewpoints), which becomes a challenging for the translator. We also vary input image resolution to show the power of photorealistic images in higher resolutions.
+
+\begin{figure}[tbhp]
+    \centering
+    \includegraphics[width=\textwidth]{images/sim2real_res.pdf}
+    \vspace{-20pt}
+    \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{} and CUT~\cite{} consistently across (a) all resolutions and (b) Unseen viewpoints. Results in (a) are from Seen setting. Results in (b) are from 336x336 resolution. }
+    \label{fig:sim2real}
+\end{figure}
+
+\paragraph{Results}
+In Figure~\ref{fig:sim2real} we show the evaluation results of sim2real transfer. Both evaluations show that TRITON outperforms CycleGAN and CUT consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to generating photorealistic images. This is because in low resolution (eg. $84\times 84$) the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clear and harm the policy learning.
+From Figure~\ref{fig:sim2real}(b), TRITON outperforms the others in Unseen setting, showing the power of xxxxxx.
+In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\ell_{UC}$ to generate photorealistic images, and such high quality images are important in higher resolutions for sim2real transfer.
+
+
+
+
+
 
 %===============================================================================
 
