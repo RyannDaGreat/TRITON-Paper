@@ -165,9 +165,7 @@
 
 \begin{abstract}
 	% Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
-
 	% Because of the 6 sentence limit, I've commented out some of the sentences...
-
 	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
 	% Because of this, the details or even identity of a particular object might change as it moves across a scene.
 	We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
@@ -182,21 +180,11 @@
 	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
 	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
-
 \end{abstract}
-
-% Two or three meaningful keywords should be added here
 \keywords{sim to real, image translation, differentiable rendering} 
 
 %===============================================================================
-
 \section{Introduction}
-	
-
-
-
-
-
 Problem: 
 Why is this problem important?
 No view consistency.
@@ -231,26 +219,21 @@ Conclusion: This works well, and our contributions are x
 	% The motivation for this paper is to create a temporally consistent sim-to-real image translation algorithm that will look the same from multiple camera angles simultaneously, keeps all semantic details 
 	% [[I'll finish this later... let's work on the meat of the paper first...]]
 
-			
-
-	
-	
 %===============================================================================
 \section{Formulation}
 \label{sec:data}
-
 	\begin{figure}[H]
+	\vspace{-10pt}
 		\begin{center}
 			\includegraphics[width=400pt]{../images/first_diagram.pdf}
 		\end{center}
+		\vspace{-5pt}
 		\caption{
 			This is an overview of what TRITON accomplishes.
 			TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
 			}
 		\label{fig:first_diagram}
 	\end{figure}
-
-
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
 
 	TRITON's goal is to turn 3d simulated images into realistic fake photographs (by training it without any matching pairs), while maintaining high surface consistency.
@@ -316,7 +299,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 % 	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
 % 	\begin{equation}
 % 		I: \left\{\frac{1}{L},\frac{2}{L},\dots \frac{L}{L}\right\} \rightarrow \left\{1,2,\dots L\right\}  \eqand  I(l)=l\cdot L
-	\end{equation}
+% 	\end{equation}
 	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
 	Also please note that this paper uses 1-based indexing for notational simplicity. 
 
@@ -379,16 +362,15 @@ TODO: Say I scales and discretizes l, don't say more than that.
 	% s hat
 
 % %===============================================================================
-\section{Method}
-\label{sec:method}
-
-
-	\begin{figure}[H]
+\section{Method} \label{sec:method}
+	\begin{figure}[thbp]
+	    \vspace{-20pt}
 		\begin{center}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed.pdf}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed_with_domains.pdf}
-			\includegraphics[width=400pt]{../images/main_diagram_beautiful.pdf}
+			\includegraphics[width=\textwidth]{../images/main_diagram_beautiful.pdf}
 		\end{center}
+		\vspace{-10pt}
 		\caption{
 			% We use differentiable rendering paired with unpaired image translation to consistently= transform synthetic scenes into realistic images.
 			% To ensure all objects look consistent in different positions and views, we learn the albedo of each object's surface by using a learnable latent texture.
@@ -428,8 +410,8 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		%TODO: MIgrate all four of these teasers into their respective subsections to save space.
 
 	\subsection{Neural Neural Texture Projection}
-
-		\begin{figure}[H]
+		\begin{figure}[thbp]
+		    \vspace{-5pt}
 			\begin{center}
 				\includegraphics[width=300pt]{../images/learnable_textures.pdf}
 			\end{center}
@@ -470,7 +452,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		\end{equation}
 		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
-		where channel $c\in \{1, 2, 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and texture index} \ \ i=I(l) ~\text{where}~ l=s_{[x,y,3]}$ and subscript means multidimensional indexing.
+		where $ x\in \{1\dots W\},\ y\in \{1\dots H\}$, and texture index $i=I(l)$ where $l=s_{[x,y,3]}$ and subscript means multidimensional indexing.
 
 		%DISCARDED TEXT:
 		% A particular neural texture $\psi^i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
@@ -681,10 +663,12 @@ TODO: Say I scales and discretizes l, don't say more than that.
 	\subsection{Unprojection Consistency Loss}
 	\label{sec:unprojection_consistency_loss}
 
-		\begin{figure}[H]
+		\begin{figure}[thbp]
+		    \vspace{-10pt}
 			\begin{center}
 				\includegraphics[width=.8\textwidth]{../images/unprojection_consistency_loss_without_reprojection.pdf}
 			\end{center}
+			\vspace{-5pt}
 			\caption{
 				This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
 				The Unprojection Mean and Reprojection nodes are not used in any losses, and help to illustrate the next section \ref{sec:texture_realism_loss}.
@@ -736,13 +720,15 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		To formally define $\lUC$ we define unprojections $\unprojection^{1...N,1...L}$ and mean unprojections (aka recovered textures) $\bar{\unprojection}^{1...L}$ 
 		with each $\unprojection^{n,i}\in\real^{3\times128\times128}$:
 		\begin{equation}
-			\unprojection_{c,U,V}^{n,i}=\expectation\ph_{c,x,y}^n 
-			\eqand \bar{\unprojection}^i_{c,u,v}   =   
-				\frac{1}{N} \lsum_n\unprojection^{n,i}_{c,u,v} 
+			\unprojection_{U,V}^{n,i}=\expectation\ph_{x,y}^n 
+			\eqand \bar{\unprojection}^i_{u,v}   =   
+				\frac{1}{N} \lsum_n\unprojection^{n,i}_{u,v} 
 			\eqand 
-			\lUC=\frac{\lsum_{i,c,U,V}
-			\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{c,u,v}-\unprojection^{i,n}_{c,U,V}\right)^2}}
-			{3\cdot128\cdot128\cdot L}
+			%\lUC=\frac{\lsum_{i,U,V}
+			%\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2}}
+			%{128\cdot128\cdot L}
+			\lUC=\mathbb{E}\left[
+			\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2} \right]
 		\end{equation}
 		where $U=\lfloor128u\rfloor$ and $V=\lfloor128v\rfloor$ and $i=I(l)$ with
 		%  $(u,v,l)=s^n_{1...3,x,y}$
@@ -750,7 +736,6 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		for all 
 		$n \in \{1...N\}$ , 
 		$i \in \{1...L\}$ , 
-		$c \in \{1,2,3}$ , 
 		$x \in \{1...W\}$ , 
 		$y \in \{1...H\}$ , 
 		$U \in \{1...128\}$ , 
@@ -760,11 +745,12 @@ TODO: Say I scales and discretizes l, don't say more than that.
 
 	\subsection{Texture Realism Loss}
 	\label{sec:texture_realism_loss}
-
-		\begin{figure}[H]
+        \vspace{-10pt}
+		\begin{figure}[thbp]
 			\begin{center}
 				\includegraphics[width=250pt]{../images/texture_realism_ablation.pdf}
 			\end{center}
+			\vspace{-5pt}
 			\caption{
 				The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
 			}
@@ -816,10 +802,9 @@ TODO: Say I scales and discretizes l, don't say more than that.
 	%===============================================================================
 
 
-\section{Results}
+\section{Results}\label{sec:results}
 
 \subsection{Data}
-
 Here I detail the datasets used in the results section. 
 Every dataset has two sets of images: UVL scenes and photographs. They are all unpaired, and have RGB values ranging from 0 to 1.
 
@@ -854,20 +839,15 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 % p hat
 % s hat
 
-
-\label{sec:results}
-
-
 \subsection{Qualitative Differences}
 \begin{figure}[H]
+    \vspace{-30pt}
 	\begin{center}
-		\includegraphics[width=400pt]{../images/frame_inconsistency_diagram.pdf}
+		\includegraphics[width=\textwidth]{../images/frame_inconsistency_diagram.pdf}
 	\end{center}
-	
 	% Each outline color corresponds to the same cube.
 	% The same cubes are marked with the same colored outlines across all photos.
 	% For the same cube, we expect to see the same number on the top of the cube regardless of its placement.
-	
 	\caption{
 		Each row of images shows a different random placement of objects in the scene.
 		Each column of images is a different image translation algorithm.
@@ -948,7 +928,7 @@ In this section we demonstrate how TRITON improves sim2real transfer for robot l
 Ideally, a good image translation model leads to less gap between $p$ and $\hat{p}$, so that the policy trained on synthesized photos will transfer to real domain seamlessly. 
 
 \paragraph{Task} We use a robot pose imitation task for our experiments. Given the input of a photo of real robot pose, the policy outputs robot controls to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
-where $\hat{a}_j$ and $a_j$ are replicated and target joint angle respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints.
+where $\hat{a}_j$ and $a_j$ are replicated and target joint angle respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints. Moreover, we attach patterns and tapes on it to make its texture complex.
 
 \paragraph{Robot policy and Baselines}
 Since sim2real provides abundant training data using the simulator, we use behavior cloning which is enough to train a good robot policy.
