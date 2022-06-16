@@ -695,19 +695,18 @@ TODO: Say I scales and discretizes l, don't say more than that.
             	\unprojection_{[u,v]}^{l}=\expectation\ph_{[x,y]} \quad s.t.~ (u,v,l) = s_{[x,y]},
         \end{equation}
         where the expectation $\mathbb{E}$ means we aggregate multiple $(r,g,b)$ vectors being assigned to the same $(u,v,l)$ location by averaging them. 
-        In practice, $(u,v,l)$ are real numbers between $[0,1]$, where as each $\unprojection$ have to be rasterized, i.e represented by $L$ $(128\times 128\times 3)$ images, where $L$ is the number of labels and $128\times 128$ is the resolution of the unprojection. Therefore, we discretize and scale corresponding $(u,v,l)$ to integers so that each $(r,g,b)$ vector will be assigned to a pixel on $\unprojection$. For the exact implementation, please see our supplementary material.
+        In practice, $(u,v,l)$ are real numbers between $[0,1]$, where as each $\unprojection$ have to be rasterized, i.e represented by $L$ $(D\times D\times 3)$ images, where $L$ is the number of labels and $D\times D$ is the resolution of the unprojection. Therefore, we discretize and scale corresponding $(u,v,l)$ to integers so that each $(r,g,b)$ vector will be assigned to a pixel on $\unprojection$. For the exact implementation, please see our supplementary material.
         
-        We obtain $N$ unprojections $\{\unprojection_{[u,v]}^{l,i}\}_{i=1}^{N}$ from a batch of $N$ UVL scenes and fake photos. The unprojection consistency loss is defined as the per-pixel
+        We obtain $N$ unprojections $\{\unprojection_{[u,v]}^{l,i}\}_{i=1}^{N}$ from a batch of $N$ UVL scenes and fake photos. The unprojection consistency loss is defined as the per pixel-channel standard deviation of $\unprojection$ over the batch
         \begin{equation}
-            
+            \ell_{UC} = \frac{1}{L\times D\times D\times 3}\sum_{l,u,v,c}\sigma(\{\unprojection^{l,i}_{[u,v,c]}\}_{i=1}^{N}),
         \end{equation}
-
+        where $\sigma(\cdot)$ stands for the variance function and $c \in \{1\dots 3\}$ is the channel index of $\unprojection$.
 		%We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
 		%Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph^i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
 		%We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
 		%This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
-
-		Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene.
+		We minimize $\lUC$ to encourage unprojections to be consistent across the batch. Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene. In addition, we call the mean of unprojections $\mu(\{\unprojection^{(l,i)}\}_{i=1}^N)$ as ``Recovered Textures'', visualzed in Figure~\ref{fig:first_diagram} and \ref{fig:unprojection_consistency_loss}.
 
 	%MOVE THIS TO APPENDIX
 	% 	This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, howe/ver.
