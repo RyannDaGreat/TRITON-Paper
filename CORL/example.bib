@@ -77,3 +77,209 @@
     note = {arXiv:1312.5602},	
 	year = {2013}
 }
+
+@article{rl_cyclegan,
+  year     = {2020},
+  title    = {{RL-CycleGAN: Reinforcement Learning Aware Simulation-To-Real}},
+  author   = {Rao, Kanishka and Harris, Chris and Irpan, Alex and Levine, Sergey and Ibarz, Julian and Khansari, Mohi},
+  journal  = {2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  doi      = {10.1109/cvpr42600.2020.01117},
+  abstract = {{Deep neural network based reinforcement learning (RL) can learn appropriate visual representations for complex tasks like vision-based robotic grasping without the need for manually engineering or prior learning a perception system. However, data for RL is collected via running an agent in the desired environment, and for applications like robotics, running a robot in the real world may be extremely costly and time consuming. Simulated training offers an appealing alternative, but ensuring that policies trained in simulation can transfer effectively into the real world requires additional machinery. Simulations may not match reality, and typically bridging the simulation-to-reality gap requires domain knowledge and task-specific engineering. We can automate this process by employing generative models to translate simulated images into realistic ones. However, this sort of translation is typically task-agnostic, in that the translated images may not preserve all features that are relevant to the task. In this paper, we introduce the RL-scene consistency loss for image translation, which ensures that the translation operation is invariant with respect to the Q-values associated with the image. This allows us to learn a task-aware translation. Incorporating this loss into unsupervised domain translation, we obtain RL-CycleGAN, a new approach for simulation-to-real-world transfer for re-inforcement learning. In evaluations of RL-CycleGAN on two vision-based robotics grasping tasks, we show that RL-CycleGAN offers a substantial improvement over a number of prior methods for sim-to-real transfer, attaining excellent real-world performance with only a modest number of realworld observations.}},
+  pages    = {11154--11163},
+  volume   = {00},
+  note     = {RL-CycleGAN}
+}
+
+@article{enhancing_photorealism_enhancement,
+  title   = {Enhancing Photorealism Enhancement},
+  author  = {Stephan R. Richter and Hassan Abu AlHaija and Vladlen Koltun},
+  journal = {arXiv:2105.04619},
+  year    = {2021}
+}
+
+@misc{retina_gan,
+  title={RetinaGAN: An Object-aware Approach to Sim-to-Real Transfer}, 
+  author={Daniel Ho and Kanishka Rao and Zhuo Xu and Eric Jang and Mohi Khansari and Yunfei Bai},
+  year={2020},
+  eprint={2011.03148},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2011.03148}
+}
+
+
+@article{playable_environments,
+  year     = {2022},
+  title    = {{Playable Environments: Video Manipulation in Space and Time}},
+  author   = {Menapace, Willi and Lathuilière, Stéphane and Siarohin, Aliaksandr and Theobalt, Christian and Tulyakov, Sergey and Golyanik, Vladislav and Ricci, Elisa},
+  journal  = {arXiv},
+  eprint   = {2203.01914},
+  abstract = {{We present Playable Environments - a new representation for interactive video generation and manipulation in space and time. With a single image at inference time, our novel framework allows the user to move objects in 3D while generating a video by providing a sequence of desired actions. The actions are learnt in an unsupervised manner. The camera can be controlled to get the desired viewpoint. Our method builds an environment state for each frame, which can be manipulated by our proposed action module and decoded back to the image space with volumetric rendering. To support diverse appearances of objects, we extend neural radiance fields with style-based modulation. Our method trains on a collection of various monocular videos requiring only the estimated camera parameters and 2D object locations. To set a challenging benchmark, we introduce two large scale video datasets with significant camera movements. As evidenced by our experiments, playable environments enable several creative applications not attainable by prior video synthesis works, including playable 3D video generation, stylization and manipulation. Further details, code and examples are available at https://willi-menapace.github.io/playable-environments-website}},
+}
+
+
+@article{dual_diffusion,
+  year     = {2022},
+  title    = {{Dual Diffusion Implicit Bridges for Image-to-Image Translation}},
+  author   = {Su, Xuan and Song, Jiaming and Meng, Chenlin and Ermon, Stefano},
+  journal  = {arXiv},
+  eprint   = {2203.08382},
+  abstract = {{Common image-to-image translation methods rely on joint training over data from both source and target domains. This excludes cases where domain data is private (e.g., in a federated setting), and often means that a new model has to be trained for a new pair of domains. We present Dual Diffusion Implicit Bridges (DDIBs), an image translation method based on diffusion models, that circumvents training on domain pairs. DDIBs allow translations between arbitrary pairs of source-target domains, given independently trained diffusion models on the respective domains. Image translation with DDIBs is a two-step process: DDIBs first obtain latent encodings for source images with the source diffusion model, and next decode such encodings using the target model to construct target images. Moreover, DDIBs enable cycle-consistency by default and is theoretically connected to optimal transport. Experimentally, we apply DDIBs on a variety of synthetic and high-resolution image datasets, demonstrating their utility in example-guided color transfer, image-to-image translation as well as their connections to optimal transport methods.}},
+}
+
+
+@article{lpips,
+  year      = {2018},
+  title     = {{The Unreasonable Effectiveness of Deep Features as a Perceptual Metric}},
+  author    = {Zhang, Richard and Isola, Phillip and Efros, Alexei A and Shechtman, Eli and Wang, Oliver},
+  journal   = {arXiv},
+  eprint    = {1801.03924},
+  abstract  = {{While it is nearly effortless for humans to quickly assess the perceptual similarity between two images, the underlying processes are thought to be quite complex. Despite this, the most widely used perceptual metrics today, such as PSNR and SSIM, are simple, shallow functions, and fail to account for many nuances of human perception. Recently, the deep learning community has found that features of the VGG network trained on ImageNet classification has been remarkably useful as a training loss for image synthesis. But how perceptual are these so-called "perceptual losses"? What elements are critical for their success? To answer these questions, we introduce a new dataset of human perceptual similarity judgments. We systematically evaluate deep features across different architectures and tasks and compare them with classic metrics. We find that deep features outperform all previous metrics by large margins on our dataset. More surprisingly, this result is not restricted to ImageNet-trained VGG features, but holds across different deep architectures and levels of supervision (supervised, self-supervised, or even unsupervised). Our results suggest that perceptual similarity is an emergent property shared across deep visual representations.}},
+}
+
+
+@article{ners, 
+year = {2021}, 
+  title = {{NeRS: Neural Reflectance Surfaces for Sparse-view 3D Reconstruction in the Wild}}, 
+  author = {Zhang, Jason Y and Yang, Gengshan and Tulsiani, Shubham and Ramanan, Deva}, 
+  journal = {arXiv}, 
+  eprint = {2110.07604}, 
+  abstract = {{Recent history has seen a tremendous growth of work exploring implicit representations of geometry and radiance, popularized through Neural Radiance Fields (NeRF). Such works are fundamentally based on a (implicit) volumetric representation of occupancy, allowing them to model diverse scene structure including translucent objects and atmospheric obscurants. But because the vast majority of real-world scenes are composed of well-defined surfaces, we introduce a surface analog of such implicit models called Neural Reflectance Surfaces (NeRS). NeRS learns a neural shape representation of a closed surface that is diffeomorphic to a sphere, guaranteeing water-tight reconstructions. Even more importantly, surface parameterizations allow NeRS to learn (neural) bidirectional surface reflectance functions (BRDFs) that factorize view-dependent appearance into environmental illumination, diffuse color (albedo), and specular "shininess." Finally, rather than illustrating our results on synthetic scenes or controlled in-the-lab capture, we assemble a novel dataset of multi-view images from online marketplaces for selling goods. Such "in-the-wild" multi-view image sets pose a number of challenges, including a small number of views with unknown/rough camera estimates. We demonstrate that surface-based neural reconstructions enable learning from such data, outperforming volumetric neural rendering-based reconstructions. We hope that NeRS serves as a first step toward building scalable, high-quality libraries of real-world shape, materials, and illumination. The project page with code and video visualizations can be found at https://jasonyzhang.com/ners.}}, 
+}
+
+
+
+@article{unit,
+  year     = {2017},
+  title    = {{Unsupervised Image-to-Image Translation Networks}},
+  author   = {Liu, Ming-Yu and Breuel, Thomas and Kautz, Jan},
+  journal  = {arXiv},
+  eprint   = {1703.00848},
+  abstract = {{Unsupervised image-to-image translation aims at learning a joint distribution of images in different domains by using images from the marginal distributions in individual domains. Since there exists an infinite set of joint distributions that can arrive the given marginal distributions, one could infer nothing about the joint distribution from the marginal distributions without additional assumptions. To address the problem, we make a shared-latent space assumption and propose an unsupervised image-to-image translation framework based on Coupled GANs. We compare the proposed framework with competing approaches and present high quality image translation results on various challenging unsupervised image translation tasks, including street scene image translation, animal image translation, and face image translation. We also apply the proposed framework to domain adaptation and achieve state-of-the-art performance on benchmark datasets. Code and additional results are available in https://github.com/mingyuliutw/unit .}},
+  note     = {UNIT},
+}
+
+
+@article{nerf,
+  year     = {2020},
+  title    = {{NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis}},
+  author   = {Mildenhall, Ben and Srinivasan, Pratul P and Tancik, Matthew and Barron, Jonathan T and Ramamoorthi, Ravi and Ng, Ren},
+  journal  = {arXiv},
+  eprint   = {2003.08934},
+  abstract = {{We present a method that achieves state-of-the-art results for synthesizing novel views of complex scenes by optimizing an underlying continuous volumetric scene function using a sparse set of input views. Our algorithm represents a scene using a fully-connected (non-convolutional) deep network, whose input is a single continuous 5D coordinate (spatial location \$(x,y,z)\$ and viewing direction \$(\textbackslashtheta, \textbackslashphi)\$) and whose output is the volume density and view-dependent emitted radiance at that spatial location. We synthesize views by querying 5D coordinates along camera rays and use classic volume rendering techniques to project the output colors and densities into an image. Because volume rendering is naturally differentiable, the only input required to optimize our representation is a set of images with known camera poses. We describe how to effectively optimize neural radiance fields to render photorealistic novel views of scenes with complicated geometry and appearance, and demonstrate results that outperform prior work on neural rendering and view synthesis. View synthesis results are best viewed as videos, so we urge readers to view our supplementary video for convincing comparisons.}},
+}
+
+@article{deferred_neural_rendering,
+  year     = {2019},
+  title    = {{Deferred Neural Rendering: Image Synthesis using Neural Textures}},
+  author   = {Thies, Justus and Zollhöfer, Michael and Nießner, Matthias},
+  journal  = {arXiv},
+  eprint   = {1904.12356},
+  abstract = {{The modern computer graphics pipeline can synthesize images at remarkable visual quality; however, it requires well-defined, high-quality 3D content as input. In this work, we explore the use of imperfect 3D content, for instance, obtained from photo-metric reconstructions with noisy and incomplete surface geometry, while still aiming to produce photo-realistic (re-)renderings. To address this challenging problem, we introduce Deferred Neural Rendering, a new paradigm for image synthesis that combines the traditional graphics pipeline with learnable components. Specifically, we propose Neural Textures, which are learned feature maps that are trained as part of the scene capture process. Similar to traditional textures, neural textures are stored as maps on top of 3D mesh proxies; however, the high-dimensional feature maps contain significantly more information, which can be interpreted by our new deferred neural rendering pipeline. Both neural textures and deferred neural renderer are trained end-to-end, enabling us to synthesize photo-realistic images even when the original 3D content was imperfect. In contrast to traditional, black-box 2D generative neural networks, our 3D representation gives us explicit control over the generated output, and allows for a wide range of application domains. For instance, we can synthesize temporally-consistent video re-renderings of recorded 3D scenes as our representation is inherently embedded in 3D space. This way, neural textures can be utilized to coherently re-render or manipulate existing video content in both static and dynamic environments at real-time rates. We show the effectiveness of our approach in several experiments on novel view synthesis, scene editing, and facial reenactment, and compare to state-of-the-art approaches that leverage the standard graphics pipeline as well as conventional generative neural networks.}},
+}
+
+@article{gancraft,
+  year     = {2021},
+  title    = {{GANcraft: Unsupervised 3D Neural Rendering of Minecraft Worlds}},
+  author   = {Hao, Zekun and Mallya, Arun and Belongie, Serge and Liu, Ming-Yu},
+  journal  = {arXiv},
+  eprint   = {2104.07659},
+  abstract = {{We present GANcraft, an unsupervised neural rendering framework for generating photorealistic images of large 3D block worlds such as those created in Minecraft. Our method takes a semantic block world as input, where each block is assigned a semantic label such as dirt, grass, or water. We represent the world as a continuous volumetric function and train our model to render view-consistent photorealistic images for a user-controlled camera. In the absence of paired ground truth real images for the block world, we devise a training technique based on pseudo-ground truth and adversarial training. This stands in contrast to prior work on neural rendering for view synthesis, which requires ground truth images to estimate scene geometry and view-dependent appearance. In addition to camera trajectory, GANcraft allows user control over both scene semantics and output style. Experimental results with comparison to strong baselines show the effectiveness of GANcraft on this novel task of photorealistic 3D block world synthesis. The project website is available at https://nvlabs.github.io/GANcraft/ .}},
+}
+
+
+@article{cyclegan,
+  year      = {2017},
+  title     = {{Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks}},
+  author    = {Zhu, Jun-Yan and Park, Taesung and Isola, Phillip and Efros, Alexei A},
+  journal   = {arXiv},
+  eprint    = {1703.10593},
+  abstract  = {{Image-to-image translation is a class of vision and graphics problems where the goal is to learn the mapping between an input image and an output image using a training set of aligned image pairs. However, for many tasks, paired training data will not be available. We present an approach for learning to translate an image from a source domain \$X\$ to a target domain \$Y\$ in the absence of paired examples. Our goal is to learn a mapping \$G: X \textbackslashrightarrow Y\$ such that the distribution of images from \$G(X)\$ is indistinguishable from the distribution \$Y\$ using an adversarial loss. Because this mapping is highly under-constrained, we couple it with an inverse mapping \$F: Y \textbackslashrightarrow X\$ and introduce a cycle consistency loss to push \$F(G(X)) \textbackslashapprox X\$ (and vice versa). Qualitative results are presented on several tasks where paired training data does not exist, including collection style transfer, object transfiguration, season transfer, photo enhancement, etc. Quantitative comparisons against several prior methods demonstrate the superiority of our approach.}},
+}
+
+
+@article{fast_nerf, 
+year = {2021}, 
+title = {{FastNeRF: High-Fidelity Neural Rendering at 200FPS}}, 
+author = {Garbin, Stephan J and Kowalski, Marek and Johnson, Matthew and Shotton, Jamie and Valentin, Julien}, 
+journal = {arXiv}, 
+eprint = {2103.10380}, 
+abstract = {{Recent work on Neural Radiance Fields (NeRF) showed how neural networks can be used to encode complex 3D environments that can be rendered photorealistically from novel viewpoints. Rendering these images is very computationally demanding and recent improvements are still a long way from enabling interactive rates, even on high-end hardware. Motivated by scenarios on mobile and mixed reality devices, we propose FastNeRF, the first NeRF-based system capable of rendering high fidelity photorealistic images at 200Hz on a high-end consumer GPU. The core of our method is a graphics-inspired factorization that allows for (i) compactly caching a deep radiance map at each position in space, (ii) efficiently querying that map using ray directions to estimate the pixel values in the rendered image. Extensive experiments show that the proposed method is 3000 times faster than the original NeRF algorithm and at least an order of magnitude faster than existing work on accelerating NeRF, while maintaining visual quality and extensibility.}}, 
+}
+
+
+@article{stable_view_synthesis,
+  year      = {2020},
+  title     = {{Stable View Synthesis}},
+  author    = {Riegler, Gernot and Koltun, Vladlen},
+  journal   = {arXiv},
+  eprint    = {2011.07233},
+  abstract  = {{We present Stable View Synthesis (SVS). Given a set of source images depicting a scene from freely distributed viewpoints, SVS synthesizes new views of the scene. The method operates on a geometric scaffold computed via structure-from-motion and multi-view stereo. Each point on this 3D scaffold is associated with view rays and corresponding feature vectors that encode the appearance of this point in the input images. The core of SVS is view-dependent on-surface feature aggregation, in which directional feature vectors at each 3D point are processed to produce a new feature vector for a ray that maps this point into the new target view. The target view is then rendered by a convolutional network from a tensor of features synthesized in this way for all pixels. The method is composed of differentiable modules and is trained end-to-end. It supports spatially-varying view-dependent importance weighting and feature transformation of source images at each point; spatial and temporal stability due to the smooth dependence of on-surface feature aggregation on the target view; and synthesis of view-dependent effects such as specular reflection. Experimental results demonstrate that SVS outperforms state-of-the-art view synthesis methods both quantitatively and qualitatively on three diverse real-world datasets, achieving unprecedented levels of realism in free-viewpoint video of challenging large-scale scenes. Code is available at https://github.com/intel-isl/StableViewSynthesis}},
+}
+
+
+@article{nerv,
+  year      = {2020},
+  title     = {{NeRV: Neural Reflectance and Visibility Fields for Relighting and View Synthesis}},
+  author    = {Srinivasan, Pratul P and Deng, Boyang and Zhang, Xiuming and Tancik, Matthew and Mildenhall, Ben and Barron, Jonathan T},
+  journal   = {arXiv},
+  eprint    = {2012.03927},
+  abstract  = {{We present a method that takes as input a set of images of a scene illuminated by unconstrained known lighting, and produces as output a 3D representation that can be rendered from novel viewpoints under arbitrary lighting conditions. Our method represents the scene as a continuous volumetric function parameterized as MLPs whose inputs are a 3D location and whose outputs are the following scene properties at that input location: volume density, surface normal, material parameters, distance to the first surface intersection in any direction, and visibility of the external environment in any direction. Together, these allow us to render novel views of the object under arbitrary lighting, including indirect illumination effects. The predicted visibility and surface intersection fields are critical to our model's ability to simulate direct and indirect illumination during training, because the brute-force techniques used by prior work are intractable for lighting conditions outside of controlled setups with a single light. Our method outperforms alternative approaches for recovering relightable 3D scene representations, and performs well in complex lighting settings that have posed a significant challenge to prior work.}},
+}
+
+
+@article{free_view_synthesis,
+  year      = {2020},
+  title     = {{Free View Synthesis}},
+  author    = {Riegler, Gernot and Koltun, Vladlen},
+  journal   = {arXiv},
+  eprint    = {2008.05511},
+  abstract  = {{We present a method for novel view synthesis from input images that are freely distributed around a scene. Our method does not rely on a regular arrangement of input views, can synthesize images for free camera movement through the scene, and works for general scenes with unconstrained geometric layouts. We calibrate the input images via SfM and erect a coarse geometric scaffold via MVS. This scaffold is used to create a proxy depth map for a novel view of the scene. Based on this depth map, a recurrent encoder-decoder network processes reprojected features from nearby views and synthesizes the new view. Our network does not need to be optimized for a given scene. After training on a dataset, it works in previously unseen environments with no fine-tuning or per-scene optimization. We evaluate the presented approach on challenging real-world datasets, including Tanks and Temples, where we demonstrate successful view synthesis for the first time and substantially outperform prior and concurrent work.}},
+}
+
+@article{barf,
+  author     = {Chen{-}Hsuan Lin and
+                Wei{-}Chiu Ma and
+                Antonio Torralba and
+                Simon Lucey},
+  title      = {{BARF:} Bundle-Adjusting Neural Radiance Fields},
+  journal    = {CoRR},
+  volume     = {abs/2104.06405},
+  year       = {2021},
+  url        = {https://arxiv.org/abs/2104.06405},
+  eprinttype = {arXiv},
+  eprint     = {2104.06405},
+  timestamp  = {Mon, 19 Apr 2021 16:45:47 +0200},
+  biburl     = {https://dblp.org/rec/journals/corr/abs-2104-06405.bib},
+  bibsource  = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{mocyclegan,
+  year      = {2019},
+  title     = {{Mocycle-GAN}},
+  author    = {Amsaleg, Laurent and Huet, Benoit and Larson, Martha and Gravier, Guillaume and Hung, Hayley and Ngo, Chong-Wah and Ooi, Wei Tsang and Chen, Yang and Pan, Yingwei and Yao, Ting and Tian, Xinmei and Mei, Tao},
+  journal   = {Proceedings of the 27th ACM International Conference on Multimedia},
+  doi       = {10.1145/3343031.3350937},
+  eprint    = {1908.09514},
+  abstract  = {{Unsupervised image-to-image translation is the task of translating an image from one domain to another in the absence of any paired training examples and tends to be more applicable to practical applications. Nevertheless, the extension of such synthesis from image-to-image to video-to-video is not trivial especially when capturing spatio-temporal structures in videos. The difficulty originates from the aspect that not only the visual appearance in each frame but also motion between consecutive frames should be realistic and consistent across transformation. This motivates us to explore both appearance structure and temporal continuity in video synthesis. In this paper, we present a new Motion-guided Cycle GAN, dubbed as Mocycle-GAN, that novelly integrates motion estimation into unpaired video translator. Technically, Mocycle-GAN capitalizes on three types of constrains: adversarial constraint discriminating between synthetic and real frame, cycle consistency encouraging an inverse translation on both frame and motion, and motion translation validating the transfer of motion between consecutive frames. Extensive experiments are conducted on video-to-labels and labels-to-video translation, and superior results are reported when comparing to state-of-the-art methods. More remarkably, we qualitatively demonstrate our Mocycle-GAN for both flower-to-flower and ambient condition transfer.}},
+  pages     = {647--655},
+  keywords  = {},
+}
+
+
+@article{tecogan,
+  year      = {2020},
+  title     = {{Learning temporal coherence via self-supervision for GAN-based video generation}},
+  author    = {Chu, Mengyu and Xie, You and Mayer, Jonas and Leal-Taixé, Laura and Thuerey, Nils},
+  journal   = {ACM Transactions on Graphics (TOG)},
+  issn      = {0730-0301},
+  doi       = {10.1145/3386569.3392457},
+  eprint    = {1811.09393},
+  abstract  = {{Our work explores temporal self-supervision for GAN-based video generation tasks. While adversarial training successfully yields generative models for a variety of areas, temporal relationships in the generated data are much less explored. Natural temporal changes are crucial for sequential generation tasks, e.g. video super-resolution and unpaired video translation. For the former, state-of-the-art methods often favor simpler norm losses such as L2 over adversarial training. However, their averaging nature easily leads to temporally smooth results with an undesirable lack of spatial detail. For unpaired video translation, existing approaches modify the generator networks to form spatio-temporal cycle consistencies. In contrast, we focus on improving learning objectives and propose a temporally self-supervised algorithm. For both tasks, we show that temporal adversarial learning is key to achieving temporally coherent solutions without sacrificing spatial detail. We also propose a novel Ping-Pong loss to improve the long-term temporal consistency. It effectively prevents recurrent networks from accumulating artifacts temporally without depressing detailed features. Additionally, we propose a first set of metrics to quantitatively evaluate the accuracy as well as the perceptual quality of the temporal evolution. A series of user studies confirm the rankings computed with these metrics. Code, data, models, and results are provided at https://github.com/thunil/TecoGAN.}},
+  pages     = {75:1--75:13},
+  number    = {4},
+  volume    = {39},
+  keywords  = {},
+  local-url = {file://localhost/Users/ryan/Downloads/tecogan_video_translation.pdf}
+}
