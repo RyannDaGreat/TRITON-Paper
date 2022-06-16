@@ -895,19 +895,19 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 \begin{table}[H]
     \caption{Ground truth comparison evaluations for TRITON. Masked and Unmasked mean xxxxxx. Sync and Unsync mean xxxxx. L2 is xxxx LPIPS is xxxxxx. TRITON is xxxxxxx. }
 	\resizebox{\textwidth}{!}{
-        \begin{tabular}{lllllllll}
+        \begin{tabular}{lcccccccc}
         \toprule
         & \multicolumn{4}{c}{Masked} & \multicolumn{4}{c}{Unmasked}  \\
-        \cmidrule(lr){2-5} \cmidrule(lr){6-9} & \multicolumn{2}{c}{LPIPS $\downarrow$} & \multicolumn{2}{c}{L2 $\downarrow$}  & \multicolumn{2}{c}{LPIPS $\downarrow$}  & \multicolumn{2}{c}{L2 $\downarrow$}   \\
+        \cmidrule(lr){2-5} \cmidrule(lr){6-9} & \multicolumn{2}{c}{LPIPS ($\times 10^{-1}$) $\downarrow$} & \multicolumn{2}{c}{L2 ($\times 10^{-2}$) $\downarrow$}  & \multicolumn{2}{c}{LPIPS ($\times 10^{-1}$) $\downarrow$}  & \multicolumn{2}{c}{L2 ($\times 10^{-2}$) $\downarrow$}   \\
         \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
         Algorithm  & Sync    & Unsync   & Sync      & Unsync    & Sync   & Unsync  & Sync     & Unsync \\
         \midrule
-        TRITON w/o $\psi, \lUC, \lTR$ & 0.0437                        & 0.0373                        & 0.00500                        & 0.00490                        & 0.434                        & 0.402                        & 0.0425                        & 0.0392                        \\
-        TRITON w/o $\lUC, \lTR$       & 0.0442                        & 0.0386                        & 0.00586                        & 0.00589                        & 0.285                        & 0.255                        & 0.0364                        & 0.0310                        \\
-        \textbf{TRITON}                        & \textbf{0.0286}               & \textbf{0.0267}               & \textbf{0.00479}               & \textbf{0.00478}               & \textbf{0.117}               & \textbf{0.1157}              & \textbf{0.0123}               & \textbf{0.0122}               \\
+        TRITON w/o $\psi, \lUC, \lTR$ & 0.437                        & 0.373                        & 0.500                        & 0.490                        & 4.34                        & 4.02                        & 4.25                        & 3.92                        \\
+        TRITON w/o $\lUC, \lTR$       & 0.442                        & 0.386                        & 0.586                        & 0.589                        & 2.85                        & 2.55                        & 3.64                        & 3.10                        \\
+        \textbf{TRITON}                        & \textbf{0.286}               & \textbf{0.267}               & \textbf{0.479}               & \textbf{0.478}               & \textbf{1.17}               & \textbf{1.16}              & \textbf{1.23}               & \textbf{1.22}               \\
         \midrule
-        CycleGAN                      & {\color[HTML]{000000} 0.0450} & {\color[HTML]{000000} 0.0379} & {\color[HTML]{000000} 0.00559} & {\color[HTML]{000000} 0.00554} & {\color[HTML]{000000} 0.602} & {\color[HTML]{000000} 0.593} & {\color[HTML]{000000} 0.0425} & {\color[HTML]{000000} 0.0423} \\
-        CUT                           & 0.0469                        & 0.0382                        & 0.00553                        & 0.00526                        & 0.540                        & 0.534                        & 0.0637                        & 0.0629\\
+        CycleGAN & 0.450 & 0.379 &  0.559 &  0.554 &  6.02 &  5.93 &  4.25 &  4.23 \\
+        CUT                           & 0.469                        & 0.382                        & 0.553                        & 0.526                        & 5.40                        & 5.34                        & 6.37                        & 6.29\\
         \bottomrule
         \end{tabular}
 	}
