@@ -411,13 +411,15 @@ TODO: Say I scales and discretizes l, don't say more than that.
 
 	\subsection{Neural Neural Texture Projection}
 		\begin{figure}[thbp]
-		    \vspace{-5pt}
+		    \vspace{-15pt}
 			\begin{center}
 				\includegraphics[width=300pt]{../images/learnable_textures.pdf}
 			\end{center}
+			\vspace{-3pt}
 			\caption{
-				This figure illustrates how the neural textures are calculated in figure \ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's U and V axes using fourier feature networks.
+				This figure illustrates how the our neural neural textures are calculated in figure \ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's U and V axes using Fourier feature networks.
 			}
+			\vspace{-10pt}
 			% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
 			% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
 			% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
@@ -745,7 +747,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 
 	\subsection{Texture Realism Loss}
 	\label{sec:texture_realism_loss}
-        \vspace{-10pt}
+        \vspace{-12pt}
 		\begin{figure}[thbp]
 			\begin{center}
 				\includegraphics[width=250pt]{../images/texture_realism_ablation.pdf}
@@ -754,6 +756,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 			\caption{
 				The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
 			}
+			\vspace{-10pt}
 			\label{fig:texture_realism_ablation}
 		\end{figure}
 
@@ -802,11 +805,11 @@ TODO: Say I scales and discretizes l, don't say more than that.
 	%===============================================================================
 
 
-\section{Results}\label{sec:results}
+\section{Experiments}\label{sec:results}
 
-\subsection{Data}
-Here I detail the datasets used in the results section. 
-Every dataset has two sets of images: UVL scenes and photographs. They are all unpaired, and have RGB values ranging from 0 to 1.
+\subsection{Datasets}
+Here we detail the datasets used in our experiments. 
+Every dataset has two sets of images: UVL scenes and real photographs. They are all unpaired, and have RGB values ranging from 0 to 1.
 
 The first dataset to mention is the three-block dataset.  
 It has 300 photos and 2000 UVL scenes. It features a table with three alphabet blocks on a table, which are randomly translated along the X and Y axes and rotated randomly along the Z axis. Each photograph features these three cubes with a random position and rotation.
@@ -839,8 +842,8 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 % p hat
 % s hat
 
-\subsection{Qualitative Differences}
-\begin{figure}[H]
+\subsection{Qualitative Evaluation Results}
+\begin{figure}[thbp]
     \vspace{-30pt}
 	\begin{center}
 		\includegraphics[width=\textwidth]{../images/frame_inconsistency_diagram.pdf}
@@ -862,16 +865,16 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 	\end{figure}
 	
 
-	\begin{figure}[H]
-		\begin{center}
-			\includegraphics[width=400pt]{../images/blurry_recovery.pdf}
-		\end{center}
-		\caption{
-			The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
-			[[TODO: include cyclegan and other algorithms here]]
-		}
-		\label{fig:blurry_recovery}
-	\end{figure}
+    \begin{figure}[thbp]
+    	\begin{center}
+    		\includegraphics[width=\textwidth]{../images/blurry_recovery.pdf}
+    	\end{center}
+    	\caption{
+    		The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
+    		[[TODO: include cyclegan and other algorithms here]]
+    	}
+    	\label{fig:blurry_recovery}
+    \end{figure}
 	% 	Alphabet Three							
 	% 	Masked				Unmasked			
 	% 	LPIPS		L2		LPIPS		L2	
@@ -922,6 +925,7 @@ TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and C
     \includegraphics[width=\textwidth]{images/sim2real_framework.pdf}
     \vspace{-20pt}
     \caption{Sim2real framework of using TRITON. We evaluate in two settings: Seen and Unseen. In Unseen, we use a new camera viewpoint to train and evaluate the policy. This new viewpoint is not used for training TRITON. }
+    \vspace{-5pt}
     \label{fig:sim2realframework}
 \end{figure}
 In this section we demonstrate how TRITON improves sim2real transfer for robot learning. To do this, we first train TRITON on a dataset consist of unpaired UVL scenes from simulator and photos from the real robot. After that, we train the robot policy in the simulator only. The input of the policy is the fake photo $\hat{p}$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is evaluated on the real robot, taking real photos $p$ as input. 
@@ -939,10 +943,12 @@ We compare TRITON against two baseline image translation methods: CycleGAN and C
 
 \begin{figure}[tbhp]
     \centering
+    \vspace{-8pt}
     \includegraphics[width=\textwidth]{images/sim2real_res.pdf}
     \vspace{-20pt}
     \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{} and CUT~\cite{} consistently across (a) all resolutions and (b) Unseen viewpoints. Results in (a) are from Seen setting. Results in (b) are from 336x336 resolution. }
     \label{fig:sim2real}
+    \vspace{-8pt}
 \end{figure}
 
 \paragraph{Results}
