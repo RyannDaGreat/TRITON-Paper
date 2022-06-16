@@ -178,7 +178,7 @@
 %
 	% These textures are projected onto the surfaces of input scenes, which are then fed through an image translation network to obtain the final outputs.
 	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
-	Unlike previous algorithms, TRITON is not limited to camera movements - it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
+	Unlike previous algorithms, TRITON is not limited to camera movements --- it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
 \end{abstract}
 \keywords{sim to real, image translation, differentiable rendering} 
@@ -222,10 +222,10 @@ Conclusion: This works well, and our contributions are x
 %===============================================================================
 \section{Formulation}
 \label{sec:data}
-	\begin{figure}[H]
+	\begin{figure}[thbp]
 	\vspace{-10pt}
 		\begin{center}
-			\includegraphics[width=400pt]{../images/first_diagram.pdf}
+			\includegraphics[width=\textwidth]{../images/first_diagram.pdf}
 		\end{center}
 		\vspace{-5pt}
 		\caption{
@@ -684,15 +684,28 @@ TODO: Say I scales and discretizes l, don't say more than that.
 			\label{fig:unprojection_consistency_loss}
 		\end{figure}
 
-		To keep the object surfaces consistent between a batch of $N$ outputs, we impose a pixel-wise ``unprojection consistency loss'' between these surfaces by unprojecting them back into a common texture space.
-		\begin{equation}
-			u\toNL=\text{unproject}(\ph\toN,s\toN)   \eqand  \lUC \Rightarrow u_1 \approx u_2 \dots \approx u_N
-		\end{equation}
+		To keep the object surfaces consistent, we impose a pixel-wise ``unprojection consistency loss'' by unprojecting surfaces in fake photos back into the common texture space.
+% 		\begin{equation}
+% 			u\toNL=\text{unproject}(\ph\toN,s\toN)   \eqand  \lUC \Rightarrow u_1 \approx u_2 \dots \approx u_N
+% 		\end{equation}
+        Given a UVL scene $s$ and its respective fake photo $\ph$, the unprojection $\unprojection$ is obtained from assigning $(r,g,b)$ values at each pixel location $(x, y)$ of $\ph$ to its corresponding $(u, v, l)$ coordinates according to $s$. 
+        % That is, we convert $s$ and $\ph$ to a key-value dictionary where the key is $(u,v,l)$ and the value is $(r,g,b)$, and such dictionary is $\unprojection$.
+        For simplicity, we note
+        \begin{equation}
+            	\unprojection_{[u,v]}^{l}=\expectation\ph_{[x,y]} \quad s.t.~ (u,v,l) = s_{[x,y]},
+        \end{equation}
+        where the expectation $\mathbb{E}$ means we aggregate multiple $(r,g,b)$ vectors being assigned to the same $(u,v,l)$ location by averaging them. 
+        In practice, $(u,v,l)$ are real numbers between $[0,1]$, where as each $\unprojection$ have to be rasterized, i.e represented by $L$ $(128\times 128\times 3)$ images, where $L$ is the number of labels and $128\times 128$ is the resolution of the unprojection. Therefore, we discretize and scale corresponding $(u,v,l)$ to integers so that each $(r,g,b)$ vector will be assigned to a pixel on $\unprojection$. For the exact implementation, please see our supplementary material.
+        
+        We obtain $N$ unprojections $\{\unprojection_{[u,v]}^{l,i}\}_{i=1}^{N}$ from a batch of $N$ UVL scenes and fake photos. The unprojection consistency loss is defined as the per-pixel
+        \begin{equation}
+            
+        \end{equation}
 
-		We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
-		Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph^i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
-		We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
-		This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
+		%We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
+		%Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph^i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
+		%We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
+		%This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
 
 		Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene.
 
@@ -719,35 +732,35 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		% \end{equation}
 		%
 		%Abbreviated
-		To formally define $\lUC$ we define unprojections $\unprojection^{1...N,1...L}$ and mean unprojections (aka recovered textures) $\bar{\unprojection}^{1...L}$ 
-		with each $\unprojection^{n,i}\in\real^{3\times128\times128}$:
-		\begin{equation}
-			\unprojection_{U,V}^{n,i}=\expectation\ph_{x,y}^n 
-			\eqand \bar{\unprojection}^i_{u,v}   =   
-				\frac{1}{N} \lsum_n\unprojection^{n,i}_{u,v} 
-			\eqand 
-			%\lUC=\frac{\lsum_{i,U,V}
-			%\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2}}
-			%{128\cdot128\cdot L}
-			\lUC=\mathbb{E}\left[
-			\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2} \right]
-		\end{equation}
-		where $U=\lfloor128u\rfloor$ and $V=\lfloor128v\rfloor$ and $i=I(l)$ with
-		%  $(u,v,l)=s^n_{1...3,x,y}$
-		$u=s^n_{1,x,y}$, $v=s^n_{2,x,y}$, $l=s^n_{3,x,y}$
-		for all 
-		$n \in \{1...N\}$ , 
-		$i \in \{1...L\}$ , 
-		$x \in \{1...W\}$ , 
-		$y \in \{1...H\}$ , 
-		$U \in \{1...128\}$ , 
-		$V \in \{1...128\}$.
+		%To formally define $\lUC$ we define unprojections $\unprojection^{1...N,1...L}$ and mean unprojections (aka recovered textures) $\bar{\unprojection}^{1...L}$ 
+		%with each $\unprojection^{n,i}\in\real^{3\times128\times128}$:
+% 		\begin{equation}
+% 			\unprojection_{U,V}^{n,i}=\expectation\ph_{x,y}^n 
+% 			\eqand \bar{\unprojection}^i_{u,v}   =   
+% 				\frac{1}{N} \lsum_n\unprojection^{n,i}_{u,v} 
+% 			\eqand 
+% 			%\lUC=\frac{\lsum_{i,U,V}
+% 			%\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2}}
+% 			%{128\cdot128\cdot L}
+% 			\lUC=\mathbb{E}\left[
+% 			\sqrt[]{\frac{1}{N}\lsum_n\left(\bar{\unprojection}^i_{u,v}-\unprojection^{i,n}_{U,V}\right)^2} \right]
+% 		\end{equation}
+% 		where $U=\lfloor128u\rfloor$ and $V=\lfloor128v\rfloor$ and $i=I(l)$ with
+% 		%  $(u,v,l)=s^n_{1...3,x,y}$
+% 		$u=s^n_{1,x,y}$, $v=s^n_{2,x,y}$, $l=s^n_{3,x,y}$
+% 		for all 
+% 		$n \in \{1...N\}$ , 
+% 		$i \in \{1...L\}$ , 
+% 		$x \in \{1...W\}$ , 
+% 		$y \in \{1...H\}$ , 
+% 		$U \in \{1...128\}$ , 
+% 		$V \in \{1...128\}$.
 
 
 
 	\subsection{Texture Realism Loss}
 	\label{sec:texture_realism_loss}
-        \vspace{-12pt}
+        \vspace{-7pt}
 		\begin{figure}[thbp]
 			\begin{center}
 				\includegraphics[width=250pt]{../images/texture_realism_ablation.pdf}
@@ -843,6 +856,7 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 % s hat
 
 \subsection{Qualitative Evaluation Results}
+We show qualitative evaluation results 
 \begin{figure}[thbp]
     \vspace{-30pt}
 	\begin{center}
@@ -884,15 +898,13 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 	% Texture Reality	0.0286	0.0267	0.00479	0.00478	0.117	0.1157	0.0123	0.0122
 	% CycleGAN			TODO: Sync with respect to L2, so sync is always ≥ unsync					
 	% CUT				TODO: Google Synthetic Dataset				
-	
-	
-	
+
 	 
-	\subsection{Ground Truth Comaprison}
+\subsection{Ground Truth Comaprison}
 
 
 	%CREATED WITH https://www.tablesgenerator.com/# -- this website is wonderful!!
-\begin{table}[H]
+\begin{table}[thbp]
     \caption{Ground truth comparison evaluations for TRITON. Masked and Unmasked mean xxxxxx. Sync and Unsync mean xxxxx. L2 is xxxx LPIPS is xxxxxx. TRITON is xxxxxxx. }
 	\resizebox{\textwidth}{!}{
         \begin{tabular}{lcccccccc}
