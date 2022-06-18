@@ -116,6 +116,10 @@
 %%%%%%%%%%%%BIG TODO::::
 %%%%%% MAKE BATCH SIZE N INSTEAD OF B - B is a domain!
 
+\addtolength{\floatsep}{-2mm}
+\addtolength{\textfloatsep}{-1mm}
+\addtolength{\intextsep}{-1mm}
+\renewcommand{\baselinestretch}{0.99}
 
 \documentclass{article}
 
@@ -130,15 +134,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{array, booktabs, ragged2e}
+\usepackage{comment}
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
 % \title{TRITON: Globally Consistent Sim-to-Real Transfer
-\title{Neural Neural Textures Make Better Simulators
-
-``I Can't Believe It's Not Real!''%Definitely gonna delete this lol
- %via Neural Textures
- }
+\title{\mbox{TRITON: Neural Neural Textures for Better Sim2Real}
+%``I Can't Believe It's Not Real!''%Definitely gonna delete this lol
+%via Neural Textures
+}
 
 \author{%
 	Ryan Burgert \\
@@ -164,36 +168,91 @@
 %===============================================================================
 
 \begin{abstract}
-	% Abstracts should be a single paragraph, between 4--6 sentences long, ideally. Gross violations will trigger corrections at the camera-ready phase.
-	% Because of the 6 sentence limit, I've commented out some of the sentences...
-	Unpaired image translation algorithms can be used for sim-to-real tasks, but most fail to generate temporally consistent results.
-	% Because of this, the details or even identity of a particular object might change as it moves across a scene.
-	We present a new approach that combines differential rendering with image translation to achieve temporal consistency over indefinite timescales.
-%
-	%TURNING TWO SENTENCES INTO ONE:
-	% We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm.
-	% Unlike previous techniques, TRITON leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
-	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim-to-real algorithm that 
+	%Current sim-to-real image translation algorithms do not generate consistent results across large timeframes when the objects in an environment are allowed to move, making it difficult to train good robotic policies using them.
+	%To address this problem, we introduce a new algorithm called TRITON (Texture Recovering Image Translation Network): an unsupervised end-to-end image translation algorithm that combines neural rendering with image translation to maintain temporal consistency over arbitrarily long timeframes.
+	%Unlike previous sim-to-real image translation algoithms, TRITON leverages the underlying 3d structure of the simulated images to learn realistic textures on the surfaces of objects.
+	%We introduce a new type of nerual texture called a ``neural neural texture'', as well as separate losses each of which are capable of accomplishing this consistency goal.
+% 	As far as we are aware, this is the first algorihtm to attempt to learn the albedo of dynamically moving 3d objects without supervision.
+	%We demonstrate the supeiority of our approach both qualitatively and quantitatively, using robotic experiments and comparisons to ground truth photographs. We show that TRITON generates more realistic images than other algoithms do.
+	Unpaired image translation algorithms can be used for sim2real tasks, but most fail to generate temporally consistent results.
+	We present a new approach that combines differentiable rendering with image translation to achieve temporal consistency over indefinite timescales, using surface consistency losses and \emph{neural neural textures}.
+	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim2real algorithm that 
 	leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
-%
-	% These textures are projected onto the surfaces of input scenes, which are then fed through an image translation network to obtain the final outputs.
-	By settling on a particular albedo for the objects in a scene, we ensure consistency between frames statelessly.
+	By settling on a particular texture for the objects in a scene, we ensure consistency between frames statelessly.
 	Unlike previous algorithms, TRITON is not limited to camera movements --- it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
-	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
+% 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
+		We demonstrate the superiority of our approach both qualitatively and quantitatively, using robotic experiments and comparisons to ground truth photographs. We show that TRITON generates more useful images than other algorithms do.
 \end{abstract}
-\keywords{sim to real, image translation, differentiable rendering} 
+\keywords{sim2real, image translation, differentiable rendering} 
 
 %===============================================================================
 \section{Introduction}
-Problem: 
-Why is this problem important?
-No view consistency.
 
-Introducing our intuition of what improvements can solve this problem.
+% INTRODUCE:
+%     Image Translation
+%         For Videos
+%     Differentiable Rendering
+%         Neural Textures
+%             They combine image translation
+%     Most similar to our work is blah
+    
 
-Our exact method - introducing our components and what we're doing
 
-Conclusion: This works well, and our contributions are x
+
+Current sim2real image translation algorithms used for robotics \cite{retina_gan,rl_cyclegan} often have difficulty generating consistent results across large time-frames particularly when the objects in an environment are allowed to move. This makes training good robotic policies using such sim2real challenging.
+In this paper, we discuss an algorithm called TRITON (Texture Recovering Image Translation Network) that combines neural rendering, image translation, and two special surface consistency losses to create surface-consistent translations.
+We use the term surface-consistent to refer to the desirable quality of preserving the visual appearance of object surfaces as they move, or are viewed from another angles. 
+
+TRITON is applicable when we have a simulator capable of generating a realistic distribution of geometric data, but when we do not have any information about the surfaces of those objects (which we need to render realistic images). For example, in our experiments we use a robotic arm model provided by the manufacturer that contains no material information, and then learn to render the materials of the arm using TRITON.
+As opposed to requiring an artist to create 3d models with meaningful textures, TRITON can generate these from scratch using a set of photographs capturing the distribution of states in a simulation, without requiring any matches between domains. 
+% TRITON is robust to small camera variations, and can recover crisp textures even if the geometry isn't perfect. 
+
+We conduct multiple experiments to confirm TRITON's advantage over prior image translation approaches commonly used for sim2real including CycleGAN~\cite{cyclegan} and CUT~\cite{cut}.
+%First, we train it on a dataset with alphabet blocks, then compare photographs in that dataset to TRITON outputs by manually aligning the simulated 3d cubes with the photographs.
+Important, we show the advantages of the proposed approach in real-robot sim2real experiments, learning the textures and training a robot policy solely based on the images generated by TRITON. 
+%We also perform a robotic experiment, where we learn a policy completely in a simulation, and then verify it in the real world. In both of these tests, TRITON outperforms other image translation algorithms. 
+
+\begin{figure}[thbp]
+	\vspace{-10pt}
+		\begin{center}
+			\includegraphics[width=\textwidth]{../images/first_diagram.pdf}
+		\end{center}
+		\vspace{-5pt}
+		\caption{
+			This is an overview of what TRITON accomplishes.
+			TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
+			}
+		\label{fig:first_diagram}
+	\vspace{-5pt}
+	\end{figure}
+	
+\vspace{-5pt}	
+\section{Related Works}
+\vspace{-3pt}
+\paragraph{Unsupervised Image to Image and Video to Video Translation}
+Generative models have been very successful in creating images unconditionally~\cite{gan,stylegan}, creating images conditioned on text~\cite{dalle,imagen} and creating images when trained on paired data~\cite{pixtopix}.
+Generative models that translate images between unpaired data is a challenging task as well, but has been done before~\cite{dual_diffusion,cyclegan,munit,unit}.
+Of particular interest are sim2real image to image translation algorithms such as~\cite{retina_gan,rl_cyclegan,surgical_image_translation,enhancing_photorealism_enhancement}. These algorithms aim to translate simulated images into realistic ones, for various purposes such as data augmentation or video game enhancement. In particular, \citet{retina_gan,rl_cyclegan} are used to help train robots. Our paper uses an architecture based on~\citet{surgical_image_translation}, which is based on MUNIT~\cite{munit}.
+This area of research has been extended to video to video translation, where optical flow is often used to create a stateful translation where temporal coherence is preserved~\cite{tecogan,mocyclegan}. These algorithms fail to provide temporal coherence over long time periods, however. Another work from~\citet{surgical_video_translation}, is closely related to ours and uses neural rendering to translate videos with temporal coherence even when the camera spins around all the way.
+
+\vspace{-8pt}
+\paragraph{View Synthesis}
+View synthesis is a field of research where we predict the outputs of unseen camera viewpoints. NeRF \cite{nerf} has spawned a large body of research on end to end view synthesis, resulting in works such as \cite{nerv,fast_nerf,barf}. Related to our work, which also uses geometry based backbone are \cite{free_view_synthesis,stable_view_synthesis,ners}. All of these works, however, only work with static scenes. There are NeRF-based approaches that work on dynamic scenes \cite{dnerf,nerfies,nerualradianceflow} but none of these interactive. \citet{playable_environments} is interactive, but its conditioned on learned actions and not compatible with physics simulators that would be used to train robots.
+
+\vspace{-8pt}
+\paragraph{Neural Textures}
+\citet{deferred_neural_rendering} introduced the concept of neural textures and image translators in the context of a deferred rendering pipeline, used in other works such as \cite{surgical_video_translation} which is closely related to our project. 
+\citet{surgical_video_translation} differs from TRITON in a few very important aspects though, the biggest being that it only synthesizes new camera views, where the only difference between each scene is the placement of the camera. In contrast, our algorithm takes in scenes where several objects are placed in different places or deformed, so that one static  global 3d model of the environment is not sufficient to accomplish our tasks. In addition, TRITON uses a new type of neural texture called a ``neural neural texture'', which is represented continuously using a fourier feature network, as described in \citep{fourier_feature_networks}.
+
+% Problem: 
+% Why is this problem important?
+% No view consistency.
+
+% Introducing our intuition of what improvements can solve this problem.
+
+% Our exact method - introducing our components and what we're doing
+
+% Conclusion: This works well, and our contributions are x
 
 % I introduce you to TRITON. The rest of the introduction text goes here; I've commented out my old incomplete introduction.
 
@@ -220,35 +279,26 @@ Conclusion: This works well, and our contributions are x
 	% [[I'll finish this later... let's work on the meat of the paper first...]]
 
 %===============================================================================
+% \vspace{-5pt}
 \section{Formulation}
 \label{sec:data}
-	\begin{figure}[thbp]
-	\vspace{-10pt}
-		\begin{center}
-			\includegraphics[width=\textwidth]{../images/first_diagram.pdf}
-		\end{center}
-		\vspace{-5pt}
-		\caption{
-			This is an overview of what TRITON accomplishes.
-			TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
-			}
-		\label{fig:first_diagram}
-	\end{figure}
+\vspace{-3pt}
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
-
 	TRITON's goal is to turn 3d simulated images into realistic fake photographs (by training it without any matching pairs), while maintaining high surface consistency.
 	It does this by simultaneously learning both an image translator and a set of realistic textures.
 	These translations can be useful for downstream tasks, especially robotic policy learning from camera data, enabling sim2real.
 	
-	In contrast to previous works involving `neural textures' \textbf{(mryoo: cite them here)}, TRITON can handle more than just camera movements:
+	In contrast to previous works involving ``neural textures'' \cite{deferred_neural_rendering,surgical_video_translation}, TRITON can handle more than just camera movements:
 	the positions of objects in the training data can be moved around or deformed as well between data samples.
-	For this reason, we chose the term ``surface consistency'' instead of ``view consistency'', which was the term used in [] \textbf{(mryoo: cite)}.
+% 	For this reason, we chose the term ``surface consistency'' instead of ``view consistency'', which was the term used in [] \textbf{(mryoo: cite)}.
 	With high surface consistency, surfaces of translated objects will look the same even when moved around or viewed from different camera angles.
 
 	\begin{figure}[H]
+	    \vspace{-5pt}
 		\begin{center}
-			\includegraphics[width=400pt]{../images/uvl_explanation_minimal.pdf}
+			\includegraphics[width=.8\textwidth]{../images/uvl_explanation_minimal.pdf}
 		\end{center}
+		\vspace{-10pt}
 		\caption{
 			A scene is obtained by rendering a 3d state into an image, where the first two color channels represent $u,v$ coordinates and the third channel $l$ represents object labels.
 			% This diagram shows the purpose of a UVL image.
@@ -260,26 +310,24 @@ Conclusion: This works well, and our contributions are x
 			% The darkest shade of blue corresponds to the 1st texture, and the next darkest shade of blue corresponds to the 2nd texture etc.
 			}
 		\label{fig:uvl_explanation}
+		\vspace{-15pt}
 	\end{figure}
 
-	There are two components to every dataset: A set of simulated 3d scenes, and a set of photographs.
+	There are two components in every dataset: A set of simulated 3d scenes, and a set of photographs.
 	Datasets usually have many more scenes than photographs, since scenes can be generated automatically.
-
 	% The photographs, having $(r,g,b)$ values between 0 and 1,
 	% 	are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
 	% 	3 refers to the three $(r,g,b)$ channels, 
 	% 	and $H,W$ are the height and width respectively.
-
 	% A photograph in a set of photographs, having $(r,g,b)$ values between 0 and 1,
 	% 	is denoted as ${p^n \in [0,1]^{ 3 \times H \times W}}$ where $n$ is that photograph's index in that set,
 	% 	3 refers to the three $(r,g,b)$ channels, 
 	% 	and $H,W$ are the height and width respectively.
-
 	A photograph is an image tensor, having $(r,g,b)$ values between 0 and 1,
-		is denoted as ${p \in [0,1]^{ 3 \times H \times W}}$ where 
+		is denoted as ${p \in [0,1]^{H \times W \times 3}}$ where 
 		3 refers to the three $(r,g,b)$ channels, 
 		and $H,W$ are the height and width respectively.
-
+		
 	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation, and deformation of every object (including the camera).
 	% Using some 3d rendering software, be it Blender or Gazebo or some other 3d creates an image from these 
 	We represent each 3d state with a simple $(r,g,b)$ image, in a simple enough format that any decent simulator should able to provide.
@@ -288,20 +336,18 @@ Conclusion: This works well, and our contributions are x
 	% A scene has the same dimensions as a photograph and is denoted as 
 	% $s^n \in [0,1]^{3 \times H \times W}$.
 	A scene has the same dimensions as a photograph and is denoted as 
-	$s \in [0,1]^{3 \times H \times W}$.
-	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in figure \ref{fig:uvl_explanation}.
+	$s \in [0,1]^{H \times W \times 3}$.
+	However, unlike $p$, $s$'s three $(r,g,b)$ channels encode a special semantic meaning: $(u,v,l)$ as depicted in Figure \ref{fig:uvl_explanation}.
 	The channels $u$ and $v$ refer to a texture coordinate, whereas $l$ refers to a label value that identifies every object in a scene.
 	In a given dataset, each object gets a different label. Likewise, each object is assigned a different texture.
-	We assume that every dataset has $L$ different label values, $L$ different objects, and that we must learn $L$ different neural textures. 
-
-
-TODO: Say I scales and discretizes l, don't say more than that. 
+	We assume that every dataset has $L$ different label values, $L$ different objects, and that we must learn $L$ different neural textures.
+    % TODO: Say I scales and discretizes l, don't say more than that. 
 % 	In each dataset, we must also define a function $I(l)$ that maps label values to texture indices. A simple way to do this is with the following definition:
 % 	\begin{equation}
 % 		I: \left\{\frac{1}{L},\frac{2}{L},\dots \frac{L}{L}\right\} \rightarrow \left\{1,2,\dots L\right\}  \eqand  I(l)=l\cdot L
 % 	\end{equation}
-	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
-	Also please note that this paper uses 1-based indexing for notational simplicity. 
+% 	However, this mapping can be changed arbitrarily if its more convenient to do so for a given dataset.
+% 	Also please note that this paper uses 1-based indexing for notational simplicity. 
 
 
 
@@ -362,13 +408,14 @@ TODO: Say I scales and discretizes l, don't say more than that.
 	% s hat
 
 % %===============================================================================
+\vspace{-8pt}
 \section{Method} \label{sec:method}
 	\begin{figure}[thbp]
-	    \vspace{-20pt}
+	    \vspace{-15pt}
 		\begin{center}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed.pdf}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed_with_domains.pdf}
-			\includegraphics[width=\textwidth]{../images/main_diagram_beautiful.pdf}
+			\includegraphics[width=0.9\textwidth]{../images/main_diagram_beautiful.pdf}
 		\end{center}
 		\vspace{-10pt}
 		\caption{
@@ -401,23 +448,21 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		}
 		\label{fig:main_diagram}
 	\end{figure}
-
-
 		In this section, we describe how TRITON works to translate images from domain A (simulation) to domain B (photos) while maintaining surface consistency. 
-		TRITON has four main components: a neural texture, an image translator, and two surface consistency losses. [[One or two sentences summarizing the flow - nothing more than that]].
-		
+		TRITON introduces a learneable neural neural texture with two novel surface consistency losses to an existing image translator. In the end, TRITON is able to effectively generate photorealistic images.
 		%JUNE 12:
 		%TODO: MIgrate all four of these teasers into their respective subsections to save space.
-
+\vspace{-3pt}
 	\subsection{Neural Neural Texture Projection}
+	\vspace{-3pt}
 		\begin{figure}[thbp]
-		    \vspace{-15pt}
+		    \vspace{-5pt}
 			\begin{center}
-				\includegraphics[width=300pt]{../images/learnable_textures.pdf}
+				\includegraphics[width=0.6\textwidth]{../images/learnable_textures.pdf}
 			\end{center}
 			\vspace{-3pt}
 			\caption{
-				This figure illustrates how the our neural neural textures are calculated in figure \ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's U and V axes using Fourier feature networks.
+				This figure details how our neural neural textures are calculated in Figure~\ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's u and v axes using Fourier feature networks.
 			}
 			\vspace{-10pt}
 			% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
@@ -432,18 +477,17 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		%Justify why we're calling it neural neural texture. Unlike previous papers [citations], we learn a neural network instead of a grid of pixels. To be explicit we call it neural neural texture. %%%%%% Previous papers were more like latent textures but ours is different: it is a funciton.  Previous works were called "Neural Textures" but we're going to call ours "Neural Neural Textures" - a subtype of neural textures. 
 
 		% Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
-		Instead of feeding a scene $s$ directly into the image translator $\Tab$, we first apply learnable textures $\psi$ to its surfaces as shown in figure \ref{fig:main_diagram}.
+		Instead of feeding a scene $s$ directly into the image translator $\Tab$, we first apply learnable textures $\psi$ to its surfaces as shown in Figure \ref{fig:main_diagram}.
 		Previous works called these learnable textures ``neural textures'', and were parametrized by a discrete grid of differentiable texels. 
 		% In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are a type of neural texture that is parametrized continuously over UV space using a neural fourier feature network.
-		In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are parametrized continuously over UV space using a neural network.
-		Like previous works, our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
+		In contrast, we call our learnable textures as ``neural nerual textures'', because our textures themselves are represented as a neural network function, parameterized continuously over UV space.
+		Our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
 		
 		These neural neural textures are represented implicitly by a neural network that maps UV values to RGB values. %, and are used to obtain projections $\pi$ from 3d scenes $s$.
 		For each texture $\psi^i \in \psi\toL$, 
 		\begin{equation}
 			\psi^i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 		\end{equation}
-		
 		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi^i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
 		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\psi^i$ to the $u,v$ values.
 		\begin{equation}
@@ -454,7 +498,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		\end{equation}
 		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
-		where $ x\in \{1\dots W\},\ y\in \{1\dots H\}$, and texture index $i=I(l)$ where $l=s_{[x,y,3]}$ and subscript means multidimensional indexing.
+		where $ x\in \{1\dots W\},\ y\in \{1\dots H\}$. Texture index $i = I(l)$ where $l=s_{[x,y,3]}$ and the function $I(\cdot)$ scales and discretizes $l$ into integers. Subscripts mean multidimensional indexing.
 
 		%DISCARDED TEXT:
 		% A particular neural texture $\psi^i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
@@ -533,11 +577,12 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		where $g_k=f_k\cdot(u,v)$
 		% , $f^i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
 		, $f_k \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
-		and $\cdot$ is the dot product operator.
+		\mbox{and $\cdot$} is the dot product operator.
 		%  $rgb$ represents a 3d color vector,
 		% :
 		% $M^i: \real^{256} \rightarrow \real^3$.
-		Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
+		The hyperparamters 256 and 10 are selected empirically.
+		%Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		
 		%Squeeze this down - we don't need explanations for why, that can go in the appendix.
@@ -553,10 +598,10 @@ TODO: Say I scales and discretizes l, don't say more than that.
 
 
 
-
+\vspace{-3pt}
 	\subsection{Image Translation}
 	\label{sec:image_translation}
-
+\vspace{-3pt}
 	% 	\begin{figure}[H]
 	% 		\begin{center}
 	% 			\includegraphics[width=200pt]{../images/module_translator.pdf}
@@ -595,7 +640,7 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		$T$ is based on the image translation module used in \citet{surgical_video_translation}, which is a based on a variant \cite{surgical_image_translation} of MUNIT \cite{munit}. 
 		$T$ uses the same network architectures as MUNIT, and also inherits its adversarial losses $\ell_{adv}$, cycle consistency losses $\ell_{cyc}$ and reconstruction losses $\ell_{rec}$.
 		The main differences between our image translation model and MUNIT are that we use a different image similarity loss $\Omega$, and like \citet[]{surgical_image_translation} and \citet[]{surgical_video_translation} our style code is fixed (making it unimodal) and noise is injected into the latent codes during training to prevent overfitting. 
-		During inference however, this intermediate noise is removed and our image translation module is completely determinstic. 
+		During inference however, this intermediate noise is removed and our image translation module is deterministic. 
 		% Apart from these differences, our image translation module has the same loss formulations and generator/encoder/discriminator network architectures as MUNIT. 
 
 		MUNIT translates images by encoding both domains $A$ and $B$ into a common latent space, then decoding them into their respective domains  $B$ and $A$.
@@ -660,29 +705,54 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		% % NOTE: THe other paper \citep{surgical_video_translation} didn't do into this much detail; instead putting most of these losses in teh appendix. I think we can cut this down? I'll check with michael first...right now I'll include everything.
 
 
-
-
-	\subsection{Unprojection Consistency Loss}
+\begin{figure}
+    \centering
+    \begin{minipage}{0.57\textwidth}
+		\includegraphics[width=1\linewidth]{../images/unprojection_consistency_loss_without_reprojection.pdf}\label{fig:unprojection_consistency_loss}
+		\vspace{-5pt}
+	\caption{
+		This is the unprojection consistency loss used in Figure~\ref{fig:main_diagram}.
+		The Unprojection Mean is not used in any losses, but help to illustrate the content in Section \ref{sec:texture_realism_loss}.
+	}
+	\end{minipage}
+	\hfill
+    % \hspace{1cm}
+    \begin{minipage}{0.39\textwidth}
+        \includegraphics[width=1\linewidth]{../images/texture_realism_ablation.pdf}
+% 			\vspace{-5pt}
+            \vspace{-5pt}
+			\caption{
+				The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
+			}
+% 			\vspace{-10pt}
+			\label{fig:texture_realism_ablation}
+    \end{minipage}
+    \vspace{-15pt}
+\end{figure}
+% \begin{figure}[thbp]
+%     \vspace{-10pt}
+% 	\begin{center}
+% 		\includegraphics[width=.75\textwidth]{../images/unprojection_consistency_loss_without_reprojection.pdf}
+% 	\end{center}
+% 	\vspace{-5pt}
+% 	\caption{
+% 		This is the unprojection consistency loss used in Figure~\ref{fig:main_diagram}.
+% 		The Unprojection Mean is not used in any losses, but help to illustrate the content in Section \ref{sec:texture_realism_loss}.
+% 		% After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $s_{1...B}$ as seen in figure \ref{fig:main_diagram}, 
+% 		% we can unproject fake photos $\hat{p}_{1...B}$ back into texture space to obtain $u_{1...B,\ 1...L}$ .
+% 		% If the fake photos display consistent textures along their 3d surfaces, then the unprojected textures should be similar.
+% 		% We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$, then averaging the result.
+% 		% When the fake photos display similar surfaces, the unprojections will be similar making the unprojection consistency loss low.
+% 		% Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
+% 	}
+% 	\label{fig:unprojection_consistency_loss}
+% \end{figure}
+\vspace{-5pt}
+\subsection{Unprojection Consistency Loss}
+\vspace{-5pt}
 	\label{sec:unprojection_consistency_loss}
 
-		\begin{figure}[thbp]
-		    \vspace{-10pt}
-			\begin{center}
-				\includegraphics[width=.8\textwidth]{../images/unprojection_consistency_loss_without_reprojection.pdf}
-			\end{center}
-			\vspace{-5pt}
-			\caption{
-				This is the unprojection consistency loss used in figure \ref{fig:main_diagram}.
-				The Unprojection Mean and Reprojection nodes are not used in any losses, and help to illustrate the next section \ref{sec:texture_realism_loss}.
-				% After calculating fake photos $\hat{p}_{1...B}$ from UVL scenes $s_{1...B}$ as seen in figure \ref{fig:main_diagram}, 
-				% we can unproject fake photos $\hat{p}_{1...B}$ back into texture space to obtain $u_{1...B,\ 1...L}$ .
-				% If the fake photos display consistent textures along their 3d surfaces, then the unprojected textures should be similar.
-				% We can measure this similarity by taking the per-channel standard deviation of these unprojections, aka $\sigma(u)$, then averaging the result.
-				% When the fake photos display similar surfaces, the unprojections will be similar making the unprojection consistency loss low.
-				% Additionally, we can also calculate the average unprojection, which is useful for visualization purposes (it will look blurry if $\hat{p}$ is inconsistent).
-			}
-			\label{fig:unprojection_consistency_loss}
-		\end{figure}
+		
 
 		To keep the object surfaces consistent, we impose a pixel-wise ``unprojection consistency loss'' by unprojecting surfaces in fake photos back into the common texture space.
 % 		\begin{equation}
@@ -694,19 +764,19 @@ TODO: Say I scales and discretizes l, don't say more than that.
         \begin{equation}
             	\unprojection_{[u,v]}^{l}=\expectation\ph_{[x,y]} \quad s.t.~ (u,v,l) = s_{[x,y]},
         \end{equation}
-        where the expectation $\mathbb{E}$ means we aggregate multiple $(r,g,b)$ vectors being assigned to the same $(u,v,l)$ location by averaging them. 
-        In practice, $(u,v,l)$ are real numbers between $[0,1]$, where as each $\unprojection$ have to be rasterized, i.e represented by $L$ $(D\times D\times 3)$ images, where $L$ is the number of labels and $D\times D$ is the resolution of the unprojection. Therefore, we discretize and scale corresponding $(u,v,l)$ to integers so that each $(r,g,b)$ vector will be assigned to a pixel on $\unprojection$. For the exact implementation, please see our supplementary material.
+        where the expectation $\mathbb{E}$ means we aggregate multiple $(r,g,b)$ vectors being assigned to the same $(u,v,l)$ coordinate by averaging them.
+        In practice, $(u,v,l)$ are real numbers between $[0,1]$, where as each $\unprojection$ have to be rasterized, i.e., represented by $L$ images with a size of $(D\times D\times 3)$, where $L$ is the number of labels and $D\times D$ is the resolution of the unprojection. Therefore, we discretize and scale corresponding $(u,v,l)$ to integers so that each $(r,g,b)$ vector will be assigned to a pixel on $\unprojection$. For the exact implementation, please see our supplementary material.
         
         We obtain $N$ unprojections $\{\unprojection_{[u,v]}^{l,i}\}_{i=1}^{N}$ from a batch of $N$ UVL scenes and fake photos. The unprojection consistency loss is defined as the per pixel-channel standard deviation of $\unprojection$ over the batch
         \begin{equation}
             \ell_{UC} = \frac{1}{L\times D\times D\times 3}\sum_{l,u,v,c}\sigma(\{\unprojection^{l,i}_{[u,v,c]}\}_{i=1}^{N}),
         \end{equation}
-        where $\sigma(\cdot)$ stands for the variance function and $c \in \{1\dots 3\}$ is the channel index of $\unprojection$.
+        where $\sigma(\cdot)$ stands for the standard deviation function and $c \in \{1\dots 3\}$ is the channel index of $\unprojection$.
 		%We sample a random batch of UVL scenes $S\toN$, and translate them into $\ph\toN$.
 		%Using geometric knowledge of the scene encoded in $S\toN$, we individually unproject each $\ph^i \in \ph\toN$ back into texture space, to obtain $N$ sets of $L$ unprojected textures $u\toNL$.
 		%We then use the per-pixel, batch-wise standard deviation of the unprojections as unprojection consistency loss $\lUC = \sigma(u\toNL)\toL$.
 		%This loss observes how different these unprojections are from one another, and thus how different the object surfaces appear between translations. 
-		We minimize $\lUC$ to encourage unprojections to be consistent across the batch. Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene. In addition, we call the mean of unprojections $\mu(\{\unprojection^{(l,i)}\}_{i=1}^N)$ as ``Recovered Textures'', visualzed in Figure~\ref{fig:first_diagram} and \ref{fig:unprojection_consistency_loss}.
+		We minimize $\lUC$ to encourage unprojections to be consistent across the batch. Intuitively, if $\lUC$ were $0$, it would mean the object surfaces in translations $\ph$ appear exactly the same in every scene. In addition, we call the mean of unprojections $\mu(\{\unprojection^{l,i}\}_{i=1}^N)$ as ``Recovered Textures'', visualzed in Figure~\ref{fig:first_diagram} and Section~\ref{fig:unprojection_consistency_loss}.
 
 	%MOVE THIS TO APPENDIX
 	% 	This loss is a fairly intuitive and effective way to maintain surface consistency. There are some caveats, howe/ver.
@@ -720,16 +790,16 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		% Also, you have to get lucky - two scene pictures have to show the same side of a cube for example. First person scenarios would be even worse.
 
 		% %Unabbreviated
-		% \begin{equation}
-		% 	\unprojection_{c,U,V}^{n,i}=\expectation\ph_{c,x,y}^n 
-		% 	\eqand \bar{\unprojection}^i_{c,u,v}   =   
-		% 		\frac{1}{N} \lsum_{n=1}^N\unprojection^{n,i}_{c,u,v} 
-		% 	\eqand 
-		% 	\lUC=\frac{\lsum_{i=1}^L\lsum_{c=1}^3\lsum_{U=1}^{128}\lsum_{V=1}^{128}
-		% 	\sqrt[]{\frac{1}{N}\lsum_{n=1}^N\left(\bar{\unprojection}^i_{c,u,v}-\unprojection^{i,n}_{c,U,V}\right)^2}}
-		% 	{3\cdot128\cdot128\cdot L}
-		% \end{equation}
-		%
+% 		\begin{equation}
+% 			\unprojection_{c,U,V}^{n,i}=\expectation\ph_{c,x,y}^n 
+% 			\eqand \bar{\unprojection}^i_{c,u,v}   =   
+% 				\frac{1}{N} \lsum_{n=1}^N\unprojection^{n,i}_{c,u,v} 
+% 			\eqand 
+% 			\lUC=\frac{\lsum_{i=1}^L\lsum_{c=1}^3\lsum_{U=1}^{128}\lsum_{V=1}^{128}
+% 			\sqrt[]{\frac{1}{N}\lsum_{n=1}^N\left(\bar{\unprojection}^i_{c,u,v}-\unprojection^{i,n}_{c,U,V}\right)^2}}
+% 			{3\cdot128\cdot128\cdot L}
+% 		\end{equation}
+		
 		%Abbreviated
 		%To formally define $\lUC$ we define unprojections $\unprojection^{1...N,1...L}$ and mean unprojections (aka recovered textures) $\bar{\unprojection}^{1...L}$ 
 		%with each $\unprojection^{n,i}\in\real^{3\times128\times128}$:
@@ -759,18 +829,18 @@ TODO: Say I scales and discretizes l, don't say more than that.
 
 	\subsection{Texture Realism Loss}
 	\label{sec:texture_realism_loss}
-        \vspace{-7pt}
-		\begin{figure}[thbp]
-			\begin{center}
-				\includegraphics[width=250pt]{../images/texture_realism_ablation.pdf}
-			\end{center}
-			\vspace{-5pt}
-			\caption{
-				The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
-			}
-			\vspace{-10pt}
-			\label{fig:texture_realism_ablation}
-		\end{figure}
+        % \vspace{-7pt}
+% 		\begin{figure}[thbp]
+% 			\centering
+% 				\includegraphics[width=0.5\textwidth]{../images/texture_realism_ablation.pdf}
+
+% 			\vspace{-5pt}
+% 			\caption{
+% 				The neural texture looks more realistic with texture realism loss enabled. Note that the blocks show different letters because of different initializations and the symmetry of a cube - both solutions are valid texture assignments. 
+% 			}
+% 			\vspace{-10pt}
+% 			\label{fig:texture_realism_ablation}
+% 		\end{figure}
 
 
 
@@ -787,17 +857,16 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		% However, we can improve this further.
 		% Up until now we have not put any constraints on this neural texture. 
 		Without $\lTR$, $\psi$ can look wildly different each time you train it.
-		As seen in the top row of figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic – the colors are completely arbitrary.
-		After adding $\lTR$ though, $\pih \approx \ph$, and $\psi$ to represents the albedo of the surfaces in the scene.
+		As seen in the top row of Figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic --- the colors are completely arbitrary.
+% 		After adding $\lTR$ though, $\pih \approx \ph$ and thus the neural texture represents the textures of the objects in real life. 
+        By adding texture realism loss $\lTR$, we make the textures $\psi$ more realistic. In practice, this makes TRITON less likely to mismatch the identity of translated objects.
 		% The image similarity loss used in $\lTR$ is calculated the same way image similarity losses are calculated in section \ref{sec:image_translation}: L2 loss minus MSSSIM.
-		
-		As it turns out, we can achieve surface-consistent translations just using $\lTR$, without $\lUC$.
-		The the reverse is also true: $\lTR$ is sufficient to ensure surface consistency without $\lUC$.
-		Using both, however, yields better results than either loss alone. 
+		%As it turns out, we can achieve surface-consistent translations just using $\lTR$, without $\lUC$.
+		%The the reverse is also true: $\lTR$ is sufficient to ensure surface consistency without $\lUC$.
+		%Using both, however, yields better results than either loss alone. \\
 		% For an explanation of why this is the case, see the appendix \ref{sec:texture_realism_theory}.
-		
-		With that said, there are some advantages to using $\lTR$ alone: when just using $\lTR$ you can use batch sizes as small as $N=1$, allowing you to save video memory. 
-		Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch as you would with $\lUC$.
+		%With that said, there are some advantages to using $\lTR$ alone: when just using $\lTR$ you can use batch sizes as small as $N=1$, allowing you to save video memory. 
+		%Using $\lTR$ is also more numerically stable, as you no longer have to worry about whether the same surfaces are seen across multiple scenes in a batch as you would with $\lUC$.
 
 		% We introduce a new loss, called texture realism loss that fixes this: $\lTR$ is an image similarity loss that encourages $\pi \approx \ph$.
 		% This loss forces the neural texture to approximate the albedo of the surfaces in a scene.
@@ -815,18 +884,23 @@ TODO: Say I scales and discretizes l, don't say more than that.
 		% you don't have to get lucky (the more chaotic, or even the more zoomed in a dataset becomes the less likely there is to be any collisions)
 
 	%===============================================================================
-
-
+\vspace{-8pt}
 \section{Experiments}\label{sec:results}
-
+\vspace{-3pt}
 \subsection{Datasets}
-Here we detail the datasets used in our experiments. 
-Every dataset has two sets of images: UVL scenes and real photographs. They are all unpaired, and have RGB values ranging from 0 to 1.
+\vspace{-2pt}
+%Here we detail the datasets used in our experiments.
+% We constructed multiple datasets for our experiments.
+We constructed two datasets AlphabetCube-3 and RobotPose-xArm to benchmark different image translators in many perspectives.
+In our setting, each dataset is composed of two sets of unpaired images: UVL scenes from a simulator and real photographs.
+Note that the images in all datasets are unpaired and UVL scenes only rely on rough 3d models of the objects in the scene without need of precisely aligning objects in the simulator to the real world.
+% . They are all unpaired, and have RGB values ranging from 0 to 1.
+We use AlphabetCube-3 for image translation quality evaluation, and RobotPose-xArm for sim2real policy learning evaluation.
 
-The first dataset to mention is the three-block dataset.  
-It has 300 photos and 2000 UVL scenes. It features a table with three alphabet blocks on a table, which are randomly translated along the X and Y axes and rotated randomly along the Z axis. Each photograph features these three cubes with a random position and rotation.
+% The first dataset we particularly use for the offline evaluation is the three-block dataset.  
 
-[[Insert photographs and UVL maps here; a digram showing each dataset we describe here and 1 or two samples of each domain in each dataset]]
+
+% [[Insert photographs and UVL maps here; a digram showing each dataset we describe here and 1 or two samples of each domain in each dataset]]
 
 % In this paper, we'll mostly focus on a hand-collected dataset that involves three alphabet blocks that are moved across a table.
 % Alphabet blocks were chosen because they all have the same geometry (a cube), but have very distinct semantic textures that will make temporal inconsistency obvious to the human eye.
@@ -854,40 +928,46 @@ It has 300 photos and 2000 UVL scenes. It features a table with three alphabet b
 % p hat
 % s hat
 
-\subsection{Qualitative Evaluation Results}
-We show qualitative evaluation results 
-\begin{figure}[thbp]
-    \vspace{-30pt}
+%\subsection{Qualitative Evaluation Results}
+%We show qualitative evaluation results ....[TODO]
+\begin{figure}[th]
 	\begin{center}
-		\includegraphics[width=\textwidth]{../images/frame_inconsistency_diagram.pdf}
+		\includegraphics[width=.9\textwidth]{../images/frame_inconsistency.pdf}
 	\end{center}
+	\vspace{-7pt}
 	% Each outline color corresponds to the same cube.
 	% The same cubes are marked with the same colored outlines across all photos.
 	% For the same cube, we expect to see the same number on the top of the cube regardless of its placement.
 	\caption{
+	    Comparison of image translation methods.
+	    The first column is the UVL map as the input.
+	    The other columns are results using different image translation methods.
 		Each row of images shows a different random placement of objects in the scene.
-		Each column of images is a different image translation algorithm.
-		The same cube is marked with the same color outline across all photos.
-		TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
-		Meanwhile, CycleGan for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
-		Because of the symmetry of the cubes, and the unsupervised training, it is arbitrary which synthetic cube gets which symbol after training - but whatever it chooses, it should be consistent between placements.
-		CUT and CycleGan are not consistent, while TRITON is.
+		TRITON consistently outputs high quality results over different object arrangements. 
+		``TRITON texture only'' stands for TRITON without two surface consistency losses $\lUC$ and $\lTR$.
+		% Each column of images is a different image translation algorithm.
+		% The same cube is marked with the same color outline across all photos.
+		% TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
+		% Meanwhile, CycleGAN for example shows a 4 on the top of that cube in the top two rows, but an 8 and a 7 in the next two rows.
+		% Because of the symmetry of the cubes, and the unsupervised training, it is arbitrary which synthetic cube gets which symbol after training - but whatever it chooses, it should be consistent between placements.
+		% CUT and CycleGAN are not consistent, while TRITON is.
 		% TODO: Update the images in this to have the latest training iteration...
 		}
+		\vspace{-15pt}
 		\label{fig:frame_inconsistency_diagram}
 	\end{figure}
 	
 
-    \begin{figure}[thbp]
-    	\begin{center}
-    		\includegraphics[width=\textwidth]{../images/blurry_recovery.pdf}
-    	\end{center}
-    	\caption{
-    		The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
-    		[[TODO: include cyclegan and other algorithms here]]
-    	}
-    	\label{fig:blurry_recovery}
-    \end{figure}
+    % \begin{figure}[thbp]
+    % 	\begin{center}
+    % 		\includegraphics[width=\textwidth]{../images/blurry_recovery.pdf}
+    % 	\end{center}
+    % 	\caption{
+    % 		The recovered texture is more crisp when we have surface consistency losses $\lUC$ and $\lTR$ enabled.
+    % 		[[TODO: include cyclegan and other algorithms here]]
+    % 	}
+    % 	\label{fig:blurry_recovery}
+    % \end{figure}
 	% 	Alphabet Three							
 	% 	Masked				Unmasked			
 	% 	LPIPS		L2		LPIPS		L2	
@@ -899,12 +979,50 @@ We show qualitative evaluation results
 	% CUT				TODO: Google Synthetic Dataset				
 
 	 
-\subsection{Ground Truth Comaprison}
+% \subsection{TRITON evaluation}
+% \vspace{-1pt}
+\subsection{Image Translation Evaluation on AlphabetCube-3}
+% \vspace{-3pt}
+AlphabetCube-3 dataset features a table with three different alphabet blocks on the top.
+% All blocks are randomly translated along the X and Y axes and rotated randomly along the Z axis.
+The dataset contains 300 real photos and 2000 UVL scenes from a simulator.  
+Each photograph features these three cubes with a random position and rotation.
+In this section, we evaluate the image translation accuracy of the TRITON and other image translation methods using AlphabetCube-3.
 
+Figure~\ref{fig:frame_inconsistency_diagram} shows qualitative results on the dataset.
+% The first column is the input UVL map for all the image translators and other columns are the results.
+% ``TRITON texture only'' stands for TRITON without two view consistency losses $\lUC$ and $\lTR$.
+% Each row of images shows a different random placement of objects in the scene except for the last row where we collect all the translated cubes from different scenes.
+% We use contours in different colors to help identify three cubes.
+From Figure~\ref{fig:frame_inconsistency_diagram} we find that TRITON consistently outputs high quality results over different object arrangements.
+The textures keep aligned even when the position of blocks change dramatically over multiple scenes (See examples in green rectangle in Figure~\ref{fig:frame_inconsistency_diagram}).
+In contrast, though MUNIT~\cite{munit} and CycleGAN~\cite{cyclegan} manage to generate realistic images, the surfaces of the cubes are either consistent over scenes (See exsamples in the red rectangle) or replicated by mistake (See examples in the orange rectangle).
+Also note that the floor background of the outputs from CycleGAN are quite different from the ground truth.
+CUT~\cite{cut} fails to generate meaningful images regarding both the foreground blocks and the background.
+
+We further conduct quantitative experiments and the results are shown as Table~\ref{tab:quantitative}.
+In this evaluation we manually align the simulator with 14 photos of different real world scenes and generate the UVL maps for translation.
+We measured the LPIPS~\cite{lpips} and $l2$-norm between the translated images and the real images using multiple configurations.
+`Masked' means we mask out the background (which is the floor in AlphabetCube-3 dataset) and only measure the translation quality w.r.t three foreground blocks.
+For the `unmasked' tests, we compare the whole image without any masking instead, and the background contributes much more to the losses due to its larger area.
+Similar to the qualitative results, TRITON consistently outperforms other methods under different metrics and configurations.
+Further ablations TRITON w/o $\psi, \lUC, \lTR$ and TRITON w/o $\lUC, \lTR$ show the importance of the new losses we introduce.
+
+
+
+\begin{comment}
+Comment from Xiang: it might be better to have a short introduction on training details if we have space.
+\end{comment}
+
+
+
+% ... shows ...
 
 	%CREATED WITH https://www.tablesgenerator.com/# -- this website is wonderful!!
+\begin{comment}
 \begin{table}[thbp]
     \caption{Ground truth comparison evaluations for TRITON. Masked and Unmasked mean xxxxxx. Sync and Unsync mean xxxxx. L2 is xxxx LPIPS is xxxxxx. TRITON is xxxxxxx. }
+    \label{tab:quantitative}
 	\resizebox{\textwidth}{!}{
         \begin{tabular}{lcccccccc}
         \toprule
@@ -913,59 +1031,82 @@ We show qualitative evaluation results
         \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}
         Algorithm  & Sync    & Unsync   & Sync      & Unsync    & Sync   & Unsync  & Sync     & Unsync \\
         \midrule
+        CycleGAN & 0.450 & 0.379 &  0.559 &  0.554 &  6.02 &  5.93 &  4.25 &  4.23 \\
+        CUT                           & 0.469                        & 0.382                        & 0.553                        & 0.526                        & 5.40                        & 5.34                        & 6.37                        & 6.29\\
+        \midrule
         TRITON w/o $\psi, \lUC, \lTR$ & 0.437                        & 0.373                        & 0.500                        & 0.490                        & 4.34                        & 4.02                        & 4.25                        & 3.92                        \\
         TRITON w/o $\lUC, \lTR$       & 0.442                        & 0.386                        & 0.586                        & 0.589                        & 2.85                        & 2.55                        & 3.64                        & 3.10                        \\
         \textbf{TRITON}                        & \textbf{0.286}               & \textbf{0.267}               & \textbf{0.479}               & \textbf{0.478}               & \textbf{1.17}               & \textbf{1.16}              & \textbf{1.23}               & \textbf{1.22}               \\
+        \bottomrule
+        \end{tabular}
+	}
+\end{table}
+\end{comment}
+
+\begin{table}[thbp]
+    \centering
+    \setlength{\tabcolsep}{2pt}
+    \caption{Quantitative results on AlphabetCube-3. LPIPS~\cite{lpips} and $l2$-norm between the translated images and the real images are reported. We exclude backgrounds in the `Masked' configuration. TRITON consistently outperforms other methods in different metrics and configurations}
+    \label{tab:quantitative}
+\resizebox{.80\textwidth}{!}{
+        \begin{tabular}{lcccc}
+        \toprule
+        & \multicolumn{2}{c}{Masked} & \multicolumn{2}{c}{Unmasked}  \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5} & LPIPS ($\times 10^{-1}$) $\downarrow$ & L2 ($\times 10^{-2}$) $\downarrow$  & LPIPS ($\times 10^{-1}$) $\downarrow$  & L2 ($\times 10^{-2}$) $\downarrow$   \\
         \midrule
-        CycleGAN & 0.450 & 0.379 &  0.559 &  0.554 &  6.02 &  5.93 &  4.25 &  4.23 \\
-        CUT                           & 0.469                        & 0.382                        & 0.553                        & 0.526                        & 5.40                        & 5.34                        & 6.37                        & 6.29\\
+        CycleGAN & 0.450 &   0.559 &    6.02 &    4.25  \\
+        CUT & 0.469 & 0.553  & 5.40  & 6.37 \\
+        \midrule
+        TRITON w/o $\psi, \lUC, \lTR$ & 0.437   & 0.500  & 4.34  & 4.25  \\
+        TRITON w/o $\lUC, \lTR$       & 0.442  & 0.586  & 2.85 & 3.64 \\
+        \textbf{TRITON} & \textbf{0.286}  & \textbf{0.479}  & \textbf{1.17}  & \textbf{1.23} \\
         \bottomrule
         \end{tabular}
 	}
 \end{table}
 
+% [[Figures: Show these results and explain why we have a mask on some of them]]
 
-[[Figures: Show these results and explain why we have a mask on some of them]]
-
-TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
-
+% TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
+\vspace{-5pt}
 \subsection{Sim2real Transfer for Robot Learning}
 \begin{figure}[thbp]
     \centering
     \vspace{-10pt}
-    \includegraphics[width=\textwidth]{images/sim2real_framework.pdf}
-    \vspace{-20pt}
+    \includegraphics[width=.8\textwidth]{images/sim2real_framework.pdf}
+    \vspace{-10pt}
     \caption{Sim2real framework of using TRITON. We evaluate in two settings: Seen and Unseen. In Unseen, we use a new camera viewpoint to train and evaluate the policy. This new viewpoint is not used for training TRITON. }
     \vspace{-5pt}
     \label{fig:sim2realframework}
 \end{figure}
-In this section we demonstrate how TRITON improves sim2real transfer for robot learning. To do this, we first train TRITON on a dataset consist of unpaired UVL scenes from simulator and photos from the real robot. After that, we train the robot policy in the simulator only. The input of the policy is the fake photo $\hat{p}$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is evaluated on the real robot, taking real photos $p$ as input. 
-Ideally, a good image translation model leads to less gap between $p$ and $\hat{p}$, so that the policy trained on synthesized photos will transfer to real domain seamlessly. 
+In this section we demonstrate how TRITON improves sim2real transfer for robot policy learning. To this end, we first train TRITON on a dataset consist of unpaired UVL scenes from a robot simulator (Gazebo) and photos from the real robot. Once TRITON is trained, we learn the robot policy while only utilizing the simulator. The input of the policy is the fake photo $\ph$ translated from the simulated UVL scene using TRITON's translator $T_{A\to B}$. Finally, the trained policy is directly evaluated on the real robot, taking real photos $p$ as input.
 
-\paragraph{Task} We use a robot pose imitation task for our experiments. Given the input of a photo of real robot pose, the policy outputs robot controls to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
-where $\hat{a}_j$ and $a_j$ are replicated and target joint angle respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints. Moreover, we attach patterns and tapes on it to make its texture complex.
+Ideally, a good image translation model makes $\ph$ similar to $p$, so that the policy trained on synthesized photos will transfer to real domain seamlessly and will have better performance. All our policies are learned with zero real-world robot interaction with the environment.
 
-\paragraph{Robot policy and Baselines}
-Since sim2real provides abundant training data using the simulator, we use behavior cloning which is enough to train a good robot policy.
-The policy is implemented by CNN~\cite{dqn}.
-We compare TRITON against two baseline image translation methods: CycleGAN and CUT, by replacing TRITON with each baseline method respectively in the above pipeline. The robot policy is the same for all methods.
+\textbf{Task} We use a robot pose imitation task for our experiments. Given the input of a photo of real robot pose, the policy outputs robot controls to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
+where $\hat{a}_j$ and $a_j$ are replicated and target joint angles respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints. We also attached patterns and tapes on the robot to make its texture more challenging to model.
 
-\paragraph{Evaluation Settings} We introduce two main evaluation settings, \textbf{Seen} and \textbf{Unseen}. In \textbf{Seen} setting, the policy is trained and tested using the same camera viewpoint that is used in training image translator. Whereas in \textbf{Unseen} setting, we introduce a camera at a new viewpoint for training and testing the policy. That is, the image translator has to generate the fake photos out of its training distribution (seen camera viewpoints), which becomes a challenging for the translator. We also vary input image resolution to show the power of photorealistic images in higher resolutions.
+\textbf{Robot policy and Baselines}
+Since the sim2real formulation allows benefiting from abundant training data using the simulator, we use behavior cloning to train a good robot policy.
+The policy is implemented with a CNN~\cite{dqn}.
+We compare TRITON against two baseline image translation methods: CycleGAN~\cite{cyclegan} and CUT~\cite{cut}, by replacing TRITON with each baseline method respectively in the above pipeline. The robot policy learning method is same for all the methods.
+
+\textbf{Evaluation Settings} We introduce two main evaluation settings, \textbf{Seen} and \textbf{Unseen}. In the \textbf{Seen} setting, the policy is trained and tested using the same camera viewpoint that is used during TRITON (or a baseline translator) training. Whereas in \textbf{Unseen} setting, we introduce a camera at a new viewpoint for training and testing the policy. That is, the image translator has to generate the fake photos out of its training distribution (seen camera viewpoints), which becomes a challenging task for the translator. We also vary input image resolutions to show the power of photo-realistic images in higher resolutions.
 
 \begin{figure}[tbhp]
     \centering
-    \vspace{-8pt}
-    \includegraphics[width=\textwidth]{images/sim2real_res.pdf}
-    \vspace{-20pt}
-    \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{} and CUT~\cite{} consistently across (a) all resolutions and (b) Unseen viewpoints. Results in (a) are from Seen setting. Results in (b) are from 336x336 resolution. }
+    \vspace{-3pt}
+    \includegraphics[width=.95\textwidth]{images/sim2real_res.pdf}
+    \vspace{-5pt}
+    \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{cyclegan} and CUT~\cite{cut} consistently across (a) all resolutions and (b) unseen viewpoints. Results in (a) are from Seen setting only. Results in (b) are from 336x336 resolution. }
     \label{fig:sim2real}
-    \vspace{-8pt}
+    \vspace{-3pt}
 \end{figure}
 
-\paragraph{Results}
-In Figure~\ref{fig:sim2real} we show the evaluation results of sim2real transfer. Both evaluations show that TRITON outperforms CycleGAN and CUT consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to the ability to generate more photorealistic images compared to the baselines. This is because in low resolution (eg. $84\times 84$) the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clearer and do harm to policy learning.
-From Figure~\ref{fig:sim2real}(b), TRITON outperforms the others in Unseen setting, showing the power of xxxxxx.
-In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\ell_{UC}$ to generate photorealistic images, and such high quality images are important in higher resolutions for sim2real transfer.
+\textbf{Results} Figure~\ref{fig:sim2real} shows the evaluation results of the sim2real transfer. Both Seen and Unseen evaluations show that TRITON outperforms baselines consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to its ability to generate more photo-realistic images compared to the baselines.
+%This is because in low resolution (eg. $84\times 84$), the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clearer and may harm policy learning.
+From Figure~\ref{fig:sim2real}(b), we confirm that TRITON outperforms the others also in the Unseen setting, showing that TRITON learns image translations that are generalizable to new viewpoints while others are limited.
+In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\ell_{UC}$ to generate photo-realistic images, and such high quality images are important in higher resolutions for sim2real transfer.
 
 
 
@@ -973,15 +1114,11 @@ In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this varian
 
 
 %===============================================================================
-
+\vspace{-8pt}
 \section{Limitaions}
 \label{sec:Limitations} 
-
-Can't handle transparent objects. 
-
-A limited number of objects can be learned at once before supervision is necessary with color loss (but there are workarounds).
-
-Takes a long time to train.
+% There are limitations of TRITON. 
+TRITON relies on 3D models of objects in order to generate photo-realistic images, making it less applicable when the geometry of an environment is unknown. Acquiring such 3D models could be challenging in the wild, especially in robots allowed to roam the world. TRITON is not able to handle transparent objects, because the UVL format is opaque. Moreover, the probability of incorrectly matching textures to objects increases as the number of object classes increases.
 
 
 %===============================================================================
@@ -1003,9 +1140,7 @@ Takes a long time to train.
 
 \bibliography{example}  % .bib
 
-
-
-
+\begin{comment}
 
 
 \clearpage
@@ -1072,9 +1207,9 @@ Takes a long time to train.
 		$
 		Using $\bar{p}$ from figure \ref{fig:unprojection_consistency_loss}
 
-		Becuase $\bar{p}$ is created from the average recovered texturs of $\hat{p}$, $\bar{p} \approx \hat{p}$.
+		Because $\bar{p}$ is created from the average recovered textures of $\hat{p}$, $\bar{p} \approx \hat{p}$.
 
-		Becuse of texture realism loss, $\pi \approx \hat{p}$.
+		Because of texture realism loss, $\pi \approx \hat{p}$.
 
 		Therefore, $\bar{p} \approx \hat{p} \approx \pi$
 
@@ -1142,6 +1277,6 @@ QUESTIONS FOR MICHAEL:
 	\item - TODO: WE MAINTAIN WHAT WE NOW CALL "SURFACE CONSISTENCY" instead of view consistency! Or texture consistency? Etc? What should we call it?
 \end{itemize}
 
-
+\end{comment}
 
 \end{document}
