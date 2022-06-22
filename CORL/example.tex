@@ -653,7 +653,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		
 		% For our purposes, MS-SSIM is a metric that measures the similarity of two BCHW tensors on a scale from 0 to 1.
 		% Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
-		We define an image similarity loss $\similar$ between two images $x,y$ that returns a score between 0 and 1, where 0 means perfect similarity:
+		We define an image similarity loss $\similar$ between two images $x,y$ that returns a score between -1 and 1, where 0 means perfect similarity:
 		\begin{equation}
 			\similar(x,y) = L_2(x,y)-\msssim(x,y) 
 		\end{equation}
