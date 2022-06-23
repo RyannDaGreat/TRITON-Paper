@@ -3,7 +3,8 @@
 \subsection{Neural Neural Textures: More Details}
 
 	In section \ref{sec:neural_tex}, we mentioned that neural neural textures learn better than raster neural textures. 
-	TRITON can be ablated to use raster textures. Let's call this version ``Raster TRITON''. 
+	We compare TRITON against its variant using raster textures (Raster TRITON).
+% 	TRITON can be ablated to use raster textures. Let's call this version ``Raster TRITON''. 
 	Raster TRITON is extremely sensitive to the resolution of its neural texture, and can be numerically unstable if that resolution is too high.
 	In comparison, regular TRITON's neural neural textures don't have a specific resolution: they are continuously defined over the UV domain using Fourier feature networks.
 
@@ -12,17 +13,17 @@
 			\includegraphics[width=400pt]{../images/raster_texture_resolution_comparisons.pdf}
 		\end{center}
 		\caption{
-			The resolution of the raster neural texture seriously impacts performance in ``Raster TRITON''. Each column has a different neural texture resolution.
-			The neural texture only looks like the translation when the resolution is low.
+			The resolution of the raster neural texture seriously impacts performance in Raster TRITON. Each column has a different neural texture resolution.
+			The neural texture in Raster TRITON only looks like the translation when the resolution is low. In comparison, TRITON with neural neural textures works better.
 		}
 		\label{fig:raster_texture_resolution_comparisons}
 	\end{figure}
 
 	In this paragraph we offer possible explanations for these observations.
-	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient can't be propagated into pixels that aren't seen.
-	If this means changing overall brightness of an object for example, the brightness of that object can't be changed over the entire object until every side has been seen - which won't happen in a single iteration, since the batch size is limited.
+	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient is not being propagated into pixels that are not seen.
+	For example, if the overall brightness of an object is changed, the brightness of that object in network representation can not be changed over the entire object until every side has been seen. This usually will not happen in a single iteration as the batch size is limited.
 
-	In addition to not propagating the gradient to unseen sides of objects, it also can't propagate to texels in-between the UVL values seen in a scene image.
+	In addition to not propagating the gradient to unseen sides of objects, using raster-based textures also can not propagate to texels in-between the UVL values seen in a scene image.
 	When the raster neural texture is too large, aliasing effects occur: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
 	In practice, this makes large raster neural textures unstable and limits us to using small amounts of detail.
 	With neural neural textures, this aliasing problem is mostly mitigated, because when a certain texture receives a gradient at particular UV coordinates, the areas of the texture between those coordinates are also changed.
