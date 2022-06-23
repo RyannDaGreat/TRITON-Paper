@@ -1,12 +1,19 @@
+\appendix
+
 \section{Appendix} 
+\subsection{Videos for Qualitative Evaluation}
+
+	We have created animations using TRITON to see how consistency helps:
+
+	\url{https://youtu.be/fuTSta_M6NQ}
 
 \subsection{Neural Neural Textures: More Details}
 
-	In section \ref{sec:neural_tex}, we mentioned that neural neural textures learn better than raster neural textures. 
+	In Section \ref{sec:neural_tex}, we mentioned that neural neural textures learn better than raster neural textures. 
 	We compare TRITON against its variant using raster textures (Raster TRITON).
 % 	TRITON can be ablated to use raster textures. Let's call this version ``Raster TRITON''. 
 	Raster TRITON is extremely sensitive to the resolution of its neural texture, and can be numerically unstable if that resolution is too high.
-	In comparison, regular TRITON's neural neural textures don't have a specific resolution: they are continuously defined over the UV domain using Fourier feature networks.
+	In comparison, regular TRITON's neural neural textures do not have a specific resolution: they are continuously defined over the UV domain using Fourier feature networks.
 
 	\begin{figure}[H]
 		\begin{center}
@@ -72,8 +79,8 @@
 
 	\bigskip
 	
-	The hyperparameter 128 we described in section \ref{sec:unprojection_consistency_loss} refers to the resolution of the unprojections used to calculate $\lUC$.
-	In figure \ref{fig:unprojection_resolution_comparison} we see that if we were to set it higher, the gradient wouldn't affect the neural texture as densely.
+	The hyperparameter 128 we described in Section \ref{sec:unprojection_consistency_loss} refers to the resolution of the unprojections used to calculate $\lUC$.
+	In Figure \ref{fig:unprojection_resolution_comparison} we see that if we were to set it higher, the gradient wouldn't affect the neural texture as densely.
 
 	\begin{figure}[H]
 		\begin{center}
@@ -88,9 +95,9 @@
 
 \subsection{Training Procedures}
 
-	In this section we detail the training procedures used to create results in section \ref{sec:results} from Triton, CycleGAN, CUT,
-		TRITON w/o $\lUC$ (aka TRITON with neither unprojection consistency loss nor texture reality loss), and
-		TRITON w/o $\psi, \lUC$ (aka TRITON without textures, and therefore also without unprojection consistency loss or texture reality loss).
+	In this section we detail the training procedures used to create results in Section \ref{sec:results} from TRITON, CycleGAN, CUT,
+		TRITON w/o $\lUC$ (i.e., TRITON with neither unprojection consistency loss nor texture reality loss), and
+		TRITON w/o $\psi, \lUC$ (i.e., TRITON without textures, and therefore also without unprojection consistency loss or texture reality loss).
 
 	\subsubsection{TRITON}
 	\label{par:triton}
@@ -102,14 +109,14 @@
 	We found that the best way to train TRITON is to start with smaller $H$ values and progressively increase that value during training.
 	For the first 50,000 iterations we use $H=320$, then for the next 50,000 iterations $H=420$, then for the last 100,000 iterations $H=\text{(the height of the original input scene)}$.
 
-	\subsubsection{TRITON w/o $\lUC$}
+	\subsubsection{TRITON w/o $\lUC, \lTR$}
 	\label{par:triton_without_luc}
 	This ablation is also known as ``Texture-Only'' TRITON, because it has a learnable texture $\psi$ but no consistency losses.
 	Its trained the same way that we train TRITON normally as discussed above in \ref{par:triton}, except the surface consistency losses $\lUC$ and $\lTR$ are omitted.
 	Effectively, it performs better than MUNIT-like TRITON (aka TRITON w/o $\psi, \lUC$, discussed in \ref{par:munit_triton})
 	% It still has a learnable texture $\psi$ though, which is allowed to change however it likes.
 
-	\subsubsection{TRITON w/o $\psi, \lUC$}
+	\subsubsection{TRITON w/o $\psi, \lUC, \lTR$}
 	\label{par:munit_triton}
 	This ablation is very similar to MUNIT, as TRITON is based on MUNIT and this ablation has neither learnable texture nor consistency losses.
 	Like in subsection \ref{par:triton_without_luc}, this ablation shares the same training procedures as TRITON.
@@ -134,8 +141,8 @@
 
 	\subsubsection{Unprojection Comparisons}
 
-		In this section we expand on the results in subsection \ref{sec:datasetsresults} by showing the mean unprojection for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
-		If a translation algorithm is consistent, these unprojections should align well and the average $bar{\omega}$ should not be blurry.
+		Here, we expand on the results in Subsection \ref{sec:datasetsresults} by showing the mean unprojection for different image translation algorithms (Figure \ref{fig:unprojection_comparisons}). With the 14 UVL images and corresponding fake photos (or photos) as calculated in Section \ref{sec:datasetsresults}, we average their unprojections.
+		If a translation algorithm is consistent, these unprojections should align well and the average $\bar{\omega}$ should not be blurry.
 
 		\begin{figure}[H]
 			\begin{center}
@@ -144,15 +151,11 @@
 			\caption{
 				In this figure, we compare the mean unprojections $\bar{\omega}$ of the 14 labeled images between different algorithms, and compare it to a ground truth. In this diagram, we align all the unprojections to make them easier to compare. Note how TRITON is more crisp and matches the unprojected photographs better than the other algorithms, which are blurrier and have the wrong colors and letters on each side of the alphabet blocks. CycleGAN and CUT for example incorrectly duplicate letters between alphabet blocks.
 			}
-			\label{fig:unprojection_resolution_comparison}
+			\label{fig:unprojection_comparisons}
 		\end{figure}
 
 
-	\subsubsection{Videos}
 
-		We have created animations using TRITON to see how consistency helps:
-
-		https://youtu.be/fuTSta_M6NQ
 	
 		
 

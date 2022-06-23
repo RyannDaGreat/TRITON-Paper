@@ -946,7 +946,7 @@ We use AlphabetCube-3 for image translation quality evaluation, and RobotPose-xA
 	    The other columns are results using different image translation methods.
 		Each row of images shows a different random placement of objects in the scene.
 		TRITON consistently outputs high quality results over different object arrangements. 
-		``TRITON texture only'' stands for TRITON without two surface consistency losses $\lUC$ and $\lTR$.
+		``TRITON Texture-Only'' stands for TRITON without two surface consistency losses $\lUC$ and $\lTR$.
 		% Each column of images is a different image translation algorithm.
 		% The same cube is marked with the same color outline across all photos.
 		% TRITON is consistent: for example, the cube outlined as yellow always has an 8 on the top.
@@ -1122,7 +1122,7 @@ In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this varian
 % There are limitations of TRITON. 
 TRITON relies on 3D models of objects in order to generate photo-realistic images, making it less applicable when the geometry of an environment is unknown. Acquiring such 3D models could be challenging in the wild, especially in robots allowed to roam the world. TRITON is not able to handle transparent objects, because the UVL format is opaque. Moreover, the probability of incorrectly matching textures to objects increases as the number of object classes increases.
 
-
+\acknowledgments{We thank Srijan Das and Kanchana Ranasinghe for valuable discussions. This work was supported by the National Science Foundation (IIS-2104404 and CNS-2104416).}
 %===============================================================================
 
 % \section{Citations} 
@@ -1134,15 +1134,15 @@ TRITON relies on 3D models of objects in order to generate photo-realistic image
 
 %===============================================================================
 
-\clearpage
+% \clearpage
 % The acknowledgments are automatically included only in the final and preprint versions of the paper.
-\acknowledgments{}
+
 
 %===============================================================================
 
 \bibliography{example}  % .bib
 
-\clearpage
+% \clearpage
 
 \input{appendix.tex}
 
