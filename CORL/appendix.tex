@@ -9,7 +9,7 @@
 
 	\begin{figure}[H]
 		\begin{center}
-			\includegraphics[width=230pt]{../images/raster_texture_resolution_comparisons.pdf}
+			\includegraphics[width=400pt]{../images/raster_texture_resolution_comparisons.pdf}
 		\end{center}
 		\caption{
 			The resolution of the raster neural texture seriously impacts performance in ``Raster TRITON''. Each column has a different neural texture resolution.
@@ -79,7 +79,7 @@
 			\includegraphics[width=400pt]{../images/unprojection_resolution_comparison.pdf}
 		\end{center}
 		\caption{
-			Here, we unproject a single translation $\ph^i$. The resolution of the unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, creating numerical instability and slowing down learning. 
+			Here, we unproject a single fake photo $\ph^i$. The resolution of the unprojection matters for unprojection consistency loss. The larger it is, the more precise the alignment will be but the less likely a given UV value is to be assigned a loss greater than 0, creating numerical instability and slowing down learning. 
 			When the unprojection resolution is too high, only a few areas of the neural texture will receive a gradient during backpropogation. In practice we use the resolution $128\times128$.
 		}
 		\label{fig:unprojection_resolution_comparison}
@@ -128,6 +128,29 @@
 	Like with CycleGAN in \ref{par:cyclegan}, we run CUT on multiple different resolutions of the input scenes, with input sizes $286\times286$ (CUT's default), $320\times320$, $420\times420$ and $512\times512$. 
 	After translation, we stretch the image into the input's aspect ratio.
 	The reported results are the calculated using the best results among these resolutions.
+
+\subsection{More Results}
+
+	\subsubsection{Unprojection Comparisons}
+
+		In this section we expand on the results in subsection \ref{sec:datasetsresults} by showing the mean unprojection for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
+		If a translation algorithm is consistent, these unprojections should align well and the average $bar{\omega}$ should not be blurry.
+
+		\begin{figure}[H]
+			\begin{center}
+				\includegraphics[width=400pt]{../images/unprojection_comparisons.pdf}
+			\end{center}
+			\caption{
+				In this figure, we compare the mean unprojections $\bar{\omega}$ of the 14 labeled images between different algorithms, and compare it to a ground truth. In this diagram, we align all the unprojections to make them easier to compare. Note how TRITON is more crisp and matches the unprojected photographs better than the other algorithms, which are blurrier and have the wrong colors and letters on each side of the alphabet blocks. CycleGAN and CUT for example incorrectly duplicate letters between alphabet blocks.
+			}
+			\label{fig:unprojection_resolution_comparison}
+		\end{figure}
+
+		
+
+	
+
+
 	
 
 	
