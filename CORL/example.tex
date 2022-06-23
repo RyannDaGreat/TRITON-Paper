@@ -123,7 +123,7 @@
 
 \documentclass{article}
 
-\usepackage[final]{corl_2022} % Use this for the initial submission.
+\usepackage[preprint]{corl_2022} % Use this for the initial submission.
 % \usepackage[final]{corl_2022} % Uncomment for the camera-ready ``final'' version.
 \usepackage{graphicx}
 \usepackage{float}
@@ -139,8 +139,8 @@
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
 % \title{TRITON: Globally Consistent Sim-to-Real Transfer
-%\title{\mbox{TRITON: Neural Neural Textures for Better Sim2Real}}
-\title{Neural Texture Fields from Unpaired Images for Better? Realistic? Sim2Real}
+\title{Neural Neural Textures Make Sim2Real Consistent}
+% \title{Neural Texture Fields from Unpaired Images for Better? Realistic? Sim2Real}
 %``I Can't Believe It's Not Real!''%Definitely gonna delete this lol
 %via Neural Textures
 
@@ -149,7 +149,7 @@
 	Department of Computer Science\\
 	Stony Brook University\\
 	Stony Brook, NY 11794 \\
-	\texttt{\{rburgert,mryoo\}@cs.stonybrook.edu} \\
+	\texttt{\{rburgert,jishang, xiangli8, mryoo\}@cs.stonybrook.edu} \\
 	% \And
 	% Michael Ryoo \\
 	% Department of Computer Science\\
@@ -242,7 +242,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 \vspace{-8pt}
 \paragraph{Neural Textures}
 \citet{deferred_neural_rendering} introduced the concept of neural textures and image translators in the context of a deferred rendering pipeline, used in other works such as \cite{surgical_video_translation} which is closely related to our project. 
-\citet{surgical_video_translation} differs from TRITON in a few very important aspects though, the biggest being that it only synthesizes new camera views, where the only difference between each scene is the placement of the camera. In contrast, our algorithm takes in scenes where several objects are placed in different places or deformed, so that one static  global 3d model of the environment is not sufficient to accomplish our tasks. In addition, TRITON uses a new type of neural texture called a ``neural neural texture'', which is represented continuously using a fourier feature network, as described in \citep{fourier_feature_networks}.
+\citet{surgical_video_translation} differs from TRITON in a few very important aspects though, the biggest being that it only synthesizes new camera views, where the only difference between each scene is the placement of the camera. In contrast, our algorithm takes in scenes where several objects are placed in different places or deformed, so that one static  global 3d model of the environment is not sufficient to accomplish our tasks. In addition, TRITON uses a new type of neural texture called a ``neural neural texture'', which is represented continuously using a fourier feature network, as described in \citet{fourier_feature_networks}.
 
 % Problem: 
 % Why is this problem important?
@@ -1085,7 +1085,7 @@ In this section we demonstrate how TRITON improves sim2real transfer for robot p
 Ideally, a good image translation model makes $\ph$ similar to $p$, so that the policy trained on synthesized photos will transfer to real domain seamlessly and will have better performance. All our policies are learned with zero real-world robot interaction with the environment.
 
 \textbf{Task} We use a robot pose imitation task for our experiments. Given the input of a photo of real robot pose, the policy outputs robot controls to replicate that target pose. We measure the angular error between the replicated and target poses as our evaluation metric:$\sqrt{\sum_{j} (\hat{a}_j - a_j)^2}$,
-where $\hat{a}_j$ and $a_j$ are replicated and target joint angles respectively, and $j$ is the joint index. We use an xArm robot which has 7 joints. We also attached patterns and tapes on the robot to make its texture more challenging to model.
+where $\hat{a}_j$ and $a_j$ are replicated and target joint angles respectively, and $j$ is the joint index. We use an xArm robot which has seven joints. We also attached patterns and tapes on the robot to make its texture more challenging to model.
 
 \textbf{Robot policy and Baselines}
 Since the sim2real formulation allows benefiting from abundant training data using the simulator, we use behavior cloning to train a good robot policy.

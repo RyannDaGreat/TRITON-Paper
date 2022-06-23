@@ -1,4 +1,4 @@
-\section{Appendix} 
+\section*{Appendix} 
 
 \subsection{Neural Neural Textures: More Details}
 
@@ -49,6 +49,7 @@
 	%
 	%
 	%Unabbreviated: Not Jinguan's version; 
+% 	\resizebox{\textwidth}{!}{
 	\begin{equation}
 		\unprojection_{c,U,V}^{n,i}=\expectation\ph_{c,x,y}^n 
 		\eqand \bar{\unprojection}^i_{c,u,v}   =   
@@ -58,6 +59,7 @@
 		\sqrt[]{\frac{1}{N}\lsum_{n=1}^N\left(\bar{\unprojection}^i_{c,u,v}-\unprojection^{i,n}_{c,U,V}\right)^2}}
 		{3\cdot128\cdot128\cdot L}
 	\end{equation}
+% 	}
 	where $U=\lfloor128u\rfloor$ and $V=\lfloor128v\rfloor$ and $i=I(l)$ with
 	%  $(u,v,l)=s^n_{1...3,x,y}$
 	$u=s^n_{1,x,y}$, $v=s^n_{2,x,y}$, $l=s^n_{3,x,y}$
