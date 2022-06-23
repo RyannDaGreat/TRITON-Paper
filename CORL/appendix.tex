@@ -19,10 +19,10 @@
 	\end{figure}
 
 	In this paragraph we offer possible explanations for these observations.
-	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient can't be propogated into pixels that aren't seen.
+	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient can't be propagated into pixels that aren't seen.
 	If this means changing overall brightness of an object for example, the brightness of that object can't be changed over the entire object until every side has been seen - which won't happen in a single iteration, since the batch size is limited.
 
-	In addition to not propogating the gradient to unseen sides of objects, it also can't propogate to texels in-between the UVL values seen in a scene image.
+	In addition to not propagating the gradient to unseen sides of objects, it also can't propagate to texels in-between the UVL values seen in a scene image.
 	When the raster neural texture is too large, aliasing effects occur: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
 	In practice, this makes large raster neural textures unstable and limits us to using small amounts of detail.
 	With neural neural textures, this aliasing problem is mostly mitigated, because when a certain texture receives a gradient at particular UV coordinates, the areas of the texture between those coordinates are also changed.
@@ -124,7 +124,7 @@
 	
 	\subsubsection{CUT}
 	\label{par:cut}
-	We use the original implementation of CUT, and stick to the reccomended 400 epochs, as it tends to overfit if you go further. 
+	We use the original implementation of CUT, and stick to the recommended 400 epochs, as it tends to overfit if you go further. 
 	Like with CycleGAN in \ref{par:cyclegan}, we run CUT on multiple different resolutions of the input scenes, with input sizes $286\times286$ (CUT's default), $320\times320$, $420\times420$ and $512\times512$. 
 	After translation, we stretch the image into the input's aspect ratio.
 	The reported results are the calculated using the best results among these resolutions.

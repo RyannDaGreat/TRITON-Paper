@@ -1245,10 +1245,10 @@ TRITON relies on 3D models of objects in order to generate photo-realistic image
 
 		\subsection{Color Loss}
 
-		TRITON is very robust to geomtric imperfections. However, sometimes it takes this a bit too far - it can overfit textures onto the wrong objects and still maintain consistency.
+		TRITON is very robust to geometric imperfections. However, sometimes it takes this a bit too far - it can over-fit textures onto the wrong objects and still maintain consistency.
 		In one example, it manages to map an apple texture onto a cube. 
 
-		To help TRITON correctly match textures to objects, we introduce a small amount of supervision by adding a color loss. I'm going to stop writing this because I don't know if I even want to keep this in the paper...you can achieve the same result by running the algorithm multiple times, and so its not strictly nessecary.
+		To help TRITON correctly match textures to objects, we introduce a small amount of supervision by adding a color loss. I'm going to stop writing this because I don't know if I even want to keep this in the paper...you can achieve the same result by running the algorithm multiple times, and so its not strictly necessary.
 
 		ASK MICHAEL: I'd rather not mention this entire section and run out the page limit...it's not very important, and not used in the robot experiments. It's only used in the experiment with the five items including the apple. Can we add it to the appendix instead?
 
