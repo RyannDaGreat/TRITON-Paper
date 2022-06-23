@@ -145,7 +145,7 @@
 %via Neural Textures
 
 \author{%
-	Ryan Burgert, Jinghuan Shang, Xiang Li, Michael S. Ryoo\\
+	Ryan Burgert \quad Jinghuan Shang \quad Xiang Li \quad Michael S. Ryoo\\
 	Department of Computer Science\\
 	Stony Brook University\\
 	Stony Brook, NY 11794 \\
@@ -456,16 +456,16 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 	\subsection{Neural Neural Texture Projection}
 	\label{sec:neural_tex}
 	\vspace{-3pt}
-		\begin{figure}[thbp]
+		\begin{figure}[t]
 		    \vspace{-5pt}
 			\begin{center}
-				\includegraphics[width=0.6\textwidth]{../images/learnable_textures.pdf}
+				\includegraphics[width=0.8\textwidth]{../images/learnable_textures.pdf}
 			\end{center}
 			\vspace{-3pt}
 			\caption{
 				This figure details how our neural neural textures are calculated in Figure~\ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's u and v axes using Fourier feature networks.
 			}
-			\vspace{-10pt}
+			\vspace{-3pt}
 			% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
 			% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
 			% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
