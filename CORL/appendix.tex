@@ -101,6 +101,8 @@
 	We found that the best way to train TRITON is to start with smaller $H$ values and progressively increase that value during training.
 	For the first 50,000 iterations we use $H=320$, then for the next 50,000 iterations $H=420$, then for the last 100,000 iterations $H=\text{(the height of the original input scene)}$.
 
+	During evaluation, we render the neural neural texture onto a raster grid of pixels. Because the neural neural texture has a 2d manifold, it can be closely approximated by an RGB image. Using this method lets us avoid evlauating $\psi$'s fourier feature network on every frame by using a raster image as a lookup table. This decreases video memory usage and speeds up calulations during inference.
+
 	\subsubsection{TRITON w/o $\lUC$}
 	\label{par:triton_without_luc}
 	This ablation is also known as ``Texture-Only'' TRITON, because it has a learnable texture $\psi$ but no consistency losses.
