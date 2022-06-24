@@ -1101,7 +1101,7 @@ We compare TRITON against two baseline image translation methods: CycleGAN~\cite
     \vspace{-3pt}
     \includegraphics[width=.95\textwidth]{../images/sim2real_res.pdf}
     \vspace{-5pt}
-    \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{cyclegan} and CUT~\cite{cut} consistently across (a) all resolutions and (b) unseen viewpoints. Results in (a) are from Seen setting only. Results in (b) are from 336x336 resolution. }
+    \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\psi,\ell_{UC},\lTR$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{cyclegan} and CUT~\cite{cut} consistently across (a) all resolutions and (b) unseen viewpoints. Results in (a) are from Seen setting only. Results in (b) are from 336x336 resolution. }
     \label{fig:sim2real}
     \vspace{-3pt}
 \end{figure}
@@ -1109,7 +1109,7 @@ We compare TRITON against two baseline image translation methods: CycleGAN~\cite
 \textbf{Results} Figure~\ref{fig:sim2real} shows the evaluation results of the sim2real transfer. Both Seen and Unseen evaluations show that TRITON outperforms baselines consistently. In Figure~\ref{fig:sim2real}(a), we find that TRITON continuously improves from low to high resolutions due to its ability to generate more photo-realistic images compared to the baselines.
 %This is because in low resolution (eg. $84\times 84$), the details in images are not important, whereas in high resolution ($336\times 336$), artifacts from imperfect translator are clearer and may harm policy learning.
 From Figure~\ref{fig:sim2real}(b), we confirm that TRITON outperforms the others also in the Unseen setting, showing that TRITON learns image translations that are generalizable to new viewpoints while others are limited.
-In the comparison against TRITON w/o $\ell_{UC}$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\ell_{UC}$ to generate photo-realistic images, and such high quality images are important in higher resolutions for sim2real transfer.
+In the comparison against TRITON w/o $\psi,\ell_{UC},\lTR$, TRITON outperforms this variant consistently except the lowest resolution. This again shows the effectiveness of $\psi$, $\ell_{UC}$ and $\lTR$ to generate photo-realistic images, and such high quality images are important in higher resolutions for sim2real transfer.
 
 
 

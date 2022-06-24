@@ -88,8 +88,8 @@
 \subsection{Training Procedures}
 
 	In this section we detail the training procedures used to create results in section \ref{sec:results} from Triton, CycleGAN, CUT,
-		TRITON w/o $\lUC$ (aka TRITON with neither unprojection consistency loss nor texture reality loss), and
-		TRITON w/o $\psi, \lUC$ (aka TRITON without textures, and therefore also without unprojection consistency loss or texture reality loss).
+		TRITON w/o $\lUC,\lTR$ (aka TRITON with neither unprojection consistency loss nor texture reality loss), and
+		TRITON w/o $\psi, \lUC,\lTR$ (aka TRITON without textures, and therefore also without unprojection consistency loss or texture reality loss).
 
 	\subsubsection{TRITON}
 	\label{par:triton}
@@ -104,16 +104,17 @@
 	Like in \cite{surgical_video_translation}, we use three Adam optimizers: two for the translation module's encoders and decoders, and another for the neural texture.
 	For the translation module's optimizers, we use learning rate $\num{1e-4}$, and for the neural neural texture we use learning rate $\num{1e-3}$. 
 	Every 100,000 iterations all learning rates are halved.
+
 	During evaluation, we render the neural neural texture onto a raster grid of pixels. Because the neural neural texture has a 2d manifold, it can be closely approximated by an RGB image. Using this method lets us avoid evlauating $\psi$'s fourier feature network on every frame by using a raster image as a lookup table. This decreases video memory usage and speeds up calulations during inference.
 
-	\subsubsection{TRITON w/o $\lUC$}
+	\subsubsection{TRITON w/o $\lUC,\lTR$}
 	\label{par:triton_without_luc}
 	This ablation is also known as ``Texture-Only'' TRITON, because it has a learnable texture $\psi$ but no consistency losses.
 	Its trained the same way that we train TRITON normally as discussed above in \ref{par:triton}, except the surface consistency losses $\lUC$ and $\lTR$ are omitted.
-	Effectively, it performs better than MUNIT-like TRITON (aka TRITON w/o $\psi, \lUC$, discussed in \ref{par:munit_triton})
+	Effectively, it performs better than MUNIT-like TRITON (aka TRITON w/o $\psi, \lUC,\lTR$, discussed in \ref{par:munit_triton})
 	% It still has a learnable texture $\psi$ though, which is allowed to change however it likes.
 
-	\subsubsection{TRITON w/o $\psi, \lUC$}
+	\subsubsection{TRITON w/o $\psi, \lUC,\lTR$}
 	\label{par:munit_triton}
 	This ablation is very similar to MUNIT, as TRITON is based on MUNIT and this ablation has neither learnable texture nor consistency losses.
 	Like in subsection \ref{par:triton_without_luc}, this ablation shares the same training procedures as TRITON.
