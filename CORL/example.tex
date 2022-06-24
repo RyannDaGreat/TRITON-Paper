@@ -198,6 +198,18 @@
 %     Most similar to our work is blah
     
 
+\begin{figure}[thbp]
+	\vspace{-10pt}
+	\begin{center}
+		\includegraphics[width=\textwidth]{../images/figure0.pdf}
+	\end{center}
+	\vspace{-5pt}
+	\caption{
+		TRITON is a sim-to-real algorithm that makes simulated scenes look realistic. As a black-box, the only input needed is an RGB image shown in the top row, which generates the output on the bottom row.
+	}
+	\label{fig:figure0}
+	\vspace{-5pt}
+\end{figure}
 
 
 Current sim2real image translation algorithms used for robotics \cite{retina_gan,rl_cyclegan} often have difficulty generating consistent results across large time-frames particularly when the objects in an environment are allowed to move. This makes training good robotic policies using such sim2real challenging.
@@ -220,17 +232,17 @@ Important, we show the advantages of the proposed approach in real-robot sim2rea
 
 \begin{figure}[thbp]
 	\vspace{-10pt}
-		\begin{center}
-			\includegraphics[width=\textwidth]{../images/first_diagram.pdf}
-		\end{center}
-		\vspace{-5pt}
-		\caption{
-			This is an overview of what TRITON accomplishes.
-			TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
-			}
-		\label{fig:first_diagram}
+	\begin{center}
+		\includegraphics[width=\textwidth]{../images/first_diagram.pdf}
+	\end{center}
 	\vspace{-5pt}
-	\end{figure}
+	\caption{
+		This is an overview of what TRITON accomplishes.
+		TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
+	}
+	\label{fig:first_diagram}
+	\vspace{-5pt}
+\end{figure}
 	
 \vspace{-5pt}	
 \section{Related Works}
