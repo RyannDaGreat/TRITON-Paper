@@ -139,7 +139,7 @@
 
 	\subsubsection{Unprojection Comparisons}
 
-		In this section we expand on the results in subsection \ref{sec:datasetsresults} by showing the mean unprojection for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
+		In this section we expand on the results in subsection \ref{sec:datasetsresults} by showing the mean unprojection (aka recovered texture) for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
 		If a translation algorithm is consistent, these unprojections should align well and the average $bar{\omega}$ should not be blurry.
 
 		\begin{figure}[H]
@@ -147,7 +147,7 @@
 				\includegraphics[width=400pt]{../images/unprojection_comparisons.pdf}
 			\end{center}
 			\caption{
-				In this figure, we compare the mean unprojections $\bar{\omega}$ of the 14 labeled images between different algorithms, and compare it to a ground truth. In this diagram, we align all the unprojections to make them easier to compare. Note how TRITON is more crisp and matches the unprojected photographs better than the other algorithms, which are blurrier and have the wrong colors and letters on each side of the alphabet blocks. CycleGAN and CUT for example incorrectly duplicate letters between alphabet blocks.
+				In this figure, we compare the recovered textures $\bar{\omega}$ (aka mean unprojections) of the 14 labeled images between different algorithms, and compare it to a ground truth. In this diagram, we align all the unprojections to make them easier to compare. Note how TRITON is more crisp and matches the unprojected photographs better than the other algorithms, which are blurrier and have the wrong colors and letters on each side of the alphabet blocks. CycleGAN and CUT for example incorrectly duplicate letters between alphabet blocks.
 			}
 			\label{fig:unprojection_resolution_comparison}
 		\end{figure}
@@ -199,7 +199,7 @@
 				\end{center}
 			\caption{
 				This video shows the results of TRITON applied on three of the datasets shown in figure \ref{fig:first_diagram}.
-				The top row shows the input scenes $, and the bottom row shows the fake photographs.
+				The top row shows the input scenes $s$, and the bottom row shows the fake photographs $\ph$.
 				Url: \href{https://youtu.be/0t0xiVS_8D0}{youtu.be/0t0xiVS\_8D0}
 			}
 			\label{fig:algocomparisonvideo}
