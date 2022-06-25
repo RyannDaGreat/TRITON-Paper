@@ -1,11 +1,13 @@
+\appendix
+
 \section{Appendix} 
 
 \subsection{Neural Neural Textures: More Details}
 
-	In section \ref{sec:neural_tex}, we mentioned that neural neural textures learn better than raster neural textures. 
+	In Section \ref{sec:neural_tex}, we mentioned that neural neural textures learn better than raster neural textures. 
 	TRITON can be ablated to use raster textures. Let's call this version ``Raster TRITON''. 
 	Raster TRITON is extremely sensitive to the resolution of its neural texture, and can be numerically unstable if that resolution is too high.
-	In comparison, regular TRITON's neural neural textures don't have a specific resolution: they are continuously defined over the UV domain using Fourier feature networks.
+	In comparison, regular TRITON's neural neural textures do not have a specific resolution: they are continuously defined over the UV domain using Fourier feature networks.
 
 	\begin{figure}[H]
 		\begin{center}
@@ -19,10 +21,10 @@
 	\end{figure}
 
 	In this paragraph we offer possible explanations for these observations.
-	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient can't be propagated into pixels that aren't seen.
-	If this means changing overall brightness of an object for example, the brightness of that object can't be changed over the entire object until every side has been seen - which won't happen in a single iteration, since the batch size is limited.
+	With raster-based textures, only the side of an object that currently is seen in a view is allowed to change during each update, because the gradient can not be propagated into pixels which are not seen.
+	If this means changing overall brightness of an object for example, the brightness of that object can not be changed over the entire object until every side has been seen - which will not happen in a single iteration, since the batch size is limited.
 
-	In addition to not propagating the gradient to unseen sides of objects, it also can't propagate to texels in-between the UVL values seen in a scene image.
+	In addition to not propagating the gradient to unseen sides of objects, it also can not propagate to texels in-between the UVL values seen in a scene image.
 	When the raster neural texture is too large, aliasing effects occur: if you have a raster texture with very high resolution, the loss gradient is less likely to be passed to a given texel because the chance that a given UV value in a scene will be rounded to that pixel's coordinates is very small.
 	In practice, this makes large raster neural textures unstable and limits us to using small amounts of detail.
 	With neural neural textures, this aliasing problem is mostly mitigated, because when a certain texture receives a gradient at particular UV coordinates, the areas of the texture between those coordinates are also changed.
@@ -71,8 +73,8 @@
 
 	\bigskip
 	
-	The hyperparameter 128 we described in section \ref{sec:unprojection_consistency_loss} refers to the resolution of the unprojections used to calculate $\lUC$.
-	In figure \ref{fig:unprojection_resolution_comparison} we see that if we were to set it higher, the gradient wouldn't affect the neural texture as densely.
+	The hyperparameter 128 we described in Section \ref{sec:unprojection_consistency_loss} refers to the resolution of the unprojections used to calculate $\lUC$.
+	In Figure \ref{fig:unprojection_resolution_comparison} we see that if we were to set it higher, the gradient wouldn't affect the neural texture as densely.
 
 	\begin{figure}[H]
 		\begin{center}
@@ -87,7 +89,7 @@
 
 \subsection{Training Procedures}
 
-	In this section we detail the training procedures used to create results in section \ref{sec:results} from Triton, CycleGAN, CUT,
+	In this section we detail the training procedures used to create results in Section \ref{sec:results} from Triton, CycleGAN, CUT,
 		TRITON w/o $\lUC,\lTR$ (aka TRITON with neither unprojection consistency loss nor texture reality loss), and
 		TRITON w/o $\psi, \lUC,\lTR$ (aka TRITON without textures, and therefore also without unprojection consistency loss or texture reality loss).
 
@@ -139,7 +141,7 @@
 
 	\subsubsection{Unprojection Comparisons}
 
-		In this section we expand on the results in subsection \ref{sec:datasetsresults} by showing the mean unprojection (aka recovered texture) for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
+		In this section we expand on the results in Subsection \ref{sec:datasetsresults} by showing the mean unprojection (aka recovered texture) for different image translation algorithms. With the 14 UVL images and corresponding fake photos (or photos) as calculated in \ref{sec:datasetsresults}, we average their unprojections.
 		If a translation algorithm is consistent, these unprojections should align well and the average $bar{\omega}$ should not be blurry.
 
 		\begin{figure}[H]
@@ -168,7 +170,7 @@
 					}
 				\end{center}
 			\caption{
-				This animation shows a side-by-side comparision of different camera viewpoints of the results discussed in section \ref{sec:robotarm_results}, as well as the inputs, ground truth video, TRITON and TRITON ablation videos.
+				This animation shows a side-by-side comparison of different camera viewpoints of the results discussed in Section \ref{sec:robotarm_results}, as well as the inputs, ground truth video, TRITON and TRITON ablation videos.
 				Url: \href{https://youtu.be/kecK_cJgLT8}{youtu.be/kecK\_cJgLT8}
 			}
 			\label{fig:robotarm_anim}
@@ -184,7 +186,7 @@
 			\caption{
 				This animation shows an animation of various algorithms on a dataset with 5 alphabet blocks moving around. 
 				When watching, note how the numbers on the top of the cubes in both CycleGAN and CUT change over time, while with TRITON they stay the same.
-				Url: \href{https://youtu.be/-GSixT4shxY}{youtu.be/-GSixT4shxY}
+				Url: \href{https://youtu.be/0t0xiVS_8D0}{youtu.be/0t0xiVS\_8D0}
 			}
 			\label{fig:algocomparisonvideo}
 		\end{figure}
@@ -198,7 +200,7 @@
 					}
 				\end{center}
 			\caption{
-				This video shows the results of TRITON applied on three of the datasets shown in figure \ref{fig:first_diagram}.
+				This video shows the results of TRITON applied on three of the datasets shown in Figure \ref{fig:first_diagram}.
 				The top row shows the input scenes $s$, and the bottom row shows the fake photographs $\ph$.
 				Url: \href{https://youtu.be/0t0xiVS_8D0}{youtu.be/0t0xiVS\_8D0}
 			}

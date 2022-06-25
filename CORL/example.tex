@@ -176,10 +176,10 @@
 	%We introduce a new type of nerual texture called a ``neural neural texture'', as well as separate losses each of which are capable of accomplishing this consistency goal.
 % 	As far as we are aware, this is the first algorihtm to attempt to learn the albedo of dynamically moving 3d objects without supervision.
 	%We demonstrate the supeiority of our approach both qualitatively and quantitatively, using robotic experiments and comparisons to ground truth photographs. We show that TRITON generates more realistic images than other algoithms do.
-	Unpaired image translation algorithms can be used for sim2real tasks, but most fail to generate temporally consistent results.
+	Unpaired image translation algorithms can be used for sim2real tasks, but many fail to generate temporally consistent results.
 	We present a new approach that combines differentiable rendering with image translation to achieve temporal consistency over indefinite timescales, using surface consistency losses and \emph{neural neural textures}.
 	We call this algorithm TRITON (Texture Recovering Image Translation Network): an unsupervised, end-to-end, stateless sim2real algorithm that 
-	leverages the underlying 3d geometry of input scenes by generating realistic-looking learnable neural textures.
+	leverages the underlying 3D geometry of input scenes by generating realistic-looking learnable neural textures.
 	By settling on a particular texture for the objects in a scene, we ensure consistency between frames statelessly.
 	Unlike previous algorithms, TRITON is not limited to camera movements --- it can handle the movement of objects as well, making it useful for downstream tasks such as robotic manipulation.
 % 	Our experiments show that in addition to achieving higher temporal consistency, the translations are closer to ground truth photographs than previous techniques.
@@ -206,7 +206,7 @@
 	\end{center}
 	\vspace{-5pt}
 	\caption{
-		TRITON is a sim-to-real algorithm that makes simulated scenes look realistic. As a black-box, the only input needed is an RGB image shown in the top row, which generates the output on the bottom row.
+		TRITON is a sim2real algorithm that makes simulated scenes look photo realistic. Serving as a black-box module, the only input needed is an RGB image shown in the top row, which generates the output on the bottom row.
 	}
 	\label{fig:figure0}
 	\vspace{-5pt}
@@ -214,17 +214,24 @@
 
 
 Current sim2real image translation algorithms used for robotics \cite{retina_gan,rl_cyclegan} often have difficulty generating consistent results across large time-frames particularly when the objects in an environment are allowed to move. This makes training good robotic policies using such sim2real challenging.
-In this paper, we discuss an algorithm called TRITON (Texture Recovering Image Translation Network) that combines neural rendering, image translation, and two special surface consistency losses to create surface-consistent translations.
+In this paper, we discuss an algorithm called TRITON (Texture Recovering Image Translation Network) that combines neural rendering, image translation, and two special surface consistency losses to create surface-consistent translations over frames.
 We use the term surface-consistent to refer to the desirable quality of preserving the visual appearance of object surfaces as they move, or are viewed from another angles. 
 
-TRITON is applicable when we have a simulator capable of generating a realistic distribution of geometric data, but when we do not have any information about the surfaces of those objects (which we need to render realistic images). For example, in our experiments we use a robotic arm model provided by the manufacturer that contains no material information, and then learn to render the materials of the arm using TRITON.
-As opposed to requiring an artist to create 3d models with meaningful textures, TRITON can generate these from scratch using a set of photographs capturing the distribution of states in a simulation, without requiring any matches between domains. 
+TRITON is applicable when we have a simulator capable of generating a realistic distribution of geometric data, but when we do not have any information about the surfaces of those objects (which we need to render realistic images). For example, in one of our experiments we use a robotic arm model provided by the manufacturer that contains no material information, and then learn to render the materials of the arm using TRITON.
+As opposed to requiring an expert/artist to create 3D models with meaningful textures, TRITON can generate these from scratch using a set of photographs capturing the distribution of states in a simulation, without requiring any matches between domains. 
+That is, given a set of unpaired, unannotated real images and geometry images, TRITON learns the underlying texture of objects and surfaces appearing in the scene without any direct supervision.
 % TRITON is robust to small camera variations, and can recover crisp textures even if the geometry isn't perfect. 
 
 % The three main technical contributions of this paper are our neural neural texture, and two separately sufficient surface consistency losses.
-One of the main contributions of this paper is our `neural neural texture'.
-Inspired by previous works, TRITON uses raster-based neural textures to create realistic images \cite{deferred_neural_rendering,surgical_video_translation}.
-Unlike those works however, we do not use a pixel-based neural texture. Instead, we use what we call a ``neural neural texture'': a continuous implicit pixelless parametric texture represented by a neural netork using fourier features \cite{fourier_feature_networks} that takes in 2d UV coordinates and outputs colors.
+
+We introduce the concept of \emph{neural neural texture}, which is an implicit texture representation having the form of a neural network function generating RGB values given surface coordinates.
+Unlike previous raster-based `neural textures' to create realistic images \cite{deferred_neural_rendering,surgical_video_translation}, we model surface textures as a function instead of discretized pixels.
+It is a continuous implicit pixel-less parametric texture represented by a neural network using Fourier features \cite{fourier_feature_networks} that takes in 2D UV coordinates and outputs colors. This is similar to how neural radiance fields (NeRF) represents a 3D scene in the form of a neural function \cite{nerf}. The difference is that we focus on learning textures from unpaired training images of very different scene configurations, for viewpoint as well as object motion synthesis.
+
+
+%One of the main contributions of this paper is our `neural neural texture'.
+%Inspired by previous works, TRITON uses raster-based neural textures to create realistic images \cite{deferred_neural_rendering,surgical_video_translation}.
+%Unlike those works however, we do not use a pixel-based neural texture. Instead, we use what we call a ``neural neural texture'': a continuous implicit pixelless parametric texture represented by a neural netork using fourier features \cite{fourier_feature_networks} that takes in 2d UV coordinates and outputs colors.
 
 We conduct multiple experiments to confirm TRITON's advantage over prior image translation approaches commonly used for sim2real including CycleGAN~\cite{cyclegan} and CUT~\cite{cut}.
 %First, we train it on a dataset with alphabet blocks, then compare photographs in that dataset to TRITON outputs by manually aligning the simulated 3d cubes with the photographs.
@@ -239,7 +246,7 @@ Important, we show the advantages of the proposed approach in real-robot sim2rea
 	\vspace{-5pt}
 	\caption{
 		This is an overview of what TRITON accomplishes.
-		TRITON learns the textures of 3d objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
+		TRITON learns the textures of 3D objects to help translate simulated images into photographs. It does this with unpaired data. Each row is a different dataset.
 	}
 	\label{fig:first_diagram}
 	\vspace{-5pt}
@@ -256,12 +263,13 @@ This area of research has been extended to video to video translation, where opt
 
 \vspace{-8pt}
 \paragraph{View Synthesis}
-View synthesis is a field of research where we predict the outputs of unseen camera viewpoints. NeRF \cite{nerf} has spawned a large body of research on end to end view synthesis, resulting in works such as \cite{nerv,fast_nerf,barf}. Related to our work, which also uses geometry based backbone are \cite{free_view_synthesis,stable_view_synthesis,ners}. All of these works, however, only work with static scenes. There are NeRF-based approaches that work on dynamic scenes \cite{dnerf,nerfies,nerualradianceflow} but none of these interactive. \citet{playable_environments} is interactive, but its conditioned on learned actions and not compatible with physics simulators that would be used to train robots.
+View synthesis is a field of research where we predict the outputs of unseen camera viewpoints. NeRF \cite{nerf} has spawned a large body of research on end to end view synthesis, resulting in works such as \cite{nerv,fast_nerf,barf}. Related to our work, which also uses geometry based backbone are \cite{free_view_synthesis,stable_view_synthesis,ners}. All of these works, however, only work with static scenes. There are NeRF-based approaches that work on dynamic scenes \cite{dnerf,nerfies,nerualradianceflow} but none of these were interactive, prohibiting their usage for sim2real. \citet{playable_environments} is interactive, but its conditioned on learned actions and not compatible with physics simulators that would be used to train robots.
 
 \vspace{-8pt}
 \paragraph{Neural Textures}
 \citet{deferred_neural_rendering} introduced the concept of neural textures and image translators in the context of a deferred rendering pipeline, used in other works such as \cite{surgical_video_translation} which is closely related to our project. 
-\citet{surgical_video_translation} differs from TRITON in a few very important aspects though, the biggest being that it only synthesizes new camera views, where the only difference between each scene is the placement of the camera. In contrast, our algorithm takes in scenes where several objects are placed in different places or deformed, so that one static  global 3d model of the environment is not sufficient to accomplish our tasks. In addition, TRITON uses a new type of neural texture called a ``neural neural texture'', which is represented continuously using a fourier feature network, as described in \citet{fourier_feature_networks}.
+\citet{surgical_video_translation} differs from TRITON in a few very important aspects though, the biggest being that it only synthesizes new camera views, where the only difference between each scene is the placement of the camera. In contrast, our algorithm takes in scenes where several objects are placed in different places or deformed, where one static global 3D model of the environment is not sufficient to accomplish our tasks. In addition, TRITON introduces a new type of neural texture, ``neural neural texture'', which is represented continuously using a Fourier feature network. 
+%as described in \citet{fourier_feature_networks}.
 
 % Problem: 
 % Why is this problem important?
@@ -303,11 +311,11 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 \label{sec:data}
 \vspace{-3pt}
 	% TRITON stands for Texture Recovering Image Translation Network. It has two goals: to translate images, and to recover textures.
-	TRITON's goal is to turn 3d simulated images into realistic fake photographs (by training it without any matching pairs), while maintaining high surface consistency.
+	TRITON's goal is to turn 3D simulated images into realistic fake photographs (by training it without any matching pairs), while maintaining high surface consistency.
 	It does this by simultaneously learning both an image translator and a set of realistic textures.
 	These translations can be useful for downstream tasks, especially robotic policy learning from camera data, enabling sim2real.
 	
-	In contrast to previous works involving ``neural textures'' \cite{deferred_neural_rendering,surgical_video_translation}, TRITON can handle more than just camera movements:
+	In contrast to previous works involving neural textures \cite{deferred_neural_rendering,surgical_video_translation}, TRITON can handle more than just camera movements:
 	the positions of objects in the training data can be moved around or deformed as well between data samples.
 % 	For this reason, we chose the term ``surface consistency'' instead of ``view consistency'', which was the term used in [] \textbf{(mryoo: cite)}.
 	With high surface consistency, surfaces of translated objects will look the same even when moved around or viewed from different camera angles.
@@ -319,7 +327,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		\end{center}
 		\vspace{-10pt}
 		\caption{
-			A scene is obtained by rendering a 3d state into an image, where the first two color channels represent $u,v$ coordinates and the third channel $l$ represents object labels.
+			A scene is obtained by rendering a 3D state into an image, where the first two color channels represent $u,v$ coordinates and the third channel $l$ represents object labels.
 			% This diagram shows the purpose of a UVL image.
 			% A UVL scene is an image that has three channels: RGB.
 			% R and G are used for U and V, and B is used for L.
@@ -332,7 +340,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		\vspace{-15pt}
 	\end{figure}
 
-	There are two components in every dataset: A set of simulated 3d scenes, and a set of photographs.
+	There are two components in every dataset: A set of simulated 3D scenes, and a set of photographs.
 	Datasets usually have many more scenes than photographs, since scenes can be generated automatically.
 	% The photographs, having $(r,g,b)$ values between 0 and 1,
 	% 	are denoted as $p \in [0,1]^{N \times 3 \times H \times W}$ where $N$ is the batch size,
@@ -347,9 +355,9 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		3 refers to the three $(r,g,b)$ channels, 
 		and $H,W$ are the height and width respectively.
 		
-	In this work, a scene refers to a rendered 3d simulation state - which includes the position, rotation, and deformation of every object (including the camera).
+	In this work, a scene refers to a rendered 3D simulation state - which includes the position, rotation, and deformation of every object (including the camera).
 	% Using some 3d rendering software, be it Blender or Gazebo or some other 3d creates an image from these 
-	We represent each 3d state with a simple $(r,g,b)$ image, in a simple enough format that any decent simulator should able to provide.
+	We represent each 3D state with a simple $(r,g,b)$ image, in a simple enough format that any decent simulator should able to provide.
 	% These have the same datatype and dimensions as photographs and are denoted as 
 	% $s \in [0,1]^{N \times 3 \times H \times W}$.
 	% A scene has the same dimensions as a photograph and is denoted as 
@@ -429,12 +437,12 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 % %===============================================================================
 \vspace{-8pt}
 \section{Method} \label{sec:method}
-	\begin{figure}[thbp]
+	\begin{figure}[t]
 	    \vspace{-15pt}
 		\begin{center}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed.pdf}
 			% \includegraphics[width=400pt]{../images/main_diagram_condensed_with_domains.pdf}
-			\includegraphics[width=0.9\textwidth]{../images/main_diagram_beautiful.pdf}
+			\includegraphics[width=\textwidth]{../images/main_diagram_beautiful.pdf}
 		\end{center}
 		\vspace{-10pt}
 		\caption{
@@ -455,7 +463,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 			%Rename 'B' to "N" for batch size
 			%Figure 8: Align consistent with inconsistent and use all 5 green ones
 			%
-			This figure is an overview TRITON.
+			An overview of TRITON.
 			Inputs are on the left, and outputs are on the right.
 			The dashed arrows indicate losses.
 			Although $\pi\toN$ and $\ph\toN$ look similar, they are not identical - $\lTR$ encourages them to look as similar as possible.
@@ -467,29 +475,14 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		}
 		\label{fig:main_diagram}
 	\end{figure}
-		In this section, we describe how TRITON works to translate images from domain A (simulation) to domain B (photos) while maintaining surface consistency. 
-		TRITON introduces a learneable neural neural texture with two novel surface consistency losses to an existing image translator. In the end, TRITON is able to effectively generate photorealistic images.
+		In this section, we describe how TRITON works to translate images from domain A (simulation) to domain B (photos) while maintaining surface consistency (Figure \ref{fig:main_diagram}). 
+		TRITON introduces a learnable neural neural texture with two novel surface consistency losses to an existing image translator. In the end, TRITON is able to effectively generate photorealistic images.
 		%JUNE 12:
 		%TODO: MIgrate all four of these teasers into their respective subsections to save space.
 \vspace{-3pt}
 	\subsection{Neural Neural Texture Projection}
 	\label{sec:neural_tex}
 	\vspace{-3pt}
-		\begin{figure}[t]
-		    \vspace{-5pt}
-			\begin{center}
-				\includegraphics[width=0.8\textwidth]{../images/learnable_textures.pdf}
-			\end{center}
-			\vspace{-3pt}
-			\caption{
-				This figure details how our neural neural textures are calculated in Figure~\ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's u and v axes using Fourier feature networks.
-			}
-			\vspace{-3pt}
-			% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
-			% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
-			% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
-			\label{fig:learnable_textures}
-		\end{figure}
 
 		%JUNE 12:
 		%Defining what it is and how it's used.
@@ -497,18 +490,19 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		%Justify why we're calling it neural neural texture. Unlike previous papers [citations], we learn a neural network instead of a grid of pixels. To be explicit we call it neural neural texture. %%%%%% Previous papers were more like latent textures but ours is different: it is a funciton.  Previous works were called "Neural Textures" but we're going to call ours "Neural Neural Textures" - a subtype of neural textures. 
 
 		% Using neural neural textures, we can encode features directly onto the surfaces of the 3d objects in a scene, which the image translation module uses to maintain visual consistency between states and viewpoints.
-		Instead of feeding a scene $s$ directly into the image translator $\Tab$, we first apply learnable textures $\psi$ to its surfaces as shown in Figure \ref{fig:main_diagram}.
-		Previous works called these learnable textures ``neural textures'', and were parametrized by a discrete grid of differentiable texels. 
+		Instead of feeding a scene $s$ directly into the image translator $\Tab$, we first apply learnable textures $\psi$ to its surfaces, which is learned jointly with $\Tab$. 
+		%(as illustrated in Figure \ref{fig:main_diagram}).
+		%Previous works called these learnable textures ``neural textures'', and were parametrized by a discrete grid of differentiable texels. 
 		% In contrast, we call our learnable textures ``neural nerual textures'', becuase our textures are a type of neural texture that is parametrized continuously over UV space using a neural fourier feature network.
-		In contrast, we call our learnable textures as ``neural nerual textures'', because our textures themselves are represented as a neural network function, parameterized continuously over UV space.
-		Our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
+		%In contrast, we call our learnable textures as ``neural nerual textures'', because our textures themselves are represented as a neural network function, parameterized continuously over UV space.
+		%Our neural textures $\psi\toL$ are learned jointly with our image translator $T$.
 		
 		These neural neural textures are represented implicitly by a neural network that maps UV values to RGB values. %, and are used to obtain projections $\pi$ from 3d scenes $s$.
 		For each texture $\psi^i \in \psi\toL$, 
 		\begin{equation}
 			\psi^i: (u,v) \in\real^2 \rightarrow (r,g,b) \in\real^3 % \eqand 
 		\end{equation}
-		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi^i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel.
+		Given a scene $s$, we obtain projection $\pi$ by applying a texture $\psi^i \in \psi\toL$ to every pixel $(u,v,l) \in s$ individually, where texture index $i=I(l)$ is decided by the label value $l$ of that scene pixel. The projection $\pi$, which is an intermediate image is computed as:
 		% Each pixel in the resulting projection $rgb\in\pi$ is the result of selecting a texture index $i$ based on the rank of label value $l$, then applying $\psi^i$ to the $u,v$ values.
 		\begin{equation}
 			% \pi=\psi\toL(s) \eqand rgb \in \pi = \psi^i(uv)
@@ -519,6 +513,23 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		% where $1\le n\le N,\ \ 1\le c\le 3 ,\ \ 1\le x\le W,\ \ 1\le y\le H,\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		% where $n\in \{1\dots N\},\ \ c\in \{1\dots 3\} ,\ x\in \{1\dots W\},\ y\in \{1\dots H\},\ \ \text{and} \ \ i=I(s_{n,3,x,y})$.
 		where $ x\in \{1\dots W\},\ y\in \{1\dots H\}$. Texture index $i = I(l)$ where $l=s_{[x,y,3]}$ and the function $I(\cdot)$ scales and discretizes $l$ into integers. Subscripts mean multidimensional indexing.
+		
+		
+		\begin{figure}[t]
+		    \vspace{-5pt}
+			\begin{center}
+				\includegraphics[width=0.8\textwidth]{../images/learnable_textures.pdf}
+			\end{center}
+			\vspace{-3pt}
+			\caption{
+				Details of how our neural neural textures are calculated in Figure~\ref{fig:main_diagram}. They are fully differentiable, and represented continuously along the texture's u and v axes using Fourier feature networks.
+			}
+			\vspace{-3pt}
+			% For each texture, there is a separate Fourier feature network (Fourier features fed into a pixel-wise MLP) that will take in Fourier features as inputs, and output an RGB image using the method described in \citet{fourier_feature_networks}.
+			% We found this method gave better results than storing each differentiable texture as a raster matrix of pixels, as well as being faster to train.
+			% During inference, you can store the results of this MLP as a raster image of arbitrarily large resolution, saving both time and VRAM.
+			\label{fig:learnable_textures}
+		\end{figure}
 
 		%DISCARDED TEXT:
 		% A particular neural texture $\psi^i$ uses maps $uv \rightarrow rgb$. Similarly, the set of textures $\psi_{1\dots L}$ maps uvl values to rgb values: $\psi_{1\dots L}(uvl)=\psi_l(uv)$ where $uvl$ is the concatenation of a $uv$ vector with a label $l \in 1\dots L$.
@@ -570,7 +581,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		% Note that there is nothing special about 256 or 10: these hyperparameter values just happen to work nicely.
 		
 		We now discuss the implementation of our neural neural networks $\psi\toL$.
-		Each neural neural texture $\psi^i$ is a function consisting of two components: a multi-layer perceptron $M^i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$. 
+		Each neural neural texture $\psi^i$ is a function consisting of two components: a multi-layer perceptron $M^i$ and a static set of 256 random spatial frequencies $f_{1...256} \in \real ^ {256 \times 2}$ (Figure \ref{fig:learnable_textures}). 
 		Given a two-dimensional $(u,v)$ vector, the spatial frequencies are used to generate a high dimensional embedding of $(u,v)$ as input for $M^i$, where $M^i$ is a function $\real^{256} \to \real^{3}$ mapping that embedding to an $(r,g,b)$ color value:
 		\begin{equation}
 				\psi^i(u,v) = 
@@ -594,9 +605,9 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 					\cos( g_{256}  )  \ 
 				)
 		\end{equation}
-		where $g_k=f_k\cdot(u,v)$
+		where $g_k=f_k\cdot(u,v)$.
 		% , $f^i \in N_{ormal}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
-		, $f_k \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
+		$f_k \in \mathcal{N}(\mu=0,\ \sigma=10)$ is a two dimensional random gaussian vector,
 		\mbox{and $\cdot$} is the dot product operator.
 		%  $rgb$ represents a 3d color vector,
 		% :
@@ -674,6 +685,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		% Given two tensors $x$ and $y$, their similarity loss is $\mu\left((x-y)^2\right) - \text{msssim}(x,y)$. 
 		We define an image similarity loss $\similar$ between two images $x,y$ that returns a score between -1 and 1, where 0 means perfect similarity:
 		\begin{equation}
+		\label{eq:omega}
 			\similar(x,y) = L_2(x,y)-\msssim(x,y) 
 		\end{equation}
 		This function combines mean pixel-wise $L_2$ distance (used in MUNIT) with multi-scale structural image similarity $\msssim$, introduced in \citep{msssim}. Note that this loss can also be applied to the latent representations obtained by $E_A$ and $E_B$, because like images those tensors are also three dimensional.
@@ -876,7 +888,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		% If we wanted to, could stop here - those formulations are sufficient to produce consistent sim-to-real translations.
 		% However, we can improve this further.
 		% Up until now we have not put any constraints on this neural texture. 
-		Without $\lTR$, $\psi$ can look wildly different each time you train it.
+		$\similar$ is the image similarity from Equation \ref{eq:omega}. Without $\lTR$, $\psi$ can look wildly different each time you train it.
 		As seen in the top row of Figure \ref{fig:texture_realism_ablation}, the neural texture looks very unrealistic --- the colors are completely arbitrary.
 % 		After adding $\lTR$ though, $\pih \approx \ph$ and thus the neural texture represents the textures of the objects in real life. 
         By adding texture realism loss $\lTR$, we make the textures $\psi$ more realistic. In practice, this makes TRITON less likely to mismatch the identity of translated objects.
@@ -914,7 +926,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 % We constructed multiple datasets for our experiments.
 We constructed two datasets AlphabetCube-3 and RobotPose-xArm to benchmark different image translators in many perspectives.
 In our setting, each dataset is composed of two sets of unpaired images: UVL scenes from a simulator and real photographs.
-Note that the images in all datasets are unpaired and UVL scenes only rely on rough 3d models of the objects in the scene without need of precisely aligning objects in the simulator to the real world.
+Note that the images in all datasets are unpaired and UVL scenes only rely on rough 3D models of the objects in the scene without need of precisely aligning objects in the simulator to the real world.
 % . They are all unpaired, and have RGB values ranging from 0 to 1.
 We use AlphabetCube-3 for image translation quality evaluation, and RobotPose-xArm for sim2real policy learning evaluation.
 
@@ -953,7 +965,7 @@ We use AlphabetCube-3 for image translation quality evaluation, and RobotPose-xA
 %We show qualitative evaluation results ....[TODO]
 \begin{figure}[th]
 	\begin{center}
-		\includegraphics[width=.9\textwidth]{../images/frame_inconsistency_diagram.png}
+		\includegraphics[width=\textwidth]{../images/frame_inconsistency_diagram.png}
 	\end{center}
 	\vspace{-7pt}
 	% Each outline color corresponds to the same cube.
@@ -1095,7 +1107,7 @@ Comment from Xiang: it might be better to have a short introduction on training 
 \begin{figure}[thbp]
     \centering
     \vspace{-10pt}
-    \includegraphics[width=.8\textwidth]{../images/sim2real_framework.pdf}
+    \includegraphics[width=\textwidth]{../images/sim2real_framework.pdf}
     \vspace{-10pt}
     \caption{Sim2real framework of using TRITON. We evaluate in two settings: Seen and Unseen. In Unseen, we use a new camera viewpoint to train and evaluate the policy. This new viewpoint is not used for training TRITON. }
     \vspace{-5pt}
@@ -1118,7 +1130,7 @@ We compare TRITON against two baseline image translation methods: CycleGAN~\cite
 \begin{figure}[tbhp]
     \centering
     \vspace{-3pt}
-    \includegraphics[width=.95\textwidth]{../images/sim2real_res.pdf}
+    \includegraphics[width=\textwidth]{../images/sim2real_res.pdf}
     \vspace{-5pt}
     \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\psi,\ell_{UC},\lTR$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{cyclegan} and CUT~\cite{cut} consistently across (a) all resolutions and (b) unseen viewpoints. Results in (a) are from Seen setting only. Results in (b) are from 336x336 resolution. }
     \label{fig:sim2real}
@@ -1162,7 +1174,7 @@ TRITON relies on 3D models of objects in order to generate photo-realistic image
 
 \bibliography{example}  % .bib
 
-% \clearpage
+\clearpage
 
 \input{appendix.tex}
 
@@ -1173,7 +1185,7 @@ TRITON relies on 3D models of objects in order to generate photo-realistic image
 \label{sec:appendix}
 
     \subsection{Unsorted}
-     	These neural textures are not stored in raster form during training. Instead, as illustrated in figure \ref{fig:learnable_textures}, they're paramaterized by pixel-wise fourier feature networks \cite{fourier_feature_networks} that take in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
+     	These neural textures are not stored in raster form during training. Instead, as illustrated in Figure \ref{fig:learnable_textures}, they're paramaterized by pixel-wise Fourier feature networks \cite{fourier_feature_networks} that take in UV coordinates and returns RGB colors. During inference, however, these textures are rasterized to save both time and video memory.
 
 	\subsection*{Unprojection Recovery Resolution Effect}
 
@@ -1229,7 +1241,7 @@ TRITON relies on 3D models of objects in order to generate photo-realistic image
 			{B}
 		}
 		$
-		Using $\bar{p}$ from figure \ref{fig:unprojection_consistency_loss}
+		Using $\bar{p}$ from Figure \ref{fig:unprojection_consistency_loss}
 
 		Because $\bar{p}$ is created from the average recovered textures of $\hat{p}$, $\bar{p} \approx \hat{p}$.
 
@@ -1283,7 +1295,7 @@ Here I put things I won't include in the paper or appendix, but want to keep for
 	\end{center}
 	\caption{
 		Compatible datasets have two sets of images: a set of UVL scenes and a set of photographs.
-		TRITON is a sim-to-real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
+		TRITON is a sim2real image translation algorithm, taking in synthetic UVL scenes and aiming to create realistic fake photographs. 
 		Being an unsupervised algorithm, there are no correspondences between synthetic and real images.
 		In this dataset, three alphabet cubes are moved around the table. 
 		The synthetic and rear cameras have the same position and field of view.
