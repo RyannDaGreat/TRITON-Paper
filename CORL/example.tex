@@ -135,6 +135,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{array, booktabs, ragged2e}
 \usepackage{comment}
+\usepackage{siunitx}
+\usepackage{hyperref}
 
 %\usepackage[preprint]{corl_2022} % Uncomment for pre-prints (e.g., arxiv); This is like ``final'', but will remove the CORL footnote.
 
@@ -454,6 +456,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 		%TODO: MIgrate all four of these teasers into their respective subsections to save space.
 \vspace{-3pt}
 	\subsection{Neural Neural Texture Projection}
+	\label{sec:neural_tex}
 	\vspace{-3pt}
 		\begin{figure}[thbp]
 		    \vspace{-5pt}
@@ -888,6 +891,7 @@ View synthesis is a field of research where we predict the outputs of unseen cam
 \section{Experiments}\label{sec:results}
 \vspace{-3pt}
 \subsection{Datasets}
+\label{sec:datasetsresults}
 \vspace{-2pt}
 %Here we detail the datasets used in our experiments.
 % We constructed multiple datasets for our experiments.
@@ -1070,10 +1074,11 @@ Comment from Xiang: it might be better to have a short introduction on training 
 % TODO: Explain what sync and unsync mean, retrieve the results for CycleGAN and CUT
 \vspace{-5pt}
 \subsection{Sim2real Transfer for Robot Learning}
+\label{sec:robotarm_results}
 \begin{figure}[thbp]
     \centering
     \vspace{-10pt}
-    \includegraphics[width=.8\textwidth]{images/sim2real_framework.pdf}
+    \includegraphics[width=.8\textwidth]{../images/sim2real_framework.pdf}
     \vspace{-10pt}
     \caption{Sim2real framework of using TRITON. We evaluate in two settings: Seen and Unseen. In Unseen, we use a new camera viewpoint to train and evaluate the policy. This new viewpoint is not used for training TRITON. }
     \vspace{-5pt}
@@ -1096,7 +1101,7 @@ We compare TRITON against two baseline image translation methods: CycleGAN~\cite
 \begin{figure}[tbhp]
     \centering
     \vspace{-3pt}
-    \includegraphics[width=.95\textwidth]{images/sim2real_res.pdf}
+    \includegraphics[width=.95\textwidth]{../images/sim2real_res.pdf}
     \vspace{-5pt}
     \caption{Evaluation results of sim2real robot learning. We compare TRITON against two baselines and one TRITON variant w/o $\ell_{UC}$ across 3 different input image resolutions. TRITON outperforms CycleGAN~\cite{cyclegan} and CUT~\cite{cut} consistently across (a) all resolutions and (b) unseen viewpoints. Results in (a) are from Seen setting only. Results in (b) are from 336x336 resolution. }
     \label{fig:sim2real}

@@ -1,5 +1,21 @@
 % This file was created with JabRef 2.10.
 % Encoding: UTF-8
+@String(PAMI = {IEEE Transactions on Pattern Analysis and Machine Intelligence})
+@String(CVPR= {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)})
+@String(ICCV= {Proceedings of the International Conference on Computer Vision (ICCV)})
+@String(ECCV= {Proceedings of the European Conference on Computer Vision (ECCV)})
+@String(NIPS= {Advances in Neural Information Processing Systems (NeurIPS)})
+@string(ICLR = {Proceedings of the International Conference on Learning Representations (ICLR)})
+@String(PR   = {Pattern Recognition})
+@String(AAAI = {Proceedings of the AAAI Conference on Artificial Intelligence (AAAI)})
+@String(ICML = {Proceedings of the International Conference on Machine Learning (ICML)})
+@String(CORL = {Conference on Robot Learning (CoRL)})
+@String(BMVC = {The British Machine Vision Conference (BMVC)})
+@String(WACV = {IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)})
+@String(ICRA = {IEEE International Conference on Robotics and Automation (ICRA)})
+@String(IROS = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)})
+@String(RAL = {IEEE Robotics and Automation Letters (RA-L)})
+
 
 @article{fourier_feature_networks,
   year     = {2020},
@@ -151,15 +167,6 @@ year = {2021},
 }
 
 
-@article{nerf,
-  year     = {2020},
-  title    = {{NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis}},
-  author   = {Mildenhall, Ben and Srinivasan, Pratul P and Tancik, Matthew and Barron, Jonathan T and Ramamoorthi, Ravi and Ng, Ren},
-  journal  = {arXiv},
-  eprint   = {2003.08934},
-  abstract = {{We present a method that achieves state-of-the-art results for synthesizing novel views of complex scenes by optimizing an underlying continuous volumetric scene function using a sparse set of input views. Our algorithm represents a scene using a fully-connected (non-convolutional) deep network, whose input is a single continuous 5D coordinate (spatial location \$(x,y,z)\$ and viewing direction \$(\textbackslashtheta, \textbackslashphi)\$) and whose output is the volume density and view-dependent emitted radiance at that spatial location. We synthesize views by querying 5D coordinates along camera rays and use classic volume rendering techniques to project the output colors and densities into an image. Because volume rendering is naturally differentiable, the only input required to optimize our representation is a set of images with known camera poses. We describe how to effectively optimize neural radiance fields to render photorealistic novel views of scenes with complicated geometry and appearance, and demonstrate results that outperform prior work on neural rendering and view synthesis. View synthesis results are best viewed as videos, so we urge readers to view our supplementary video for convincing comparisons.}},
-}
-
 @article{deferred_neural_rendering,
   year     = {2019},
   title    = {{Deferred Neural Rendering: Image Synthesis using Neural Textures}},
@@ -302,18 +309,17 @@ abstract = {{Recent work on Neural Radiance Fields (NeRF) showed how neural netw
 @inproceedings{dnerf,
     title={{D-NeRF: Neural Radiance Fields for Dynamic Scenes}},
     author={Pumarola, Albert and Corona, Enric and Pons-Moll, Gerard and Moreno-Noguer, Francesc},
-    booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+    booktitle=CVPR,
     year={2020}
 }
 
-    @inproceedings{nerualradianceflow,
-                      author    = {Yilun Du and Yinan Zhang and Hong-Xing Yu 
-                                   and Joshua B. Tenenbaum and Jiajun Wu},
-                      title     = {Neural Radiance Flow for 4D View Synthesis and Video Processing},
-                      year      = {2021},
-                      booktitle   = {Proceedings of the IEEE/CVF International Conference
-                                     on Computer Vision},
-                    }
+@inproceedings{nerualradianceflow,
+  author    = {Yilun Du and Yinan Zhang and Hong-Xing Yu 
+               and Joshua B. Tenenbaum and Jiajun Wu},
+  title     = {Neural Radiance Flow for 4D View Synthesis and Video Processing},
+  year      = {2021},
+  booktitle   = CVPR,
+}
                 
 
 
@@ -408,4 +414,11 @@ abstract = {{Recent work on Neural Radiance Fields (NeRF) showed how neural netw
   year = {2016},
   
   copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@inproceedings{nerf,
+  author = {Mildenhall, Ben and Srinivasan, Pratul P. and Tancik, Matthew and Barron, Jonathan T. and Ramamoorthi, Ravi and Ng, Ren},
+  title = {NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis},
+  booktitle = ECCV,
+  year = {2020},
 }
